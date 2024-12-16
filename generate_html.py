@@ -6,7 +6,9 @@ from pathlib import Path
 import sat_question_api as SAT
 
 STYLE = """<style>
-  .sr-only { display: none; }
+  .sr-only {
+    display: none;
+  }
   .index-button {
     color: black;
     text-decoration: none;
@@ -18,7 +20,7 @@ STYLE = """<style>
   .question-block {
     margin: auto;
     margin-bottom: 5px;
-    max-width: 6in;
+    max-width: 12in;
     border: 1px solid black;
     padding: 5px;
   }
@@ -30,9 +32,24 @@ STYLE = """<style>
     font-style: italic;
     font-size: small;
   }
-  .difficulty-H { color: red; }
-  .difficulty-M { color: orange; }
-  .difficulty-E { color: green; }
+  .difficulty-H {
+    color: red;
+  }
+  .difficulty-M {
+    color: orange;
+  }
+  .difficulty-E {
+    color: green;
+  }
+  .flex-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .flex-row-item {
+    /*max-width: 6in;*/
+    flex-basis: 6in;
+  }
 </style>"""
 
 HEAD = f"""<head>
@@ -51,7 +68,8 @@ def usage():
   die(f"usage: {sys.argv[0]} <scrape_directory> <output_directory>")
 
 def format_options(options):
-  return "<ol type='A'>" + ''.join(f"<li>{option}</li>" for option in options) + "</ol>"
+  list_items = ''.join(f"<li>{option}</li>" for option in options)
+  return f"""<div class="flex-row-item"><ol type="A">{list_items}</ol></div>"""
 
 def get_question_html_blocks(questions_file_path):
   questions = json.load(open(questions_file_path))
@@ -97,9 +115,13 @@ def get_question_html_blocks(questions_file_path):
         <span class="question-type">{question['domain']} > {question['subdomain']}</span>
         <span class="difficulty-{question['difficulty']}">{question['difficulty']}</span>
       </div>
-      {stimulus}
-      {stem}
-      {options}
+      <div class="flex-row">
+        <div class="flex-row-item">
+          {stimulus}
+          {stem}
+        </div>
+        {options}
+      </div>
       <hr>
       <details>
         <summary>Show Answer</summary>
@@ -141,7 +163,8 @@ def main():
     index[output_file_name] = output_file_title
 
   with open(output_directory / "index.html", "w") as f:
-    items = ''.join(f"""<a class="index-button" href="{output_file_name}">{output_file_title}</a>""" for output_file_name, output_file_title in index.items())
+    index_row = """<a class="index-button" href="{}">{}</a>"""
+    items = ''.join(index_row.format(name, title) for name, title in index.items())
 
     index_html = f"""
     <!DOCTYPE html>

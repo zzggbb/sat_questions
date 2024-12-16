@@ -4,7 +4,9 @@
     <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-  .sr-only { display: none; }
+  .sr-only {
+    display: none;
+  }
   .index-button {
     color: black;
     text-decoration: none;
@@ -16,7 +18,7 @@
   .question-block {
     margin: auto;
     margin-bottom: 5px;
-    max-width: 6in;
+    max-width: 12in;
     border: 1px solid black;
     padding: 5px;
   }
@@ -28,9 +30,24 @@
     font-style: italic;
     font-size: small;
   }
-  .difficulty-H { color: red; }
-  .difficulty-M { color: orange; }
-  .difficulty-E { color: green; }
+  .difficulty-H {
+    color: red;
+  }
+  .difficulty-M {
+    color: orange;
+  }
+  .difficulty-E {
+    color: green;
+  }
+  .flex-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .flex-row-item {
+    /*max-width: 6in;*/
+    flex-basis: 6in;
+  }
 </style>
 </head>
     <body>
