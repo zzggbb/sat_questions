@@ -5,6 +5,8 @@ from pathlib import Path
 
 import sat_question_api as SAT
 
+from bs4 import BeautifulSoup
+
 STYLE = """<style>
   .sr-only {
     display: none;
@@ -71,6 +73,25 @@ def format_options(options):
   list_items = ''.join(f"<li>{option}</li>" for option in options)
   return f"""<div class="flex-row-item"><ol type="A">{list_items}</ol></div>"""
 
+def replace_mfenced(html_string):
+  '''
+  <mfenced>...</mfenced> -> <mrow><mo>(</mo>...<mo>)</mo></mrow>
+  '''
+  soup = BeautifulSoup(html_string, 'html.parser')
+
+  for mfenced in soup.find_all('mfenced'):
+    mo_open = soup.new_tag('mo')
+    mo_open.string = mfenced.attrs.get('open', '(')
+
+    mo_close = soup.new_tag('mo')
+    mo_close.string = mfenced.attrs.get('close', ')')
+
+    mfenced.name = 'mrow'
+    mfenced.insert(0, mo_open)
+    mfenced.append(mo_close)
+
+  return str(soup)
+
 def get_question_html_blocks(questions_file_path):
   questions = json.load(open(questions_file_path))
   N = len(questions)
@@ -108,6 +129,11 @@ def get_question_html_blocks(questions_file_path):
       correct_answer = ', '.join(question['correct_answer'])
       rationale = question['rationale']
 
+    stimulus = replace_mfenced(stimulus)
+    stem = replace_mfenced(stem)
+    options = replace_mfenced(options)
+    rationale = replace_mfenced(rationale)
+
     yield f"""
     <div class="question-block">
       <div class="question-header">
@@ -130,7 +156,6 @@ def get_question_html_blocks(questions_file_path):
       </details>
     </div>
     """
-    #log(f"parsed question {identifier} {index+1}/{N}")
 
 def main():
   if len(sys.argv) != 3:
