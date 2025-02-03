@@ -7,60 +7,15 @@ import sat_question_api as SAT
 
 from bs4 import BeautifulSoup
 
-STYLE = """<style>
-  .sr-only {
-    display: none;
-  }
-  .index-button {
-    color: black;
-    text-decoration: none;
-    border: 1px solid black;
-    padding: 5px;
-    margin-bottom: 5px;
-    display: table;
-  }
-  .question-block {
-    margin: auto;
-    margin-bottom: 5px;
-    max-width: 12in;
-    border: 1px solid black;
-    padding: 5px;
-  }
-  .question-header {
-    display: flex;
-    justify-content: space-between;
-  }
-  .question-type {
-    font-style: italic;
-    font-size: small;
-  }
-  .difficulty-H {
-    color: red;
-  }
-  .difficulty-M {
-    color: orange;
-  }
-  .difficulty-E {
-    color: green;
-  }
-  .flex-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .flex-row-item {
-    /*max-width: 6in;*/
-    flex-basis: 6in;
-  }
-</style>"""
-
 HEAD = f"""<head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  {STYLE}
+  <link rel="stylesheet" type="text/css" href="style.css"/>
 </head>"""
 
-def log(message):
-  print(f"[LOG] {message}", file=sys.stderr)
+INDEX_HTML_FORMAT = f"<!DOCTYPE html><html>{HEAD}<body>{{}}</body></html>"
+
+def log(message, **kwargs):
+  print(f"[LOG] {message}", file=sys.stderr, flush=True, **kwargs)
 
 def die(message):
   print(message)
@@ -92,9 +47,13 @@ def replace_mfenced(html_string):
 
   return str(soup)
 
-def get_question_html_blocks(questions_file_path):
+def parse_questions(questions_file_path):
   questions = json.load(open(questions_file_path))
   N = len(questions)
+
+  subdomains = set()
+  question_elements = []
+
   for index, question in enumerate(questions):
     if 'item_id' in question:
       # special handling
@@ -134,10 +93,12 @@ def get_question_html_blocks(questions_file_path):
     options = replace_mfenced(options)
     rationale = replace_mfenced(rationale)
 
-    yield f"""
-    <div class="question-block">
+    subdomains.add(question['subdomain'].title())
+    question_elements.append(f"""
+    <div class="question-block" difficulty="{question['difficulty']}">
       <div class="question-header">
         <b>Question {index+1}</b>
+        <i class="selected-index">{index+1} of {N} selected</i>
         <span class="question-type">{question['domain']} > {question['subdomain']}</span>
         <span class="difficulty-{question['difficulty']}">{question['difficulty']}</span>
       </div>
@@ -155,7 +116,16 @@ def get_question_html_blocks(questions_file_path):
         {rationale}
       </details>
     </div>
-    """
+    """)
+
+  return subdomains, question_elements
+
+def format_subdomains(subdomains):
+  out = """<ul class="subdomains-list">"""
+  for subdomain in subdomains:
+    out += f"<li>{subdomain}</li>"
+  out += "</ul>"
+  return out
 
 def main():
   if len(sys.argv) != 3:
@@ -165,14 +135,34 @@ def main():
   output_directory = Path(sys.argv[2])
   index = {}
   for questions_file_path in sorted(scrape_directory.glob("*.json")):
-    questions = ''.join(get_question_html_blocks(questions_file_path))
+    log(f"generating from {questions_file_path}", end='... ')
+    subdomains, questions = parse_questions(questions_file_path)
+    questions_string = ''.join(questions)
+
     output_html = f"""
     <!DOCTYPE html><html>
     {HEAD}
     <body>
-      <a class="index-button" href="index.html">Return to Index</a>
-      {questions}
+      <a id="index-button" class="button" href="index.html">Return to Index</a>
+      <div id="difficulty-filters">
+        <div class="difficulty-filter">
+          <label for="checkbox-H" class="difficulty-H">H</label>
+          <input type="checkbox" id="checkbox-H" class="checkbox" checked>
+        </div>
+
+        <div class="difficulty-filter">
+          <label for="checkbox-M" class="difficulty-M">M</label>
+          <input type="checkbox" id="checkbox-M" class="checkbox" checked>
+        </div>
+
+        <div class="difficulty-filter">
+          <label for="checkbox-E" class="difficulty-E">E</label>
+          <input type="checkbox" id="checkbox-E" class="checkbox" checked>
+        </div>
+      </div>
+      {questions_string}
     </body>
+    <script src="script.js"></script>
     </html>
     """
     output_file_name = f"{questions_file_path.stem}.html"
@@ -184,22 +174,40 @@ def main():
     test_number = int(test_number)
     test_name = SAT.parameters.TEST_NAMES[test_number]
     test_domain = SAT.parameters.DOMAINS[test_number][domain_code]
-    output_file_title = f"SAT > {test_name} > {test_domain}"
-    index[output_file_name] = output_file_title
+    #output_file_title = f"SAT > {test_name} > {test_domain}"
+    #index[output_file_name] = (output_file_title, subdomains_string)
+
+    if test_name not in index:
+      index[test_name] = {}
+
+    index[test_name][test_domain] = (output_file_name, sorted(subdomains))
+    log("done")
+
+  print(json.dumps(index, indent=4))
 
   with open(output_directory / "index.html", "w") as f:
-    index_row = """<a class="index-button" href="{}">{}</a>"""
-    items = ''.join(index_row.format(name, title) for name, title in index.items())
+    index_body = ""
+    index_body += '<div class="outer">'
+    for test_name, test_domains in index.items():
+      index_body += '<div class="column">'
+      index_body += f'<div class="column-title">{test_name}</div>'
+      for test_domain, (filename, subdomains) in test_domains.items():
+        index_body += f'<a class="button" href="{filename}">'
+        index_body += f'<div class="test-domain">{test_domain}</div>'
+        index_body += format_subdomains(subdomains)
+        index_body += '</a>'
 
-    index_html = f"""
-    <!DOCTYPE html>
-    <html>
-    {HEAD}
-    <body>
-    {items}
-    </body>
-    </html>
-    """
+      index_body += '</div>'
+
+    index_body += '</div>'
+    '''
+    index_row = """<a class="button" href="{}"><div>{}</div><div>{}</div></a>"""
+    items = ''.join(
+      index_row.format(filename, title, subdomains) for filename, (title, subdomains) in index.items()
+    )
+    '''
+
+    index_html = INDEX_HTML_FORMAT.format(index_body)
     print(index_html, file=f)
 
 if __name__ == '__main__':

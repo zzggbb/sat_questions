@@ -2,59 +2,31 @@
     <!DOCTYPE html><html>
     <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-  .sr-only {
-    display: none;
-  }
-  .index-button {
-    color: black;
-    text-decoration: none;
-    border: 1px solid black;
-    padding: 5px;
-    margin-bottom: 5px;
-    display: table;
-  }
-  .question-block {
-    margin: auto;
-    margin-bottom: 5px;
-    max-width: 12in;
-    border: 1px solid black;
-    padding: 5px;
-  }
-  .question-header {
-    display: flex;
-    justify-content: space-between;
-  }
-  .question-type {
-    font-style: italic;
-    font-size: small;
-  }
-  .difficulty-H {
-    color: red;
-  }
-  .difficulty-M {
-    color: orange;
-  }
-  .difficulty-E {
-    color: green;
-  }
-  .flex-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .flex-row-item {
-    /*max-width: 6in;*/
-    flex-basis: 6in;
-  }
-</style>
+  <link rel="stylesheet" type="text/css" href="style.css"/>
 </head>
     <body>
-      <a class="index-button" href="index.html">Return to Index</a>
+      <a id="index-button" class="button" href="index.html">Return to Index</a>
+      <div id="difficulty-filters">
+        <div class="difficulty-filter">
+          <label for="checkbox-H" class="difficulty-H">H</label>
+          <input type="checkbox" id="checkbox-H" class="checkbox" checked>
+        </div>
+
+        <div class="difficulty-filter">
+          <label for="checkbox-M" class="difficulty-M">M</label>
+          <input type="checkbox" id="checkbox-M" class="checkbox" checked>
+        </div>
+
+        <div class="difficulty-filter">
+          <label for="checkbox-E" class="difficulty-E">E</label>
+          <input type="checkbox" id="checkbox-E" class="checkbox" checked>
+        </div>
+      </div>
       
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 1</b>
+        <i class="selected-index">1 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -73,9 +45,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 2</b>
+        <i class="selected-index">2 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -94,9 +67,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 3</b>
+        <i class="selected-index">3 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -118,9 +92,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 4</b>
+        <i class="selected-index">4 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -139,9 +114,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 5</b>
+        <i class="selected-index">5 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -160,9 +136,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 6</b>
+        <i class="selected-index">6 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -181,9 +158,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 7</b>
+        <i class="selected-index">7 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -202,9 +180,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 8</b>
+        <i class="selected-index">8 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -223,9 +202,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 9</b>
+        <i class="selected-index">9 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -247,9 +227,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 10</b>
+        <i class="selected-index">10 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -268,9 +249,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 11</b>
+        <i class="selected-index">11 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -292,9 +274,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 12</b>
+        <i class="selected-index">12 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -313,9 +296,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 13</b>
+        <i class="selected-index">13 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -334,9 +318,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 14</b>
+        <i class="selected-index">14 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -355,9 +340,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 15</b>
+        <i class="selected-index">15 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -379,9 +365,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 16</b>
+        <i class="selected-index">16 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -400,9 +387,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 17</b>
+        <i class="selected-index">17 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -422,9 +410,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 18</b>
+        <i class="selected-index">18 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -443,9 +432,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 19</b>
+        <i class="selected-index">19 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -464,9 +454,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 20</b>
+        <i class="selected-index">20 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -485,9 +476,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 21</b>
+        <i class="selected-index">21 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -506,9 +498,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 22</b>
+        <i class="selected-index">22 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -527,9 +520,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 23</b>
+        <i class="selected-index">23 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -548,9 +542,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 24</b>
+        <i class="selected-index">24 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -569,9 +564,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 25</b>
+        <i class="selected-index">25 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -594,9 +590,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 26</b>
+        <i class="selected-index">26 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -615,9 +612,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 27</b>
+        <i class="selected-index">27 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -636,9 +634,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 28</b>
+        <i class="selected-index">28 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -661,9 +660,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 29</b>
+        <i class="selected-index">29 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -682,9 +682,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 30</b>
+        <i class="selected-index">30 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -703,9 +704,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 31</b>
+        <i class="selected-index">31 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -724,9 +726,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 32</b>
+        <i class="selected-index">32 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -748,9 +751,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 33</b>
+        <i class="selected-index">33 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -769,9 +773,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 34</b>
+        <i class="selected-index">34 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -790,9 +795,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 35</b>
+        <i class="selected-index">35 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -811,9 +817,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 36</b>
+        <i class="selected-index">36 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -835,9 +842,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 37</b>
+        <i class="selected-index">37 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -856,9 +864,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 38</b>
+        <i class="selected-index">38 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -877,9 +886,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 39</b>
+        <i class="selected-index">39 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -898,9 +908,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 40</b>
+        <i class="selected-index">40 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -919,9 +930,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 41</b>
+        <i class="selected-index">41 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -941,9 +953,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 42</b>
+        <i class="selected-index">42 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -962,9 +975,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 43</b>
+        <i class="selected-index">43 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -986,9 +1000,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 44</b>
+        <i class="selected-index">44 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1007,9 +1022,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 45</b>
+        <i class="selected-index">45 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1028,9 +1044,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 46</b>
+        <i class="selected-index">46 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1053,9 +1070,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 47</b>
+        <i class="selected-index">47 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1074,9 +1092,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 48</b>
+        <i class="selected-index">48 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1098,9 +1117,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 49</b>
+        <i class="selected-index">49 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1123,9 +1143,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 50</b>
+        <i class="selected-index">50 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1148,9 +1169,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 51</b>
+        <i class="selected-index">51 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1172,9 +1194,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 52</b>
+        <i class="selected-index">52 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1197,9 +1220,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 53</b>
+        <i class="selected-index">53 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1218,9 +1242,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 54</b>
+        <i class="selected-index">54 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1239,9 +1264,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 55</b>
+        <i class="selected-index">55 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1263,9 +1289,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 56</b>
+        <i class="selected-index">56 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1284,9 +1311,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 57</b>
+        <i class="selected-index">57 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1309,9 +1337,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 58</b>
+        <i class="selected-index">58 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1330,9 +1359,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 59</b>
+        <i class="selected-index">59 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1351,9 +1381,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 60</b>
+        <i class="selected-index">60 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1372,9 +1403,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 61</b>
+        <i class="selected-index">61 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1393,9 +1425,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 62</b>
+        <i class="selected-index">62 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1414,9 +1447,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 63</b>
+        <i class="selected-index">63 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1435,9 +1469,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 64</b>
+        <i class="selected-index">64 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1459,9 +1494,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 65</b>
+        <i class="selected-index">65 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1480,9 +1516,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 66</b>
+        <i class="selected-index">66 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1502,9 +1539,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 67</b>
+        <i class="selected-index">67 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1523,9 +1561,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 68</b>
+        <i class="selected-index">68 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1544,9 +1583,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 69</b>
+        <i class="selected-index">69 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1565,9 +1605,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 70</b>
+        <i class="selected-index">70 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1586,9 +1627,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 71</b>
+        <i class="selected-index">71 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1607,9 +1649,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 72</b>
+        <i class="selected-index">72 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1629,9 +1672,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 73</b>
+        <i class="selected-index">73 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1650,9 +1694,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 74</b>
+        <i class="selected-index">74 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1671,9 +1716,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 75</b>
+        <i class="selected-index">75 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1692,9 +1738,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 76</b>
+        <i class="selected-index">76 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1713,9 +1760,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 77</b>
+        <i class="selected-index">77 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1738,9 +1786,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 78</b>
+        <i class="selected-index">78 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1759,9 +1808,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 79</b>
+        <i class="selected-index">79 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1780,9 +1830,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 80</b>
+        <i class="selected-index">80 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1801,9 +1852,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 81</b>
+        <i class="selected-index">81 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -1825,9 +1877,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 82</b>
+        <i class="selected-index">82 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1846,9 +1899,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 83</b>
+        <i class="selected-index">83 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1867,9 +1921,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 84</b>
+        <i class="selected-index">84 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1892,9 +1947,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 85</b>
+        <i class="selected-index">85 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1916,9 +1972,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 86</b>
+        <i class="selected-index">86 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1937,9 +1994,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 87</b>
+        <i class="selected-index">87 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -1962,9 +2020,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 88</b>
+        <i class="selected-index">88 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -1983,9 +2042,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 89</b>
+        <i class="selected-index">89 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2004,9 +2064,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 90</b>
+        <i class="selected-index">90 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2026,9 +2087,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 91</b>
+        <i class="selected-index">91 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2051,9 +2113,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 92</b>
+        <i class="selected-index">92 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2072,9 +2135,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 93</b>
+        <i class="selected-index">93 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2093,9 +2157,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 94</b>
+        <i class="selected-index">94 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2114,9 +2179,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 95</b>
+        <i class="selected-index">95 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2135,9 +2201,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 96</b>
+        <i class="selected-index">96 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2167,9 +2234,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 97</b>
+        <i class="selected-index">97 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2191,9 +2259,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 98</b>
+        <i class="selected-index">98 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2212,9 +2281,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 99</b>
+        <i class="selected-index">99 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2233,9 +2303,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 100</b>
+        <i class="selected-index">100 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2257,9 +2328,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 101</b>
+        <i class="selected-index">101 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2281,9 +2353,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 102</b>
+        <i class="selected-index">102 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2302,9 +2375,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 103</b>
+        <i class="selected-index">103 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2323,9 +2397,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 104</b>
+        <i class="selected-index">104 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2348,9 +2423,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 105</b>
+        <i class="selected-index">105 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2369,9 +2445,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 106</b>
+        <i class="selected-index">106 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2394,9 +2471,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 107</b>
+        <i class="selected-index">107 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2415,9 +2493,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 108</b>
+        <i class="selected-index">108 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2436,9 +2515,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 109</b>
+        <i class="selected-index">109 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2457,9 +2537,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 110</b>
+        <i class="selected-index">110 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2481,9 +2562,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 111</b>
+        <i class="selected-index">111 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2502,9 +2584,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 112</b>
+        <i class="selected-index">112 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2523,9 +2606,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 113</b>
+        <i class="selected-index">113 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2544,9 +2628,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 114</b>
+        <i class="selected-index">114 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2566,9 +2651,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 115</b>
+        <i class="selected-index">115 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2588,9 +2674,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 116</b>
+        <i class="selected-index">116 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2609,9 +2696,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 117</b>
+        <i class="selected-index">117 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2630,9 +2718,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 118</b>
+        <i class="selected-index">118 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2651,9 +2740,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 119</b>
+        <i class="selected-index">119 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2675,9 +2765,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 120</b>
+        <i class="selected-index">120 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2696,9 +2787,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 121</b>
+        <i class="selected-index">121 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2717,9 +2809,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 122</b>
+        <i class="selected-index">122 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2741,9 +2834,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 123</b>
+        <i class="selected-index">123 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2762,9 +2856,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 124</b>
+        <i class="selected-index">124 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2783,9 +2878,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 125</b>
+        <i class="selected-index">125 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2807,9 +2903,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 126</b>
+        <i class="selected-index">126 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2828,9 +2925,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 127</b>
+        <i class="selected-index">127 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2849,9 +2947,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 128</b>
+        <i class="selected-index">128 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2870,9 +2969,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 129</b>
+        <i class="selected-index">129 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2891,9 +2991,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 130</b>
+        <i class="selected-index">130 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2912,9 +3013,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 131</b>
+        <i class="selected-index">131 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -2936,9 +3038,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 132</b>
+        <i class="selected-index">132 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -2957,9 +3060,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 133</b>
+        <i class="selected-index">133 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -2981,9 +3085,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 134</b>
+        <i class="selected-index">134 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3002,9 +3107,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 135</b>
+        <i class="selected-index">135 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3026,9 +3132,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 136</b>
+        <i class="selected-index">136 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3047,9 +3154,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 137</b>
+        <i class="selected-index">137 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3080,9 +3188,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 138</b>
+        <i class="selected-index">138 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3111,9 +3220,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 139</b>
+        <i class="selected-index">139 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -3132,9 +3242,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 140</b>
+        <i class="selected-index">140 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3153,9 +3264,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 141</b>
+        <i class="selected-index">141 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3175,9 +3287,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 142</b>
+        <i class="selected-index">142 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3199,9 +3312,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 143</b>
+        <i class="selected-index">143 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3232,9 +3346,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 144</b>
+        <i class="selected-index">144 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3257,9 +3372,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 145</b>
+        <i class="selected-index">145 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -3278,9 +3394,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 146</b>
+        <i class="selected-index">146 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3299,9 +3416,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 147</b>
+        <i class="selected-index">147 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3321,9 +3439,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 148</b>
+        <i class="selected-index">148 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3342,9 +3461,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 149</b>
+        <i class="selected-index">149 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3366,9 +3486,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 150</b>
+        <i class="selected-index">150 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3387,9 +3508,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 151</b>
+        <i class="selected-index">151 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3408,9 +3530,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 152</b>
+        <i class="selected-index">152 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3429,9 +3552,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 153</b>
+        <i class="selected-index">153 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3450,9 +3574,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 154</b>
+        <i class="selected-index">154 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3471,9 +3596,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 155</b>
+        <i class="selected-index">155 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -3492,9 +3618,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 156</b>
+        <i class="selected-index">156 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3513,9 +3640,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 157</b>
+        <i class="selected-index">157 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3534,9 +3662,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 158</b>
+        <i class="selected-index">158 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3555,9 +3684,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 159</b>
+        <i class="selected-index">159 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3576,9 +3706,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 160</b>
+        <i class="selected-index">160 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3601,9 +3732,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 161</b>
+        <i class="selected-index">161 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3623,9 +3755,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 162</b>
+        <i class="selected-index">162 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -3648,9 +3781,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 163</b>
+        <i class="selected-index">163 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3669,9 +3803,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 164</b>
+        <i class="selected-index">164 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3690,9 +3825,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 165</b>
+        <i class="selected-index">165 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3711,9 +3847,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 166</b>
+        <i class="selected-index">166 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3736,9 +3873,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 167</b>
+        <i class="selected-index">167 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3757,9 +3895,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 168</b>
+        <i class="selected-index">168 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3778,9 +3917,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 169</b>
+        <i class="selected-index">169 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -3802,9 +3942,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 170</b>
+        <i class="selected-index">170 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3831,9 +3972,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 171</b>
+        <i class="selected-index">171 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3852,9 +3994,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 172</b>
+        <i class="selected-index">172 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3877,9 +4020,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 173</b>
+        <i class="selected-index">173 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -3902,9 +4046,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 174</b>
+        <i class="selected-index">174 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3923,9 +4068,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 175</b>
+        <i class="selected-index">175 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3948,9 +4094,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 176</b>
+        <i class="selected-index">176 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3972,9 +4119,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 177</b>
+        <i class="selected-index">177 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -3993,9 +4141,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 178</b>
+        <i class="selected-index">178 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4014,9 +4163,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 179</b>
+        <i class="selected-index">179 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4035,9 +4185,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 180</b>
+        <i class="selected-index">180 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4056,9 +4207,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 181</b>
+        <i class="selected-index">181 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4080,9 +4232,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 182</b>
+        <i class="selected-index">182 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4101,9 +4254,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 183</b>
+        <i class="selected-index">183 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4122,9 +4276,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 184</b>
+        <i class="selected-index">184 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4143,9 +4298,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 185</b>
+        <i class="selected-index">185 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4165,9 +4321,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 186</b>
+        <i class="selected-index">186 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4186,9 +4343,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 187</b>
+        <i class="selected-index">187 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4211,9 +4369,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 188</b>
+        <i class="selected-index">188 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4232,9 +4391,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 189</b>
+        <i class="selected-index">189 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4253,9 +4413,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 190</b>
+        <i class="selected-index">190 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4274,9 +4435,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 191</b>
+        <i class="selected-index">191 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4299,9 +4461,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 192</b>
+        <i class="selected-index">192 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4320,9 +4483,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 193</b>
+        <i class="selected-index">193 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4342,9 +4506,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 194</b>
+        <i class="selected-index">194 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4363,9 +4528,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 195</b>
+        <i class="selected-index">195 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4387,9 +4553,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 196</b>
+        <i class="selected-index">196 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4408,9 +4575,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 197</b>
+        <i class="selected-index">197 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4432,9 +4600,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 198</b>
+        <i class="selected-index">198 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4457,9 +4626,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 199</b>
+        <i class="selected-index">199 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4478,9 +4648,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 200</b>
+        <i class="selected-index">200 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4499,9 +4670,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 201</b>
+        <i class="selected-index">201 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4520,9 +4692,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 202</b>
+        <i class="selected-index">202 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4544,9 +4717,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 203</b>
+        <i class="selected-index">203 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4565,9 +4739,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 204</b>
+        <i class="selected-index">204 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4586,9 +4761,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 205</b>
+        <i class="selected-index">205 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4611,9 +4787,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 206</b>
+        <i class="selected-index">206 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4632,9 +4809,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 207</b>
+        <i class="selected-index">207 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4653,9 +4831,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 208</b>
+        <i class="selected-index">208 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4674,9 +4853,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 209</b>
+        <i class="selected-index">209 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4695,9 +4875,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 210</b>
+        <i class="selected-index">210 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4716,9 +4897,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 211</b>
+        <i class="selected-index">211 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4737,9 +4919,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 212</b>
+        <i class="selected-index">212 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4758,9 +4941,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 213</b>
+        <i class="selected-index">213 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4782,9 +4966,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 214</b>
+        <i class="selected-index">214 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4803,9 +4988,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 215</b>
+        <i class="selected-index">215 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4828,9 +5014,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 216</b>
+        <i class="selected-index">216 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4849,9 +5036,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 217</b>
+        <i class="selected-index">217 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4870,9 +5058,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 218</b>
+        <i class="selected-index">218 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4891,9 +5080,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 219</b>
+        <i class="selected-index">219 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -4913,9 +5103,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 220</b>
+        <i class="selected-index">220 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -4934,9 +5125,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 221</b>
+        <i class="selected-index">221 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4959,9 +5151,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 222</b>
+        <i class="selected-index">222 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -4980,9 +5173,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 223</b>
+        <i class="selected-index">223 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5001,9 +5195,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 224</b>
+        <i class="selected-index">224 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5022,9 +5217,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 225</b>
+        <i class="selected-index">225 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5043,9 +5239,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 226</b>
+        <i class="selected-index">226 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5066,9 +5263,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 227</b>
+        <i class="selected-index">227 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5087,9 +5285,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 228</b>
+        <i class="selected-index">228 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5108,9 +5307,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 229</b>
+        <i class="selected-index">229 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5129,9 +5329,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 230</b>
+        <i class="selected-index">230 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -5150,9 +5351,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 231</b>
+        <i class="selected-index">231 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5171,9 +5373,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 232</b>
+        <i class="selected-index">232 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5195,9 +5398,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 233</b>
+        <i class="selected-index">233 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -5216,9 +5420,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 234</b>
+        <i class="selected-index">234 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5240,9 +5445,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 235</b>
+        <i class="selected-index">235 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -5261,9 +5467,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 236</b>
+        <i class="selected-index">236 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -5282,9 +5489,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 237</b>
+        <i class="selected-index">237 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5303,9 +5511,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 238</b>
+        <i class="selected-index">238 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -5328,9 +5537,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 239</b>
+        <i class="selected-index">239 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5352,9 +5562,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 240</b>
+        <i class="selected-index">240 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5373,9 +5584,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 241</b>
+        <i class="selected-index">241 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -5397,9 +5609,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 242</b>
+        <i class="selected-index">242 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5419,9 +5632,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 243</b>
+        <i class="selected-index">243 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5443,9 +5657,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 244</b>
+        <i class="selected-index">244 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5464,9 +5679,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 245</b>
+        <i class="selected-index">245 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5488,9 +5704,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 246</b>
+        <i class="selected-index">246 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5509,9 +5726,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 247</b>
+        <i class="selected-index">247 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5534,9 +5752,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 248</b>
+        <i class="selected-index">248 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5559,9 +5778,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 249</b>
+        <i class="selected-index">249 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5581,9 +5801,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 250</b>
+        <i class="selected-index">250 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5602,9 +5823,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 251</b>
+        <i class="selected-index">251 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5623,9 +5845,10 @@
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 252</b>
+        <i class="selected-index">252 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5648,9 +5871,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 253</b>
+        <i class="selected-index">253 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5669,9 +5893,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 254</b>
+        <i class="selected-index">254 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5690,9 +5915,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 255</b>
+        <i class="selected-index">255 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5711,9 +5937,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 256</b>
+        <i class="selected-index">256 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5732,9 +5959,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 257</b>
+        <i class="selected-index">257 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -5753,9 +5981,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 258</b>
+        <i class="selected-index">258 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5774,9 +6003,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 259</b>
+        <i class="selected-index">259 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5795,9 +6025,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 260</b>
+        <i class="selected-index">260 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5816,9 +6047,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 261</b>
+        <i class="selected-index">261 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5837,9 +6069,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 262</b>
+        <i class="selected-index">262 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5858,9 +6091,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 263</b>
+        <i class="selected-index">263 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -5879,9 +6113,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 264</b>
+        <i class="selected-index">264 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5900,9 +6135,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 265</b>
+        <i class="selected-index">265 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5921,9 +6157,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 266</b>
+        <i class="selected-index">266 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5947,9 +6184,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 267</b>
+        <i class="selected-index">267 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5968,9 +6206,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 268</b>
+        <i class="selected-index">268 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -5989,9 +6228,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 269</b>
+        <i class="selected-index">269 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6011,9 +6251,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 270</b>
+        <i class="selected-index">270 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6035,9 +6276,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 271</b>
+        <i class="selected-index">271 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6056,9 +6298,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 272</b>
+        <i class="selected-index">272 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6080,9 +6323,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 273</b>
+        <i class="selected-index">273 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6104,9 +6348,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 274</b>
+        <i class="selected-index">274 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6128,9 +6373,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 275</b>
+        <i class="selected-index">275 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6149,9 +6395,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 276</b>
+        <i class="selected-index">276 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6170,9 +6417,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 277</b>
+        <i class="selected-index">277 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6191,9 +6439,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 278</b>
+        <i class="selected-index">278 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6215,9 +6464,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 279</b>
+        <i class="selected-index">279 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6239,9 +6489,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 280</b>
+        <i class="selected-index">280 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6264,9 +6515,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 281</b>
+        <i class="selected-index">281 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6288,9 +6540,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 282</b>
+        <i class="selected-index">282 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6318,9 +6571,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 283</b>
+        <i class="selected-index">283 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6340,9 +6594,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 284</b>
+        <i class="selected-index">284 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6361,9 +6616,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 285</b>
+        <i class="selected-index">285 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6382,9 +6638,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 286</b>
+        <i class="selected-index">286 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6403,9 +6660,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 287</b>
+        <i class="selected-index">287 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6424,9 +6682,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 288</b>
+        <i class="selected-index">288 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6447,9 +6706,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 289</b>
+        <i class="selected-index">289 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6468,9 +6728,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 290</b>
+        <i class="selected-index">290 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6489,9 +6750,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 291</b>
+        <i class="selected-index">291 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6511,9 +6773,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 292</b>
+        <i class="selected-index">292 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6532,9 +6795,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 293</b>
+        <i class="selected-index">293 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6554,9 +6818,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 294</b>
+        <i class="selected-index">294 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6575,9 +6840,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 295</b>
+        <i class="selected-index">295 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6596,9 +6862,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 296</b>
+        <i class="selected-index">296 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6617,9 +6884,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 297</b>
+        <i class="selected-index">297 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6642,9 +6910,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 298</b>
+        <i class="selected-index">298 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6663,9 +6932,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 299</b>
+        <i class="selected-index">299 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6688,9 +6958,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 300</b>
+        <i class="selected-index">300 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6709,9 +6980,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 301</b>
+        <i class="selected-index">301 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6734,9 +7006,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 302</b>
+        <i class="selected-index">302 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6759,9 +7032,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 303</b>
+        <i class="selected-index">303 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6783,9 +7057,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 304</b>
+        <i class="selected-index">304 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6807,9 +7082,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 305</b>
+        <i class="selected-index">305 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6828,9 +7104,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 306</b>
+        <i class="selected-index">306 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6849,9 +7126,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 307</b>
+        <i class="selected-index">307 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6870,9 +7148,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 308</b>
+        <i class="selected-index">308 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -6891,9 +7170,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 309</b>
+        <i class="selected-index">309 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -6912,9 +7192,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 310</b>
+        <i class="selected-index">310 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6933,9 +7214,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 311</b>
+        <i class="selected-index">311 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6954,9 +7236,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 312</b>
+        <i class="selected-index">312 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6975,9 +7258,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 313</b>
+        <i class="selected-index">313 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -6996,9 +7280,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 314</b>
+        <i class="selected-index">314 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -7017,9 +7302,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 315</b>
+        <i class="selected-index">315 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -7042,9 +7328,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 316</b>
+        <i class="selected-index">316 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -7063,9 +7350,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 317</b>
+        <i class="selected-index">317 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -7088,9 +7376,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 318</b>
+        <i class="selected-index">318 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -7113,9 +7402,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 319</b>
+        <i class="selected-index">319 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -7138,9 +7428,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 320</b>
+        <i class="selected-index">320 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -7159,9 +7450,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 321</b>
+        <i class="selected-index">321 of 329 selected</i>
         <span class="question-type">Craft and Structure > Cross-Text Connections</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -7183,9 +7475,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 322</b>
+        <i class="selected-index">322 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -7204,9 +7497,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 323</b>
+        <i class="selected-index">323 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -7225,9 +7519,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 324</b>
+        <i class="selected-index">324 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -7246,9 +7541,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 325</b>
+        <i class="selected-index">325 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -7275,9 +7571,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 326</b>
+        <i class="selected-index">326 of 329 selected</i>
         <span class="question-type">Craft and Structure > Text Structure and Purpose</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -7300,9 +7597,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="H">
       <div class="question-header">
         <b>Question 327</b>
+        <i class="selected-index">327 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-H">H</span>
       </div>
@@ -7321,9 +7619,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="M">
       <div class="question-header">
         <b>Question 328</b>
+        <i class="selected-index">328 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-M">M</span>
       </div>
@@ -7342,9 +7641,10 @@ indication of their presence, as he wants to avoid detection by anyone who might
       </details>
     </div>
     
-    <div class="question-block">
+    <div class="question-block" difficulty="E">
       <div class="question-header">
         <b>Question 329</b>
+        <i class="selected-index">329 of 329 selected</i>
         <span class="question-type">Craft and Structure > Words in Context</span>
         <span class="difficulty-E">E</span>
       </div>
@@ -7364,5 +7664,6 @@ indication of their presence, as he wants to avoid detection by anyone who might
     </div>
     
     </body>
+    <script src="script.js"></script>
     </html>
     

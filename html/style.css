@@ -1,0 +1,89 @@
+body {
+  margin: 5px;
+}
+
+.outer {
+  display: flex;
+  justify-content: space-evenly;
+}
+.column {
+  display: flex;
+  flex-direction: column;
+}
+.column-title {
+  font-size: x-large;
+  text-align: center;
+  font-weight: bold;
+}
+.test-domain {
+  font-size: large;
+  text-align: center;
+  font-weight: bold;
+}
+
+.subdomains-list {
+  margin: 5px;
+  padding-left: 10px;
+}
+.subdomains-list > li {
+  font-size: medium;
+}
+.sr-only { display: none; }
+.button {
+  color: black;
+  text-decoration: none;
+  border: 1px solid black;
+  padding: 5px;
+  margin-bottom: 5px;
+  display: table;
+}
+#index-button {
+  position: fixed;
+}
+
+#difficulty-filters {
+  position: fixed;
+  right: 10px;
+}
+.difficulty-filter {
+  display: flex;
+}
+.question-block {
+  margin: auto;
+  margin-bottom: 5px;
+  max-width: 12in;
+  border: 1px solid black;
+  padding: 5px;
+}
+.question-header {
+  display: flex;
+  justify-content: space-between;
+}
+.question-type {
+  font-style: italic;
+  font-size: small;
+}
+.difficulty-H {
+  font-family: monospace;
+  font-size: xx-large;
+  color: red;
+}
+.difficulty-M {
+  font-family: monospace;
+  font-size: xx-large;
+  color: orange;
+}
+.difficulty-E {
+  font-family: monospace;
+  font-size: xx-large;
+  color: green;
+}
+.flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.flex-row-item {
+  /*max-width: 6in;*/
+  flex-basis: 6in;
+}
