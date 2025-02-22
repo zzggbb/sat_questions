@@ -10,8 +10,24 @@ def die(message):
   sys.exit(1)
 
 def usage():
-  print(f"usage: {sys.argv[0]} <event_id> <test_number> <domain_code>")
-  print(f"       {sys.argv[0]} <scrape_directory>")
+  print(f"""
+  usage: {sys.argv[0]} <event_id> <test_id> <domain_id>
+            event IDs: 99 - SAT
+                       100 - PSAT/NMSQT & PSAT 10
+                       102 - PSAT 8/9
+             test IDS: 1 - Reading & Writing
+                       2 - Math
+           domain IDS: INI - Information and Ideas
+                       CAS - Craft and Structure
+                       EOI - Expression of Ideas
+                       SEC - Standard English Conventions
+                       H - Algebra
+                       P - Advanced Math
+                       Q - Problem-Solving and Data Analysis
+                       S - Geometry and Trigonometry
+
+         {sys.argv[0]} <scrape_directory>
+  """)
 
 def download(directory, test_number, domain_code):
   output_path = directory / f"SAT_{test_number}_{domain_code}.json"

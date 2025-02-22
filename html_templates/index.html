@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% set title = "SAT Questions" %}
+
+{% block body %}
+  <div class="outer">
+  {% for test_name, test_domains in index.items() %}
+    <div class="column">
+      <div class="column-title">{{test_name}}</div>
+      {% for test_domain, (filename, subdomains) in test_domains.items() %}
+        <a class="button" href="{{filename}}">
+          <div class="test-domain">{{test_domain}}</div>
+          <ul class="subdomains-list">
+          {% for subdomain in subdomains %}
+            <li>{{subdomain}}</li>
+          {% endfor %}
+          </ul>
+        </a>
+      {% endfor %}
+    </div>
+  {% endfor %}
+  </div>
+{% endblock %}

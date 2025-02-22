@@ -2,17 +2,18 @@ import sys
 import json
 import string
 from pathlib import Path
+from dataclasses import dataclass
 
 import sat_question_api as SAT
 
+import jinja2
 from bs4 import BeautifulSoup
 
-HEAD = f"""<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="style.css"/>
-</head>"""
-
-INDEX_HTML_FORMAT = f"<!DOCTYPE html><html>{HEAD}<body>{{}}</body></html>"
+DIFFICULTY_MAP = {
+  'E': 'easy',
+  'M': 'medium',
+  'H': 'hard'
+}
 
 def log(message, **kwargs):
   print(f"[LOG] {message}", file=sys.stderr, flush=True, **kwargs)
@@ -24,14 +25,11 @@ def die(message):
 def usage():
   die(f"usage: {sys.argv[0]} <scrape_directory> <output_directory>")
 
-def format_options(options):
-  list_items = ''.join(f"<li>{option}</li>" for option in options)
-  return f"""<div class="flex-row-item"><ol type="A">{list_items}</ol></div>"""
+def format_attribute(s):
+  return s.lower().replace(' ', '-')
 
 def replace_mfenced(html_string):
-  '''
-  <mfenced>...</mfenced> -> <mrow><mo>(</mo>...<mo>)</mo></mrow>
-  '''
+  # <mfenced>...</mfenced> -> <mrow><mo>(</mo>...<mo>)</mo></mrow>
   soup = BeautifulSoup(html_string, 'html.parser')
 
   for mfenced in soup.find_all('mfenced'):
@@ -47,12 +45,25 @@ def replace_mfenced(html_string):
 
   return str(soup)
 
+@dataclass
+class Question:
+  # metadata
+  difficulty: str
+  index: int
+  domain: str
+  subdomain: str
+
+  # data
+  stimulus: str
+  stem: str
+  options: list[str]
+  correct_answer: str
+  rationale: str
+
 def parse_questions(questions_file_path):
   questions = json.load(open(questions_file_path))
-  N = len(questions)
-
   subdomains = set()
-  question_elements = []
+  question_objects = []
 
   for index, question in enumerate(questions):
     if 'item_id' in question:
@@ -63,10 +74,10 @@ def parse_questions(questions_file_path):
       stem = question.get('prompt', '')
       qtype = question['answer']['style']
       if qtype == 'Multiple Choice':
-        options = format_options(option['body'] for option in question['answer']['choices'].values())
+        options = [option['body'] for option in question['answer']['choices'].values()]
         correct_answer = question['answer'].get('correct_choice', '')
       elif qtype == 'SPR':
-        options = ''
+        options = []
         correct_answer = ''
       else:
         raise RuntimeError(f"Unexpected question type {qtype}")
@@ -79,9 +90,9 @@ def parse_questions(questions_file_path):
       stem = question['stem']
       qtype = question['type']
       if qtype == 'mcq':
-        options = format_options(option['content'] for option in question['answerOptions'])
+        options = [option['content'] for option in question['answerOptions']]
       elif qtype == 'spr':
-        options = ''
+        options = []
       else:
         raise RuntimeError(f"Unexpected question type {qtype}")
 
@@ -90,42 +101,16 @@ def parse_questions(questions_file_path):
 
     stimulus = replace_mfenced(stimulus)
     stem = replace_mfenced(stem)
-    options = replace_mfenced(options)
+    options = list(map(replace_mfenced, options))
     rationale = replace_mfenced(rationale)
 
     subdomains.add(question['subdomain'].title())
-    question_elements.append(f"""
-    <div class="question-block" difficulty="{question['difficulty']}">
-      <div class="question-header">
-        <b>Question {index+1}</b>
-        <i class="selected-index">{index+1} of {N} selected</i>
-        <span class="question-type">{question['domain']} > {question['subdomain']}</span>
-        <span class="difficulty-{question['difficulty']}">{question['difficulty']}</span>
-      </div>
-      <div class="flex-row">
-        <div class="flex-row-item">
-          {stimulus}
-          {stem}
-        </div>
-        {options}
-      </div>
-      <hr>
-      <details>
-        <summary>Show Answer</summary>
-        <b>Correct Answer:</b> {correct_answer}
-        {rationale}
-      </details>
-    </div>
-    """)
+    question_objects.append(Question(
+      DIFFICULTY_MAP[question['difficulty']], index, question['domain'], question['subdomain'],
+      stimulus, stem, options, correct_answer, rationale
+    ))
 
-  return subdomains, question_elements
-
-def format_subdomains(subdomains):
-  out = """<ul class="subdomains-list">"""
-  for subdomain in subdomains:
-    out += f"<li>{subdomain}</li>"
-  out += "</ul>"
-  return out
+  return subdomains, question_objects
 
 def main():
   if len(sys.argv) != 3:
@@ -133,82 +118,45 @@ def main():
 
   scrape_directory = Path(sys.argv[1])
   output_directory = Path(sys.argv[2])
+  loader = jinja2.FileSystemLoader(Path(__file__).parent / 'html_templates')
+  env = jinja2.Environment(loader=loader)
+  env.filters['format_attribute'] = format_attribute
+
   index = {}
-  for questions_file_path in sorted(scrape_directory.glob("*.json")):
-    log(f"generating from {questions_file_path}", end='... ')
-    subdomains, questions = parse_questions(questions_file_path)
-    questions_string = ''.join(questions)
+  for questions_json_path in sorted(scrape_directory.glob("*.json")):
+    questions_file_name = f"{questions_json_path.stem}.html"
+    questions_path = output_directory / questions_file_name
 
-    output_html = f"""
-    <!DOCTYPE html><html>
-    {HEAD}
-    <body>
-      <a id="index-button" class="button" href="index.html">Return to Index</a>
-      <div id="difficulty-filters">
-        <div class="difficulty-filter">
-          <label for="checkbox-H" class="difficulty-H">H</label>
-          <input type="checkbox" id="checkbox-H" class="checkbox" checked>
-        </div>
+    log(f"generating {questions_path} from {questions_json_path}", end='... ')
 
-        <div class="difficulty-filter">
-          <label for="checkbox-M" class="difficulty-M">M</label>
-          <input type="checkbox" id="checkbox-M" class="checkbox" checked>
-        </div>
-
-        <div class="difficulty-filter">
-          <label for="checkbox-E" class="difficulty-E">E</label>
-          <input type="checkbox" id="checkbox-E" class="checkbox" checked>
-        </div>
-      </div>
-      {questions_string}
-    </body>
-    <script src="script.js"></script>
-    </html>
-    """
-    output_file_name = f"{questions_file_path.stem}.html"
-    output_file_path = output_directory / output_file_name
-    with open(output_file_path, 'w') as f:
-      print(output_html, file=f)
-
-    _, test_number, domain_code = questions_file_path.stem.split('_')
+    # get metadata (test name, domain)
+    _, test_number, domain_code = questions_path.stem.split('_')
     test_number = int(test_number)
     test_name = SAT.parameters.TEST_NAMES[test_number]
     test_domain = SAT.parameters.DOMAINS[test_number][domain_code]
-    #output_file_title = f"SAT > {test_name} > {test_domain}"
-    #index[output_file_name] = (output_file_title, subdomains_string)
 
+    # get questions
+    subdomains, questions = parse_questions(questions_json_path)
+    subdomains_clean = [s.lower().replace(' ', '-') for s in subdomains]
+
+    # write question file
+    questions_template = env.get_template("questions.html")
+    questions_html = questions_template.render(
+      domain=test_domain, subdomains=subdomains, questions=questions
+    )
+    open(questions_path, 'w').write(questions_html)
+
+    # save metadata for generating the index
     if test_name not in index:
       index[test_name] = {}
+    index[test_name][test_domain] = (questions_file_name, sorted(subdomains))
+    print("done")
 
-    index[test_name][test_domain] = (output_file_name, sorted(subdomains))
-    log("done")
-
-  print(json.dumps(index, indent=4))
-
-  with open(output_directory / "index.html", "w") as f:
-    index_body = ""
-    index_body += '<div class="outer">'
-    for test_name, test_domains in index.items():
-      index_body += '<div class="column">'
-      index_body += f'<div class="column-title">{test_name}</div>'
-      for test_domain, (filename, subdomains) in test_domains.items():
-        index_body += f'<a class="button" href="{filename}">'
-        index_body += f'<div class="test-domain">{test_domain}</div>'
-        index_body += format_subdomains(subdomains)
-        index_body += '</a>'
-
-      index_body += '</div>'
-
-    index_body += '</div>'
-    '''
-    index_row = """<a class="button" href="{}"><div>{}</div><div>{}</div></a>"""
-    items = ''.join(
-      index_row.format(filename, title, subdomains) for filename, (title, subdomains) in index.items()
-    )
-    '''
-
-    index_html = INDEX_HTML_FORMAT.format(index_body)
-    print(index_html, file=f)
+  index_path = output_directory / "index.html"
+  log(f"generating {index_path}", end="... ")
+  index_html = env.get_template("index.html").render(index=index)
+  open(index_path, 'w').write(index_html)
+  print("done")
 
 if __name__ == '__main__':
   main()
