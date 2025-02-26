@@ -137,7 +137,7 @@ def main():
 
     # get questions
     subdomains, questions = parse_questions(questions_json_path)
-    subdomains_clean = [s.lower().replace(' ', '-') for s in subdomains]
+    subdomains = sorted(subdomains)
 
     # write question file
     questions_template = env.get_template("questions.html")
@@ -149,7 +149,7 @@ def main():
     # save metadata for generating the index
     if test_name not in index:
       index[test_name] = {}
-    index[test_name][test_domain] = (questions_file_name, sorted(subdomains))
+    index[test_name][test_domain] = (questions_file_name, subdomains)
     print("done")
 
   index_path = output_directory / "index.html"

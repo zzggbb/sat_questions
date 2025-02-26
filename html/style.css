@@ -64,8 +64,14 @@ body {
 
 /* top bar */
 #bar {
+  position: static;
+  top: 5px;
+  max-width: 12in;
+  margin: auto auto 5px auto;
+
+  background-color: var(--bg);
   border: 1px solid var(--fg);
-  margin-bottom: 5px;
+
   display: flex;
   justify-content: space-between;
   padding: 5px;
@@ -76,6 +82,7 @@ body {
 #totals {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 #difficulty-filters {
   display: flex;
