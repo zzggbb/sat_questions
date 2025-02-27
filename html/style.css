@@ -65,6 +65,7 @@ body {
 /* top bar */
 #bar {
   position: static;
+  z-index: 99;
   top: 5px;
   max-width: 12in;
   margin: auto auto 5px auto;
