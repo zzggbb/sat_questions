@@ -29,7 +29,8 @@ function update_total_selected_questions() {
 }
 
 window.onload = () => {
-  for (let checkbox of document.querySelectorAll('input[type="checkbox"]')) {
+  //for (let checkbox of document.querySelectorAll('input[type="checkbox"]')) {
+  for (let checkbox of document.querySelectorAll('.checkbox')) {
     checkbox.checked = true
     checkbox.onchange = () => {
       update_total_selected_questions()
@@ -50,6 +51,22 @@ window.onload = () => {
   }
 
   update_total_selected_questions()
+
+  document.querySelector('#show-all-subdomains').onclick = (event) => {
+    console.log('showing all subdomains')
+    for (let checkbox of document.querySelectorAll('.subdomain-filter .checkbox')) {
+      checkbox.checked = true
+      checkbox.onchange()
+    }
+  }
+
+  document.querySelector('#hide-all-subdomains').onclick = (event) => {
+    console.log('hiding all subdomains')
+    for (let checkbox of document.querySelectorAll('.subdomain-filter .checkbox')) {
+      checkbox.checked = false
+      checkbox.onchange()
+    }
+  }
 }
 
 document.onkeypress = (event) => {

@@ -1,19 +1,14 @@
+import re
 import sys
 import json
 import string
 from pathlib import Path
-from dataclasses import dataclass
 
+from question import Question
 import sat_question_api as SAT
 
 import jinja2
 from bs4 import BeautifulSoup
-
-DIFFICULTY_MAP = {
-  'E': 'easy',
-  'M': 'medium',
-  'H': 'hard'
-}
 
 def log(message, **kwargs):
   print(f"[LOG] {message}", file=sys.stderr, flush=True, **kwargs)
@@ -45,21 +40,6 @@ def replace_mfenced(html_string):
 
   return str(soup)
 
-@dataclass
-class Question:
-  # metadata
-  difficulty: str
-  index: int
-  domain: str
-  subdomain: str
-
-  # data
-  stimulus: str
-  stem: str
-  options: list[str]
-  correct_answer: str
-  rationale: str
-
 def parse_questions(questions_file_path):
   questions = json.load(open(questions_file_path))
   subdomains = set()
@@ -69,35 +49,45 @@ def parse_questions(questions_file_path):
     if 'item_id' in question:
       # special handling
       identifier = question['item_id']
-      assert question['item_id'].endswith('DC')
+      assert identifier.endswith('DC')
       stimulus = question.get('body', '')
       stem = question.get('prompt', '')
       qtype = question['answer']['style']
+      rationale = question['answer']['rationale']
+
       if qtype == 'Multiple Choice':
         options = [option['body'] for option in question['answer']['choices'].values()]
-        correct_answer = question['answer'].get('correct_choice', '')
+        if 'correct_choice' in question['answer']:
+          correct_answer = question['answer']['correct_choice'].upper()
+        else:
+          needle = r'Choice ([A-Z]) is correct'
+          search_result = re.search(needle, rationale)
+          if search_result:
+            correct_answer = search_result.group(1).upper() # first match
+          else:
+            print(f"couldn't detect answer for {identifier}")
+            correct_answer = None
       elif qtype == 'SPR':
+        # Student Produced Response
         options = []
-        correct_answer = ''
+        correct_answer = None
       else:
         raise RuntimeError(f"Unexpected question type {qtype}")
-
-      rationale = question['answer']['rationale']
 
     else:
       identifier = question['externalid']
       stimulus = question.get('stimulus', '')
       stem = question['stem']
       qtype = question['type']
+      correct_answer = ', '.join(question['correct_answer'])
+      rationale = question['rationale']
+
       if qtype == 'mcq':
         options = [option['content'] for option in question['answerOptions']]
       elif qtype == 'spr':
         options = []
       else:
         raise RuntimeError(f"Unexpected question type {qtype}")
-
-      correct_answer = ', '.join(question['correct_answer'])
-      rationale = question['rationale']
 
     stimulus = replace_mfenced(stimulus)
     stem = replace_mfenced(stem)
@@ -106,8 +96,15 @@ def parse_questions(questions_file_path):
 
     subdomains.add(question['subdomain'].title())
     question_objects.append(Question(
-      DIFFICULTY_MAP[question['difficulty']], index, question['domain'], question['subdomain'],
-      stimulus, stem, options, correct_answer, rationale
+      SAT.parameters.DIFFICULTIES[question['difficulty']].lower(),
+      index,
+      question['domain'],
+      question['subdomain'],
+      stimulus,
+      stem,
+      options,
+      correct_answer,
+      rationale
     ))
 
   return subdomains, question_objects

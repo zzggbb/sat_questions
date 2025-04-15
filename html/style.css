@@ -26,8 +26,8 @@ body {
   text-decoration: none;
   border: 1px solid var(--fg);
   padding: 5px;
-  display: table;
   color: var(--fg);
+  cursor: pointer;
 }
 .button:hover {
   box-shadow: 0 0 0 2px var(--fg);
@@ -94,6 +94,12 @@ body {
 #subdomain-filters {
   display: flex;
   flex-direction: column;
+}
+#subdomain-toggle-all {
+  display: flex;
+  flex-direction: row;
+  column-gap: 5px;
+  justify-content: center;
 }
 
 .question-block {
