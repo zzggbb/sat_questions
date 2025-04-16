@@ -116,7 +116,7 @@ def main():
   scrape_directory = Path(sys.argv[1])
   output_directory = Path(sys.argv[2])
   loader = jinja2.FileSystemLoader(Path(__file__).parent / 'html_templates')
-  env = jinja2.Environment(loader=loader)
+  env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
   env.filters['format_attribute'] = format_attribute
 
   index = {}
