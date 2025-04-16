@@ -65,7 +65,9 @@
     </div>
     <details>
       <summary>Show Answer</summary>
-      <b>Correct Answer:</b> {{question.correct_answer}}
+      {% if question.correct_answer %}
+        <b>Correct Answer:</b> {{question.correct_answer}}
+      {% endif %}
       {{question.rationale}}
     </details>
   </div>
