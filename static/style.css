@@ -82,61 +82,93 @@
   }
   #index-button {
   }
-  #totals {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  #difficulty-filters {
-    display: flex;
-    flex-direction: column;
-  }
-  .difficulty-filter {
-  }
-  #search {
-    border: 1px solid var(--fg);
-    font-size: large;
-    font-family: monospace;
-    color: var(--fg);
-    text-align: center;
-  }
-  .filter-table {
-    display: table;
-    border-collapse: collapse;
-    border-style: hidden;
-  }
-  .filter-table-row {
-    display: table-row;
-    border-bottom: 1px solid var(--fg);
-  }
-  .filter-table-cell {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 5px;
-  }
-  .filter-table-domain {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    row-gap: 5px;
-    max-width: 2in;
-    text-align: center;
-  }
-  #subdomain-filters {
-    display: flex;
-    flex-direction: column;
-  }
-  #domain-filters {
-    display: flex;
-    flex-direction: column;
-    flex-basis: 855px;
-  }
-  .toggle-buttons {
-    display: flex;
-    flex-direction: row;
-    column-gap: 5px;
-    justify-content: center;
-  }
+
+  /* bar column 1 */
+    #bar-column-1 {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    #loading-indicator {
+      visibility: hidden;
+      width: 48px;
+      height: 48px;
+      border: 5px solid #FFF;
+      border-bottom-color: transparent;
+      border-radius: 50%;
+      display: inline-block;
+      box-sizing: border-box;
+      animation: rotation 1s linear infinite;
+    }
+    @keyframes rotation {
+      0% {
+          transform: rotate(0deg);
+      }
+      100% {
+          transform: rotate(360deg);
+      }
+    }
+
+  /* bar column 2 */
+    #bar-column-2 {
+      display: flex;
+      flex-direction: column;
+      row-gap: 15px;
+    }
+    .difficulty-filter {
+    }
+    .difficulty-hard { color: #cc0000; }
+    .difficulty-medium { color: #E69138; }
+    .difficulty-easy { color: #6aa84f; }
+    .response-type-mcq { color: #3c78d8; }
+    .response-type-frq { color: #8e7cc3; }
+
+  /* bar column 3 */
+    #bar-column-3 {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 855px;
+    }
+    #search {
+      border: 1px solid var(--fg);
+      font-size: large;
+      font-family: monospace;
+      color: var(--fg);
+      text-align: center;
+      background-color: var(--bg);
+    }
+    .filter-table {
+      display: table;
+      border-collapse: collapse;
+      border-style: hidden;
+    }
+    .filter-table-row {
+      display: table-row;
+      border-bottom: 1px solid var(--fg);
+    }
+    .filter-table-cell {
+      display: table-cell;
+      vertical-align: middle;
+      padding: 5px;
+    }
+    .filter-table-domain {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      row-gap: 5px;
+      max-width: 2in;
+      text-align: center;
+    }
+    #subdomain-filters {
+      display: flex;
+      flex-direction: column;
+    }
+    .toggle-buttons {
+      display: flex;
+      flex-direction: row;
+      column-gap: 5px;
+      justify-content: center;
+    }
 
 /* question block */
   .question-block {
@@ -153,15 +185,24 @@
 /* question metadata */
   .question-header {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    column-gap: 15px;
+  }
+  .question-index {
+    font-weight: bold;
+  }
+  .match-index {
+    font-style: italic;
   }
   .question-subdomain {
     font-style: italic;
   }
-  .difficulty-rating { font-family: monospace; font-size: large; }
-  .difficulty-hard { color: red; }
-  .difficulty-medium { color: orange; }
-  .difficulty-easy { color: green; }
+  .question-taxonomy {
+    font-style: italic;
+    flex-grow: 1;
+    text-align: center;
+  }
 
 /* question body and answers */
   .question-body {

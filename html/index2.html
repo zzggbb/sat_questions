@@ -5,40 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../static/style.css"/>
   <script src="../static/script2.js"></script>
+  <script src="../static/question_data.js"></script>
   </head>
   <body>
   <div id="bar">
-    <div id="totals">
-      <div id="total-selected-questions">loading...</div>
+    <div id="bar-column-1">
+      <div id="total-matching-questions">loading...</div>
       <div id="total-questions">2998 questions</div>
+      <div id="loading-indicator"></div>
     </div>
-    <div id="difficulty-filters">
-      <div class="difficulty-filter">
-        <input type="checkbox" class="checkbox"
-               id="checkbox-difficulty-hard" difficulty="hard">
-        <label for="checkbox-difficulty-hard"
-               class="difficulty-rating difficulty-hard">
-          hard
-        </label>
+    <div id="bar-column-2">
+      <div id="difficulty-filters">
+        <div class="difficulty-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-difficulty-hard" difficulty="hard">
+          <label for="checkbox-difficulty-hard"
+                 class="difficulty-rating difficulty-hard">
+            hard
+          </label>
+        </div>
+        <div class="difficulty-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-difficulty-medium" difficulty="medium">
+          <label for="checkbox-difficulty-medium"
+                 class="difficulty-rating difficulty-medium">
+            medium
+          </label>
+        </div>
+        <div class="difficulty-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-difficulty-easy" difficulty="easy">
+          <label for="checkbox-difficulty-easy"
+                 class="difficulty-rating difficulty-easy">
+            easy
+          </label>
+        </div>
       </div>
-      <div class="difficulty-filter">
-        <input type="checkbox" class="checkbox"
-               id="checkbox-difficulty-medium" difficulty="medium">
-        <label for="checkbox-difficulty-medium"
-               class="difficulty-rating difficulty-medium">
-          medium
-        </label>
-      </div>
-      <div class="difficulty-filter">
-        <input type="checkbox" class="checkbox"
-               id="checkbox-difficulty-easy" difficulty="easy">
-        <label for="checkbox-difficulty-easy"
-               class="difficulty-rating difficulty-easy">
-          easy
-        </label>
+      <div id="response-type-filters">
+        <div class="response-type-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-response-type-mcq" response-type="mcq">
+          <label for="checkbox-response-type-mcq"
+                 class="question-response-type response-type-mcq">
+            MCQ
+          </label>
+        </div>
+        <div class="response-type-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-response-type-frq" response-type="frq">
+          <label for="checkbox-response-type-frq"
+                 class="question-response-type response-type-frq">
+            FRQ
+          </label>
+        </div>
       </div>
     </div>
-    <div id="domain-filters">
+    <div id="bar-column-3">
       <input id="search" type="text"
              placeholder="type text here and hit enter to search" autofocus>
       <details><summary>Reading and Writing</summary>
@@ -352,6 +374,6 @@
   <div id="questions"></div>
     <div id="footer">
       <div>Created by Zane Bradley (zanegbradley@gmail.com)</div>
-      <div>Last Updated: 2025-05-07 17:29:05 PDT</div>
+      <div>Last Updated: 2025-05-07 23:23:24 PDT</div>
   </body>
 </html>

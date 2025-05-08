@@ -115,9 +115,11 @@ class Distill:
         else:
           raise RuntimeError(f"Unexpected question type {qtype}")
 
-      difficulty = parameters.DIFFICULTIES[question['difficulty']].lower()
       domain = question['domain']
       subdomain = Distill._sanitize_subdomain(question['subdomain'])
+      response_type = 'mcq' if len(options) > 0 else 'frq'
+      difficulty = parameters.DIFFICULTIES[question['difficulty']].lower()
+
       stimulus = Distill._replace_mfenced(stimulus)
       stem = Distill._replace_mfenced(stem)
       options = list(map(Distill._replace_mfenced, options))
@@ -125,7 +127,7 @@ class Distill:
 
       subdomains.add(subdomain)
       question_objects.append(Question(
-        index, domain, subdomain, difficulty,
+        index, domain, subdomain, response_type, difficulty,
         stimulus, stem,
         options, correct_answer,
         rationale
@@ -138,7 +140,6 @@ class Distill:
 
   def produced_files():
     yield from [
-      Distill.working_dir / "questions.json",
       Distill.working_dir / "questions.pickle",
       Distill.working_dir / "taxonomy.pickle"
     ]
@@ -158,10 +159,29 @@ class Distill:
       taxonomy[test_name][test_domain] = subdomains
       print("Finished")
 
-    json.dump(all_questions, open(Distill.working_dir / "questions.json", "w"), indent=2,
-              default=lambda obj: vars(obj))
+    #json.dump(all_questions, open(Distill.working_dir / "questions.json", "w"), indent=2,
+    #          default=lambda obj: vars(obj))
     pickle.dump(all_questions, open(Distill.working_dir / "questions.pickle", "wb"))
     pickle.dump(taxonomy, open(Distill.working_dir / "taxonomy.pickle", "wb"))
+
+class QuestionDataJS:
+  """QuestionDataJS"""
+
+  working_dir = ROOT / "static"
+
+  def required_files():
+    yield Distill.working_dir / "questions.pickle"
+
+  def produced_files():
+    yield QuestionDataJS.working_dir / "question_data.js"
+
+  def run():
+    path = QuestionDataJS.working_dir / "question_data.js"
+    questions = pickle.load(open(Distill.working_dir / "questions.pickle", "rb"))
+    question_data_string = json.dumps(questions, default=lambda obj: vars(obj), indent=2)
+    output = f"let question_data = {question_data_string}"
+    with open(path, 'w') as f:
+      f.write(output)
 
 class NewHTML:
   """NewHTML"""
@@ -256,8 +276,8 @@ def run_pipeline(stages):
 
     description = stage.__doc__
 
-    upstream_mtime = max((f.stat().st_mtime for f in stage.required_files()), default=0)
-    downstream_mtime = min(f.stat().st_mtime for f in stage.produced_files())
+    upstream_mtime = max((f.stat().st_mtime for f in stage.required_files() if f.exists()), default=0)
+    downstream_mtime = min((f.stat().st_mtime for f in stage.produced_files() if f.exists()), default=1)
     upstream_changed = upstream_mtime > downstream_mtime
 
     if all(path.exists() for path in stage.produced_files()) \
@@ -270,7 +290,7 @@ def run_pipeline(stages):
       print(f"[{description}] Finished running.")
 
 def main():
-  stages = [Scrape, Distill, NewHTML, OldHTML]
+  stages = [Scrape, Distill, QuestionDataJS, NewHTML, OldHTML]
   run_pipeline(stages)
 
 if __name__ == '__main__':

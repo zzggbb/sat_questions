@@ -8,6 +8,11 @@ class Question:
   index: int
   domain: str
   subdomain: str
+
+  '''Either mcq or frq'''
+  response_type: str
+
+  '''Either easy, medium, hard'''
   difficulty: str
 
   '''

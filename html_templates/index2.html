@@ -3,27 +3,43 @@
 
 {% block head %}
   <script src="../static/script2.js"></script>
+  <script src="../static/question_data.js"></script>
 {% endblock %}
 
 {% block body %}
   <div id="bar">
-    <div id="totals">
-      <div id="total-selected-questions">loading...</div>
+    <div id="bar-column-1">
+      <div id="total-matching-questions">loading...</div>
       <div id="total-questions">{{questions|length}} questions</div>
+      <div id="loading-indicator"></div>
     </div>
-    <div id="difficulty-filters">
-      {% for difficulty in ["hard", "medium", "easy"] %}
-      <div class="difficulty-filter">
-        <input type="checkbox" class="checkbox"
-               id="checkbox-difficulty-{{difficulty}}" difficulty="{{difficulty}}">
-        <label for="checkbox-difficulty-{{difficulty}}"
-               class="difficulty-rating difficulty-{{difficulty}}">
-          {{difficulty}}
-        </label>
+    <div id="bar-column-2">
+      <div id="difficulty-filters">
+        {% for difficulty in ["hard", "medium", "easy"] %}
+        <div class="difficulty-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-difficulty-{{difficulty}}" difficulty="{{difficulty}}">
+          <label for="checkbox-difficulty-{{difficulty}}"
+                 class="difficulty-rating difficulty-{{difficulty}}">
+            {{difficulty}}
+          </label>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
+      <div id="response-type-filters">
+        {% for response_type in ["mcq", "frq"] %}
+        <div class="response-type-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-response-type-{{response_type}}" response-type="{{response_type}}">
+          <label for="checkbox-response-type-{{response_type}}"
+                 class="question-response-type response-type-{{response_type}}">
+            {{response_type.upper()}}
+          </label>
+        </div>
+        {% endfor %}
+      </div>
     </div>
-    <div id="domain-filters">
+    <div id="bar-column-3">
       <input id="search" type="text"
              placeholder="type text here and hit enter to search" autofocus>
       {% set ns = namespace(counter=0) %}

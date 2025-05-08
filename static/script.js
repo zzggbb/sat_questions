@@ -23,13 +23,12 @@ function get_total_selected_questions() {
 }
 
 function update_total_selected_questions() {
-  let elem = document.querySelector("#total-selected-questions")
+  let elem = document.querySelector("#total-matching-questions")
   let total = get_total_selected_questions()
   elem.textContent = `${total} selected`
 }
 
 window.onload = () => {
-  //for (let checkbox of document.querySelectorAll('input[type="checkbox"]')) {
   for (let checkbox of document.querySelectorAll('.checkbox')) {
     checkbox.checked = true
     checkbox.onchange = () => {
@@ -40,7 +39,7 @@ window.onload = () => {
       for (let question of document.querySelectorAll('.question-block')) {
         if (is_question_selected(question)) {
           question.removeAttribute("hidden")
-          question.querySelector('.selected-index').textContent =
+          question.querySelector('.match-index').textContent =
             `${selected_index} of ${selected_N} selected`
           selected_index += 1
         } else {

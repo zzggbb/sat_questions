@@ -7,10 +7,10 @@
 
 {% block body %}
   <div id="bar">
-    <div id="totals">
+    <div id="bar-column-1">
       <a id="index-button" class="button" href="index.html">home</a>
       <div id="domain">{{domain}}</div>
-      <div id="total-selected-questions">loading...</div>
+      <div id="total-matching-questions">loading...</div>
       <div id="total-questions">{{questions|length}} questions</div>
     </div>
     <div id="difficulty-filters">
@@ -41,20 +41,20 @@
   {% for question in questions %}
   <div class="question-block" subdomain="{{question.subdomain | format_attribute}}" difficulty="{{question.difficulty}}">
     <div class="question-header">
-      <b>Question {{question.index+1}}</b>
-      <i class="selected-index">{{question.index+1}} of {{questions|length}} selected</i>
+      <span class="question-index">Question {{question.index+1}}</span>
+      <span class="match-index">{{question.index+1}} of {{questions|length}} selected</span>
       <span class="question-subdomain">{{question.subdomain}}</span>
       <span class="difficulty-rating difficulty-{{question.difficulty}}">
         {{question.difficulty[0].upper()}}
       </span>
     </div>
-    <div class="flex-row">
-      <div class="flex-row-item">
+    <div class="question-body">
+      <div class="question-body-item">
         {{question.stimulus}}
         {{question.stem}}
       </div>
       {% if question.options %}
-      <div class="flex-row-item">
+      <div class="question-body-item">
         <ol type="A">
           {% for option in question.options %}
           <li>{{option}}</li>
