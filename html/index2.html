@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Index 2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/style.css"/>
+  <script src="../static/script2.js"></script>
+  </head>
+  <body>
+  <div id="bar">
+    <div id="totals">
+      <div id="total-selected-questions">loading...</div>
+      <div id="total-questions">2998 questions</div>
+    </div>
+    <div id="difficulty-filters">
+      <div class="difficulty-filter">
+        <input type="checkbox" class="checkbox"
+               id="checkbox-difficulty-hard" difficulty="hard">
+        <label for="checkbox-difficulty-hard"
+               class="difficulty-rating difficulty-hard">
+          hard
+        </label>
+      </div>
+      <div class="difficulty-filter">
+        <input type="checkbox" class="checkbox"
+               id="checkbox-difficulty-medium" difficulty="medium">
+        <label for="checkbox-difficulty-medium"
+               class="difficulty-rating difficulty-medium">
+          medium
+        </label>
+      </div>
+      <div class="difficulty-filter">
+        <input type="checkbox" class="checkbox"
+               id="checkbox-difficulty-easy" difficulty="easy">
+        <label for="checkbox-difficulty-easy"
+               class="difficulty-rating difficulty-easy">
+          easy
+        </label>
+      </div>
+    </div>
+    <div id="domain-filters">
+      <input id="search" type="text"
+             placeholder="type text here and hit enter to search" autofocus>
+      <details><summary>Reading and Writing</summary>
+        <div class="toggle-buttons">
+          <div class="toggle button" show key="superdomain" value="Reading and Writing">
+            Show All
+          </div>
+          <div class="toggle button" key="superdomain" value="Reading and Writing">
+            Hide All
+          </div>
+        </div>
+        <div class="filter-table">
+          <div class="filter-table-row">
+            <div class="filter-table-cell">
+              <div class="filter-table-domain">
+                <div>Information and Ideas</div>
+                <div class="toggle-buttons">
+                  <div class="toggle button" show key="domain" value="Information and Ideas">
+                    Show All
+                  </div>
+                  <div class="toggle button" key="domain" value="Information and Ideas">
+                    Hide All
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-table-cell">
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-0"
+                       superdomain="Reading and Writing" domain="Information and Ideas" subdomain="Central Ideas And Details">
+                <label for="checkbox-subdomain-0">Central Ideas And Details</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-1"
+                       superdomain="Reading and Writing" domain="Information and Ideas" subdomain="Command Of Evidence">
+                <label for="checkbox-subdomain-1">Command Of Evidence</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-2"
+                       superdomain="Reading and Writing" domain="Information and Ideas" subdomain="Inferences">
+                <label for="checkbox-subdomain-2">Inferences</label>
+              </div>
+            </div>
+          </div>
+          <div class="filter-table-row">
+            <div class="filter-table-cell">
+              <div class="filter-table-domain">
+                <div>Craft and Structure</div>
+                <div class="toggle-buttons">
+                  <div class="toggle button" show key="domain" value="Craft and Structure">
+                    Show All
+                  </div>
+                  <div class="toggle button" key="domain" value="Craft and Structure">
+                    Hide All
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-table-cell">
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-3"
+                       superdomain="Reading and Writing" domain="Craft and Structure" subdomain="Cross-Text Connections">
+                <label for="checkbox-subdomain-3">Cross-Text Connections</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-4"
+                       superdomain="Reading and Writing" domain="Craft and Structure" subdomain="Text Structure And Purpose">
+                <label for="checkbox-subdomain-4">Text Structure And Purpose</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-5"
+                       superdomain="Reading and Writing" domain="Craft and Structure" subdomain="Words In Context">
+                <label for="checkbox-subdomain-5">Words In Context</label>
+              </div>
+            </div>
+          </div>
+          <div class="filter-table-row">
+            <div class="filter-table-cell">
+              <div class="filter-table-domain">
+                <div>Expression of Ideas</div>
+                <div class="toggle-buttons">
+                  <div class="toggle button" show key="domain" value="Expression of Ideas">
+                    Show All
+                  </div>
+                  <div class="toggle button" key="domain" value="Expression of Ideas">
+                    Hide All
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-table-cell">
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-6"
+                       superdomain="Reading and Writing" domain="Expression of Ideas" subdomain="Rhetorical Synthesis">
+                <label for="checkbox-subdomain-6">Rhetorical Synthesis</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-7"
+                       superdomain="Reading and Writing" domain="Expression of Ideas" subdomain="Transitions">
+                <label for="checkbox-subdomain-7">Transitions</label>
+              </div>
+            </div>
+          </div>
+          <div class="filter-table-row">
+            <div class="filter-table-cell">
+              <div class="filter-table-domain">
+                <div>Standard English Conventions</div>
+                <div class="toggle-buttons">
+                  <div class="toggle button" show key="domain" value="Standard English Conventions">
+                    Show All
+                  </div>
+                  <div class="toggle button" key="domain" value="Standard English Conventions">
+                    Hide All
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-table-cell">
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-8"
+                       superdomain="Reading and Writing" domain="Standard English Conventions" subdomain="Boundaries">
+                <label for="checkbox-subdomain-8">Boundaries</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-9"
+                       superdomain="Reading and Writing" domain="Standard English Conventions" subdomain="Form, Structure, And Sense">
+                <label for="checkbox-subdomain-9">Form, Structure, And Sense</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+      <details><summary>Math</summary>
+        <div class="toggle-buttons">
+          <div class="toggle button" show key="superdomain" value="Math">
+            Show All
+          </div>
+          <div class="toggle button" key="superdomain" value="Math">
+            Hide All
+          </div>
+        </div>
+        <div class="filter-table">
+          <div class="filter-table-row">
+            <div class="filter-table-cell">
+              <div class="filter-table-domain">
+                <div>Algebra</div>
+                <div class="toggle-buttons">
+                  <div class="toggle button" show key="domain" value="Algebra">
+                    Show All
+                  </div>
+                  <div class="toggle button" key="domain" value="Algebra">
+                    Hide All
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-table-cell">
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-10"
+                       superdomain="Math" domain="Algebra" subdomain="Linear Equations In 1 Variable">
+                <label for="checkbox-subdomain-10">Linear Equations In 1 Variable</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-11"
+                       superdomain="Math" domain="Algebra" subdomain="Linear Equations In 2 Variables">
+                <label for="checkbox-subdomain-11">Linear Equations In 2 Variables</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-12"
+                       superdomain="Math" domain="Algebra" subdomain="Linear Functions">
+                <label for="checkbox-subdomain-12">Linear Functions</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-13"
+                       superdomain="Math" domain="Algebra" subdomain="Linear Inequalities In 1 Or 2 Variables">
+                <label for="checkbox-subdomain-13">Linear Inequalities In 1 Or 2 Variables</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-14"
+                       superdomain="Math" domain="Algebra" subdomain="Systems Of 2 Linear Equations In 2 Variables">
+                <label for="checkbox-subdomain-14">Systems Of 2 Linear Equations In 2 Variables</label>
+              </div>
+            </div>
+          </div>
+          <div class="filter-table-row">
+            <div class="filter-table-cell">
+              <div class="filter-table-domain">
+                <div>Advanced Math</div>
+                <div class="toggle-buttons">
+                  <div class="toggle button" show key="domain" value="Advanced Math">
+                    Show All
+                  </div>
+                  <div class="toggle button" key="domain" value="Advanced Math">
+                    Hide All
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-table-cell">
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-15"
+                       superdomain="Math" domain="Advanced Math" subdomain="Equivalent Expressions">
+                <label for="checkbox-subdomain-15">Equivalent Expressions</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-16"
+                       superdomain="Math" domain="Advanced Math" subdomain="Nonlinear Equations In 1 Variable And Systems Of Equations In 2 Variables">
+                <label for="checkbox-subdomain-16">Nonlinear Equations In 1 Variable And Systems Of Equations In 2 Variables</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-17"
+                       superdomain="Math" domain="Advanced Math" subdomain="Nonlinear Functions">
+                <label for="checkbox-subdomain-17">Nonlinear Functions</label>
+              </div>
+            </div>
+          </div>
+          <div class="filter-table-row">
+            <div class="filter-table-cell">
+              <div class="filter-table-domain">
+                <div>Problem-Solving and Data Analysis</div>
+                <div class="toggle-buttons">
+                  <div class="toggle button" show key="domain" value="Problem-Solving and Data Analysis">
+                    Show All
+                  </div>
+                  <div class="toggle button" key="domain" value="Problem-Solving and Data Analysis">
+                    Hide All
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-table-cell">
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-18"
+                       superdomain="Math" domain="Problem-Solving and Data Analysis" subdomain="Evaluating Statistical Claims: Observational Studies And Experiments">
+                <label for="checkbox-subdomain-18">Evaluating Statistical Claims: Observational Studies And Experiments</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-19"
+                       superdomain="Math" domain="Problem-Solving and Data Analysis" subdomain="Inference From Sample Statistics And Margin Of Error">
+                <label for="checkbox-subdomain-19">Inference From Sample Statistics And Margin Of Error</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-20"
+                       superdomain="Math" domain="Problem-Solving and Data Analysis" subdomain="One-Variable Data: Distributions And Measures Of Center And Spread">
+                <label for="checkbox-subdomain-20">One-Variable Data: Distributions And Measures Of Center And Spread</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-21"
+                       superdomain="Math" domain="Problem-Solving and Data Analysis" subdomain="Percentages">
+                <label for="checkbox-subdomain-21">Percentages</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-22"
+                       superdomain="Math" domain="Problem-Solving and Data Analysis" subdomain="Probability And Conditional Probability">
+                <label for="checkbox-subdomain-22">Probability And Conditional Probability</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-23"
+                       superdomain="Math" domain="Problem-Solving and Data Analysis" subdomain="Ratios, Rates, Proportional Relationships, And Units">
+                <label for="checkbox-subdomain-23">Ratios, Rates, Proportional Relationships, And Units</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-24"
+                       superdomain="Math" domain="Problem-Solving and Data Analysis" subdomain="Two-Variable Data: Models And Scatterplots">
+                <label for="checkbox-subdomain-24">Two-Variable Data: Models And Scatterplots</label>
+              </div>
+            </div>
+          </div>
+          <div class="filter-table-row">
+            <div class="filter-table-cell">
+              <div class="filter-table-domain">
+                <div>Geometry and Trigonometry</div>
+                <div class="toggle-buttons">
+                  <div class="toggle button" show key="domain" value="Geometry and Trigonometry">
+                    Show All
+                  </div>
+                  <div class="toggle button" key="domain" value="Geometry and Trigonometry">
+                    Hide All
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-table-cell">
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-25"
+                       superdomain="Math" domain="Geometry and Trigonometry" subdomain="Area And Volume">
+                <label for="checkbox-subdomain-25">Area And Volume</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-26"
+                       superdomain="Math" domain="Geometry and Trigonometry" subdomain="Circles">
+                <label for="checkbox-subdomain-26">Circles</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-27"
+                       superdomain="Math" domain="Geometry and Trigonometry" subdomain="Lines, Angles, And Triangles">
+                <label for="checkbox-subdomain-27">Lines, Angles, And Triangles</label>
+              </div>
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-28"
+                       superdomain="Math" domain="Geometry and Trigonometry" subdomain="Right Triangles And Trigonometry">
+                <label for="checkbox-subdomain-28">Right Triangles And Trigonometry</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div id="questions"></div>
+    <div id="footer">
+      <div>Created by Zane Bradley (zanegbradley@gmail.com)</div>
+      <div>Last Updated: 2025-05-07 17:29:05 PDT</div>
+  </body>
+</html>

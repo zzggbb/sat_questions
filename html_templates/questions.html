@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% set title = domain %}
+
+{% block head %}
+  <script src="../static/script.js"></script>
+{% endblock %}
+
+{% block body %}
+  <div id="bar">
+    <div id="totals">
+      <a id="index-button" class="button" href="index.html">home</a>
+      <div id="domain">{{domain}}</div>
+      <div id="total-selected-questions">loading...</div>
+      <div id="total-questions">{{questions|length}} questions</div>
+    </div>
+    <div id="difficulty-filters">
+      {% for difficulty in ["hard", "medium", "easy"] %}
+      <div class="difficulty-filter">
+        <input type="checkbox" class="checkbox" id="checkbox-difficulty-{{difficulty}}" checked>
+        <label for="checkbox-difficulty-{{difficulty}}"
+               class="difficulty-rating difficulty-{{difficulty}}">
+          {{difficulty}}
+        </label>
+      </div>
+      {% endfor %}
+    </div>
+    <div id="subdomain-filters">
+      <div class="toggle-buttons">
+        <div id="show-all-subdomains" class="button">Show All Subdomains</div>
+        <div id="hide-all-subdomains" class="button">Hide All Subdomains</div>
+      </div>
+      {% for subdomain in subdomains %}
+      <div class="subdomain-filter">
+        <input type="checkbox" class="checkbox" id="checkbox-subdomain-{{subdomain | format_attribute}}" checked>
+        <label for="checkbox-subdomain-{{subdomain | format_attribute}}">{{subdomain}}</label>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% for question in questions %}
+  <div class="question-block" subdomain="{{question.subdomain | format_attribute}}" difficulty="{{question.difficulty}}">
+    <div class="question-header">
+      <b>Question {{question.index+1}}</b>
+      <i class="selected-index">{{question.index+1}} of {{questions|length}} selected</i>
+      <span class="question-subdomain">{{question.subdomain}}</span>
+      <span class="difficulty-rating difficulty-{{question.difficulty}}">
+        {{question.difficulty[0].upper()}}
+      </span>
+    </div>
+    <div class="flex-row">
+      <div class="flex-row-item">
+        {{question.stimulus}}
+        {{question.stem}}
+      </div>
+      {% if question.options %}
+      <div class="flex-row-item">
+        <ol type="A">
+          {% for option in question.options %}
+          <li>{{option}}</li>
+          {% endfor %}
+        </ol>
+      </div>
+      {% endif %}
+    </div>
+    <details>
+      <summary>Show Answer</summary>
+      {% if question.correct_answer %}
+        <b>Correct Answer:</b> {{question.correct_answer}}
+      {% endif %}
+      {{question.rationale}}
+    </details>
+  </div>
+  {% endfor %}
+{% endblock %}

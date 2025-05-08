@@ -1,0 +1,195 @@
+/* light/dark mode */
+  :root {
+    color-scheme: light dark;
+    --fg: light-dark(black, white);
+    --bg: light-dark(white, black);
+  }
+
+  /* invert the diagrams if dark mode is enabled */
+  @media (prefers-color-scheme: dark) {
+    img, svg {
+      filter: invert(1);
+    }
+  }
+
+  body {
+    margin: 5px;
+    color: var(--fg);
+    background-color: var(--bg);
+  }
+
+/* some wierd thing from the HTML blobs that should be hidden */
+.sr-only { display: none; }
+
+/* general purpose button element */
+  .button {
+    text-decoration: none;
+    border: 1px solid var(--fg);
+    padding: 5px;
+    color: var(--fg);
+    cursor: pointer;
+  }
+  .button:hover {
+    box-shadow: 0 0 0 2px var(--fg);
+  }
+
+/* index page */
+  .outer {
+    display: flex;
+    justify-content: space-evenly;
+    column-gap: 5px;
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+  }
+  .column-title {
+    font-size: x-large;
+    text-align: center;
+    font-weight: bold;
+  }
+  .test-domain {
+    font-size: large;
+    text-align: center;
+    font-weight: bold;
+  }
+  .subdomains-list {
+    margin: 5px;
+    padding-left: 10px;
+  }
+  .subdomains-list > li {
+    font-size: medium;
+  }
+
+/* top bar */
+  #bar {
+    position: static;
+    z-index: 99;
+    top: 5px;
+    max-width: 12in;
+    margin: auto auto 5px auto;
+
+    background-color: var(--bg);
+    border: 1px solid var(--fg);
+
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    column-gap: 5px;
+    font-family: monospace;
+    font-size: large;
+  }
+  #index-button {
+  }
+  #totals {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #difficulty-filters {
+    display: flex;
+    flex-direction: column;
+  }
+  .difficulty-filter {
+  }
+  #search {
+    border: 1px solid var(--fg);
+    font-size: large;
+    font-family: monospace;
+    color: var(--fg);
+    text-align: center;
+  }
+  .filter-table {
+    display: table;
+    border-collapse: collapse;
+    border-style: hidden;
+  }
+  .filter-table-row {
+    display: table-row;
+    border-bottom: 1px solid var(--fg);
+  }
+  .filter-table-cell {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 5px;
+  }
+  .filter-table-domain {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 5px;
+    max-width: 2in;
+    text-align: center;
+  }
+  #subdomain-filters {
+    display: flex;
+    flex-direction: column;
+  }
+  #domain-filters {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 855px;
+  }
+  .toggle-buttons {
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
+    justify-content: center;
+  }
+
+/* question block */
+  .question-block {
+    margin: auto;
+    margin-bottom: 5px;
+    max-width: 12in;
+    border: 1px solid var(--fg);
+    padding: 5px;
+  }
+  .question-block:hover {
+    box-shadow: 0 0 0 2px var(--fg);
+  }
+
+/* question metadata */
+  .question-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  .question-subdomain {
+    font-style: italic;
+  }
+  .difficulty-rating { font-family: monospace; font-size: large; }
+  .difficulty-hard { color: red; }
+  .difficulty-medium { color: orange; }
+  .difficulty-easy { color: green; }
+
+/* question body and answers */
+  .question-body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .question-body-item {
+    flex-basis: 6in;
+  }
+
+/* answer dropdown */
+  summary {
+    text-align: center;
+  }
+  summary:hover {
+    color: var(--bg);
+    background-color: var(--fg);
+  }
+
+/* footer */
+  #footer {
+    border: 1px solid grey;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin: 20px auto 5px auto;
+    padding: 5px;
+    color: grey;
+  }
