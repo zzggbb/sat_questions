@@ -221,7 +221,7 @@ class OldHTML:
     yield from Distill.produced_files()
     yield ROOT / "html_templates" / "base.html"
     yield ROOT / "html_templates" / "index.html"
-    yield ROOT / "html_templates" / "questions.html"
+    yield ROOT / "html_templates" / "section.html"
 
   def produced_files():
     yield OldHTML.working_dir / "index.html"
@@ -259,7 +259,7 @@ class OldHTML:
       html_name = f"SAT_{test_number}_{domain_code}.html"
 
       with open(OldHTML.working_dir / html_name, 'w') as f:
-        f.write(env.get_template("questions.html").render(
+        f.write(env.get_template("section.html").render(
           domain=domain, subdomains=subdomains, questions=domain_questions, timestamp=TIMESTAMP
         ))
 
