@@ -1,7 +1,13 @@
 {% extends "base.html" %}
-{% set title = domain %}
+{% set title = domain_name %}
 
 {% block head %}
+  <script>
+    const DOMAIN_KEY = "{{domain_key}}"
+  </script>
+  <script src="../static/storage.js"></script>
+  <script src="../static/progress.js"></script>
+  <script src="../static/filters.js"></script>
   <script src="../static/section.js"></script>
 {% endblock %}
 
@@ -9,15 +15,27 @@
   <div id="bar">
     <div id="bar-column-1">
       <a id="index-button" class="button" href="index.html">home</a>
-      <div id="domain">{{domain}}</div>
+      <div id="domain">{{domain_name}}</div>
+      <div id="total-questions">{{questions|length}} total questions</div>
       <div id="total-matching-questions">loading...</div>
-      <div id="total-questions">{{questions|length}} questions</div>
+      <div id="total-answered-questions">loading...</div>
+      <fieldset id="username-radios">
+        <legend>users:</legend>
+        <div>loading...</div>
+      </fieldset>
+      <div id="username-feedback" hidden></div>
+      <div style="display: flex; column-gap: 5px;">
+        <input class="button" type="text" id="username-input" placeholder="enter a new username">
+        <span class="button" id="username-submit-input">add</span>
+      </div>
+      <div id="username-delete" class="button">delete selected user</div>
     </div>
     <div id="difficulty-filters">
       {% for difficulty in ["hard", "medium", "easy"] %}
       <div class="difficulty-filter">
-        <input type="checkbox" class="checkbox" id="checkbox-difficulty-{{difficulty}}" checked>
-        <label for="checkbox-difficulty-{{difficulty}}"
+        <input type="checkbox" class="checkbox"
+               id="checkbox-{{domain_key}}-difficulty-{{difficulty}}">
+        <label for="checkbox-{{domain_key}}-difficulty-{{difficulty}}"
                class="difficulty-rating difficulty-{{difficulty}}">
           {{difficulty}}
         </label>
@@ -31,44 +49,53 @@
       </div>
       {% for subdomain in subdomains %}
       <div class="subdomain-filter">
-        <input type="checkbox" class="checkbox" id="checkbox-subdomain-{{subdomain | format_attribute}}" checked>
-        <label for="checkbox-subdomain-{{subdomain | format_attribute}}">{{subdomain}}</label>
+        <input type="checkbox" class="checkbox"
+               id="checkbox-{{domain_key}}-subdomain-{{subdomain | format_attribute}}">
+        <label for="checkbox-{{domain_key}}-subdomain-{{subdomain | format_attribute}}">
+          {{subdomain}}
+        </label>
       </div>
       {% endfor %}
     </div>
   </div>
 
   {% for question in questions %}
-  <div class="question-block" subdomain="{{question.subdomain | format_attribute}}" difficulty="{{question.difficulty}}">
-    <div class="question-header">
-      <span class="question-index">Question {{question.index+1}}</span>
-      <span class="match-index">{{question.index+1}} of {{questions|length}} selected</span>
-      <span class="question-subdomain">{{question.subdomain}}</span>
-      <span class="difficulty-rating difficulty-{{question.difficulty}}">
-        {{question.difficulty[0].upper()}}
-      </span>
-    </div>
-    <div class="question-body">
-      <div class="question-body-item">
-        {{question.stimulus}}
-        {{question.stem}}
+  <div class="question-block"
+    uuid="{{question.uuid}}"
+    subdomain="{{question.subdomain | format_attribute}}"
+    difficulty="{{question.difficulty}}">
+    <details class="content-toggle" open>
+      <summary class="question-header">
+        <span class="question-checkmark" invisible>✓ </span>
+        <span class="question-index" title="{{question.uuid}}">Question {{question.index+1}}</span>
+        <span class="match-index">{{question.index+1}} of {{questions|length}} selected</span>
+        <span class="question-subdomain">{{question.subdomain}}</span>
+        <span class="difficulty-rating difficulty-{{question.difficulty}}">
+          {{question.difficulty[0].upper()}}
+        </span>
+      </summary>
+      <div class="question-body">
+        <div class="question-body-item">
+          {{question.stimulus}}
+          {{question.stem}}
+        </div>
+        {% if question.options %}
+        <div class="question-body-item">
+          <ol type="A">
+            {% for option in question.options %}
+            <li class="answer-option">{{option}}</li>
+            {% endfor %}
+          </ol>
+        </div>
+        {% endif %}
       </div>
-      {% if question.options %}
-      <div class="question-body-item">
-        <ol type="A">
-          {% for option in question.options %}
-          <li>{{option}}</li>
-          {% endfor %}
-        </ol>
-      </div>
-      {% endif %}
-    </div>
-    <details>
-      <summary>Show Answer</summary>
-      {% if question.correct_answer %}
-        <b>Correct Answer:</b> {{question.correct_answer}}
-      {% endif %}
-      {{question.rationale}}
+      <details>
+        <summary class="answer-toggle">Show Answer</summary>
+        {% if question.correct_answer %}
+          <b>Correct Answer:</b> {{question.correct_answer}}
+        {% endif %}
+        {{question.rationale}}
+      </details>
     </details>
   </div>
   {% endfor %}

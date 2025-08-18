@@ -94,10 +94,8 @@ def get_question(metadata):
 
   if ibn:
     question = get_ibn_question(ibn)
-    #log(f"{domain_code} fetched ibn={ibn}")
   else:
     question = get_eid_question(eid)
-    #log(f"{domain_code} fetched eid={eid}")
 
   extra_metadata = {
     'domain': metadata['primary_class_cd_desc'],
@@ -106,23 +104,21 @@ def get_question(metadata):
   }
   return question | extra_metadata
 
-def get_questions(event_id: int, test_number: int, domain_code: str):
+def get_questions(event_id: int, domain):
   """
   event_id: see EVENT_IDS
-  test_number: see TEST_NUMBERS
-  domain_code: see DOMAINS
+  domain: see DOMAINS
   """
   event_name = parameters.EVENT_NAMES[event_id]
-  test_name = parameters.TEST_NAMES[test_number]
-  domain_name = parameters.DOMAINS[test_number][domain_code]
-  line_header = f"{event_name} > {test_name:<19} > {domain_name:<33}"
+  superdomain = parameters.SUPERDOMAINS[domain.superdomain_key]
+  line_header = f"{event_name} > {superdomain.name:<19} > {domain.name:<33}"
 
   url = 'https://qbank-api.collegeboard.org/msreportingquestionbank-prod/questionbank/digital/get-questions'
   method = 'POST'
   payload = {
     'asmtEventId': event_id,
-    'test': test_number,
-    'domain': domain_code,
+    'test': superdomain.number,
+    'domain': domain.ugly,
   }
   response = requests.request(method, url, headers=HEADERS, json=payload)
   if response.status_code != 200:

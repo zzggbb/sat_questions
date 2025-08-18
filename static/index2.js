@@ -30,7 +30,7 @@ function generate_question_element(question, total_matches) {
     <div class="question-header">
       <span class="question-index">Question ${question.index+1}</span>
       <span class="match-index">${question.match_index+1} of ${total_matches}</span>
-      <span class="question-taxonomy">${question.domain} > ${question.subdomain}</span>
+      <span class="question-taxonomy">${question.domain.name} > ${question.subdomain}</span>
       <span class="question-response-type response-type-${question.response_type}">
         ${question.response_type.toUpperCase()}
       </span>

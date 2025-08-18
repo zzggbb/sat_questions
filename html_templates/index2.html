@@ -43,37 +43,37 @@
       <input id="search" type="text"
              placeholder="type text here and hit enter to search" autofocus>
       {% set ns = namespace(counter=0) %}
-      {% for superdomain_name, superdomain in taxonomy.items() %}
-      <details><summary>{{superdomain_name}}</summary>
+      {% for superdomain, domains in taxonomy.items() %}
+      <details><summary>{{superdomain.name}}</summary>
         <div class="toggle-buttons">
-          <div class="toggle button" show key="superdomain" value="{{superdomain_name}}">
+          <div class="toggle button" show key="superdomain" value="{{superdomain.name}}">
             Show All
           </div>
-          <div class="toggle button" key="superdomain" value="{{superdomain_name}}">
+          <div class="toggle button" key="superdomain" value="{{superdomain.name}}">
             Hide All
           </div>
         </div>
         <div class="filter-table">
-          {% for domain_name, domain in superdomain.items() %}
+          {% for domain, subdomains in domains.items() %}
           <div class="filter-table-row">
             <div class="filter-table-cell">
               <div class="filter-table-domain">
-                <div>{{domain_name}}</div>
+                <div>{{domain.name}}</div>
                 <div class="toggle-buttons">
-                  <div class="toggle button" show key="domain" value="{{domain_name}}">
+                  <div class="toggle button" show key="domain" value="{{domain.name}}">
                     Show All
                   </div>
-                  <div class="toggle button" key="domain" value="{{domain_name}}">
+                  <div class="toggle button" key="domain" value="{{domain.name}}">
                     Hide All
                   </div>
                 </div>
               </div>
             </div>
             <div class="filter-table-cell">
-              {% for subdomain in domain %}
+              {% for subdomain in subdomains %}
               <div class="subdomain-filter">
                 <input type="checkbox" class="checkbox" id="checkbox-subdomain-{{ns.counter}}"
-                       superdomain="{{superdomain_name}}" domain="{{domain_name}}" subdomain="{{subdomain}}">
+                       superdomain="{{superdomain.name}}" domain="{{domain.name}}" subdomain="{{subdomain}}">
                 <label for="checkbox-subdomain-{{ns.counter}}">{{subdomain}}</label>
                 {% set ns.counter = ns.counter + 1 %}
               </div>

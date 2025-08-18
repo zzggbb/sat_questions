@@ -3,6 +3,12 @@
     color-scheme: light dark;
     --fg: light-dark(black, white);
     --bg: light-dark(white, black);
+    --gray: #555555;
+    --red: #CC0000;
+    --orange: #E69138;
+    --green: #6AA84F;
+    --blue: #3C78D8;
+    --purple: #8E7CC3;
   }
 
   /* invert the diagrams if dark mode is enabled */
@@ -28,6 +34,8 @@
     padding: 5px;
     color: var(--fg);
     cursor: pointer;
+    flex-grow: 1;
+    text-align: center;
   }
   .button:hover {
     box-shadow: 0 0 0 2px var(--fg);
@@ -60,6 +68,7 @@
   }
   .subdomains-list > li {
     font-size: medium;
+    text-align: left;
   }
 
 /* top bar */
@@ -83,11 +92,45 @@
   #index-button {
   }
 
+  .subdomain-filter {
+    line-height: 15px;
+  }
+
+  .checkbox {
+    margin: 0;
+    border-radius: 0;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+
+    border: 1px solid var(--fg);
+  }
+  .checkbox:checked {
+    border: 5px solid var(--fg);
+  }
+  .checkbox:hover {
+    border: 5px solid var(--gray);
+  }
+
+  input[type="radio"] {
+    appearance: none;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+
+    border: 1px solid var(--fg);
+  }
+
+  input[type="radio"]:checked {
+    border: 5px solid var(--fg);
+  }
+
   /* bar column 1 */
     #bar-column-1 {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      row-gap: 5px;
     }
     #loading-indicator {
       visibility: hidden;
@@ -109,6 +152,27 @@
       }
     }
 
+    #username-radios {
+      width: 100%;
+      padding: 5px;
+      border: 1px solid var(--fg);
+      margin: 0;
+      box-sizing: border-box;
+    }
+    #username-input {
+      color: var(--fg);
+      background-color: var(--bg);
+      font-family: monospace;
+      display: inline;
+    }
+    #username-feedback {
+      color: white;
+      background-color: #cc0000;
+      text-align: center;
+      width: 100%;
+    }
+
+
   /* bar column 2 */
     #bar-column-2 {
       display: flex;
@@ -117,11 +181,11 @@
     }
     .difficulty-filter {
     }
-    .difficulty-hard { color: #cc0000; }
-    .difficulty-medium { color: #E69138; }
-    .difficulty-easy { color: #6aa84f; }
-    .response-type-mcq { color: #3c78d8; }
-    .response-type-frq { color: #8e7cc3; }
+    .difficulty-hard { color: var(--red); }
+    .difficulty-medium { color: var(--orange); }
+    .difficulty-easy { color: var(--green); }
+    .response-type-mcq { color: var(--blue); }
+    .response-type-frq { color: var(--purple); }
 
   /* bar column 3 */
     #bar-column-3 {
@@ -162,6 +226,7 @@
     #subdomain-filters {
       display: flex;
       flex-direction: column;
+      row-gap: 5px;
     }
     .toggle-buttons {
       display: flex;
@@ -181,6 +246,9 @@
   .question-block:hover {
     box-shadow: 0 0 0 2px var(--fg);
   }
+  .question-block[answered="true"] .question-body, .question-block[answered="true"] .question-header  {
+    color: var(--gray);
+  }
 
 /* question metadata */
   .question-header {
@@ -189,15 +257,37 @@
     justify-content: space-between;
     column-gap: 15px;
   }
+  .question-header > span {
+    text-align: left;
+  }
+  .question-header > span:last-of-type {
+    text-align: right;
+  }
+  .question-checkmark {
+    width: 0.5in;
+    visibility: visible;
+    color: var(--fg);
+    font-weight: bold;
+  }
+  .question-checkmark[invisible] {
+    visibility: hidden;
+  }
   .question-index {
     font-weight: bold;
+    width: 2in;
   }
   .match-index {
     font-style: italic;
+    width: 2in;
   }
   .question-subdomain {
     font-style: italic;
+    width: 7in;
   }
+  .difficulty-rating {
+    width: 0.5in;
+  }
+
   .question-taxonomy {
     font-style: italic;
     flex-grow: 1;
@@ -212,6 +302,14 @@
   }
   .question-body-item {
     flex-basis: 6in;
+  }
+  .answer-option:hover {
+    text-decoration: line-through var(--red) 2px;
+    filter: brightness(100%);
+  }
+  .answer-option[wrong] {
+    text-decoration: line-through var(--red) 2px;
+    filter: brightness(50%);
   }
 
 /* answer dropdown */
