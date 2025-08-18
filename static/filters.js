@@ -14,7 +14,10 @@ class Filters {
   }
   get_total_selected_questions() {
     let current = JSON.parse(window.localStorage.getItem('total_selected_questions'))
-    return current[DOMAIN_KEY]
+    if (DOMAIN_KEY in current)
+      return current[DOMAIN_KEY]
+    else
+      return 'unknown'
   }
   initialize_toggle_all(mode) {
     let bool = (mode === 'show')
