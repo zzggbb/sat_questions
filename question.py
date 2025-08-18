@@ -75,4 +75,4 @@ class Question:
       self.rationale
     ]
     combined = ''.join(parts)
-    self.uuid = hashlib.md5(combined.encode()).hexdigest()
+    self.uuid = self.domain_key + '-' + hashlib.md5(combined.encode()).hexdigest()

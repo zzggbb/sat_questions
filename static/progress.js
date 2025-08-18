@@ -179,7 +179,7 @@ class Progress {
   get_current_user_answered() {
     let user = this.get_current_user()
     let answered = this.get_answered()
-    return answered[user]
+    return answered[user].filter((uuid) => uuid.startsWith(DOMAIN_KEY))
   }
   update_total_answered_questions() {
     let elem = document.querySelector("#total-answered-questions")
