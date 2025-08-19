@@ -50,8 +50,8 @@
       {% for subdomain in subdomains %}
       <div class="subdomain-filter">
         <input type="checkbox" class="checkbox"
-               id="checkbox-{{domain_key}}-subdomain-{{subdomain | format_attribute}}">
-        <label for="checkbox-{{domain_key}}-subdomain-{{subdomain | format_attribute}}">
+               id="checkbox-{{domain_key}}-subdomain-{{subdomain | fmtattr}}">
+        <label for="checkbox-{{domain_key}}-subdomain-{{subdomain | fmtattr}}">
           {{subdomain}}
         </label>
       </div>
@@ -62,13 +62,17 @@
   {% for question in questions %}
   <div class="question-block"
     uuid="{{question.uuid}}"
-    subdomain="{{question.subdomain | format_attribute}}"
+    subdomain="{{question.subdomain | fmtattr}}"
     difficulty="{{question.difficulty}}">
     <details class="content-toggle" open>
       <summary class="question-header">
         <span class="question-checkmark" invisible>✓ </span>
-        <span class="question-index" title="{{question.uuid}}">Question {{question.index+1}}</span>
-        <span class="match-index">{{question.index+1}} of {{questions|length}} selected</span>
+        <span class="question-index" title="{{question.uuid}}">
+          Question {{question.index+1}}
+        </span>
+        <span class="match-index">
+          {{question.index+1}} of {{questions|length}} selected
+        </span>
         <span class="question-subdomain">{{question.subdomain}}</span>
         <span class="difficulty-rating difficulty-{{question.difficulty}}">
           {{question.difficulty[0].upper()}}
@@ -89,8 +93,8 @@
         </div>
         {% endif %}
       </div>
-      <details>
-        <summary class="answer-toggle">Show Answer</summary>
+      <details class="answer-toggle">
+        <summary>Show Answer</summary>
         {% if question.correct_answer %}
           <b>Correct Answer:</b> {{question.correct_answer}}
         {% endif %}

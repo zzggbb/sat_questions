@@ -12,8 +12,16 @@ import jinja2
 from bs4 import BeautifulSoup
 import simplejson as json
 
+def format_attribute(s):
+  return s.lower().replace(',','').replace(' ', '-').replace(':','-')
+
+
 ROOT = Path(__file__).parent
 TIMESTAMP = datetime.datetime.now(datetime.timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
+LOADER = jinja2.FileSystemLoader(ROOT / "html_templates")
+ENV = jinja2.Environment(loader=LOADER, trim_blocks=True, lstrip_blocks=True)
+ENV.globals['timestamp'] = TIMESTAMP
+ENV.filters['fmtattr'] = format_attribute
 
 class Scrape:
   """Scrape"""
@@ -190,14 +198,12 @@ class NewHTML:
     yield NewHTML.working_dir / "index2.html"
 
   def run():
-    loader = jinja2.FileSystemLoader(ROOT / "html_templates")
-    env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
 
     taxonomy = pickle.load(open(Distill.working_dir / "taxonomy.pickle", "rb"))
     questions = pickle.load(open(Distill.working_dir / "questions.pickle", "rb"))
 
-    html = env.get_template("index2.html").render(
-      taxonomy=taxonomy, questions=questions, timestamp=TIMESTAMP
+    html = ENV.get_template("index2.html").render(
+      taxonomy=taxonomy, questions=questions
     )
 
     open(NewHTML.working_dir / "index2.html", "w").write(html)
@@ -206,9 +212,6 @@ class OldHTML:
   """OldHTML"""
 
   working_dir = ROOT / "html"
-
-  def _format_attribute(s):
-    return s.lower().replace(',','').replace(' ', '-').replace(':','-')
 
   def required_files():
     yield from Distill.produced_files()
@@ -222,10 +225,6 @@ class OldHTML:
       yield OldHTML.working_dir / f"SAT_{domain_key}.html"
 
   def run():
-    loader = jinja2.FileSystemLoader(ROOT / "html_templates")
-    env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-    env.filters['format_attribute'] = OldHTML._format_attribute
-
     taxonomy = pickle.load(open(Distill.working_dir / "taxonomy.pickle", "rb"))
     questions = pickle.load(open(Distill.working_dir / "questions.pickle", "rb"))
 
@@ -243,12 +242,11 @@ class OldHTML:
       html_name = f"SAT_{domain.key}.html"
 
       with open(OldHTML.working_dir / html_name, 'w') as f:
-        f.write(env.get_template("section.html").render(
+        f.write(ENV.get_template("section.html").render(
           domain_name=domain.name,
           domain_key=domain.key,
           subdomains=subdomains,
-          questions=questions,
-          timestamp=TIMESTAMP
+          questions=questions
         ))
 
       if superdomain.name not in index:
@@ -256,7 +254,7 @@ class OldHTML:
       index[superdomain.name][domain.name] = (html_name, subdomains)
 
     with open(OldHTML.working_dir / "index.html", 'w') as f:
-      f.write(env.get_template("index.html").render(index=index, timestamp=TIMESTAMP))
+      f.write(ENV.get_template("index.html").render(index=index))
 
 def run_pipeline(stages):
   for stage in stages:
