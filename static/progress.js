@@ -64,14 +64,16 @@ class Progress {
 
   /* initialization methods */
   initialize_user_select() {
-    let container = document.querySelector("#username-radios")
+    let container = document.querySelector("#username-select")
     for (let radio_wrapper of container.querySelectorAll('div'))
       radio_wrapper.remove()
 
     let username_index = 0
     for (let username of storage.get("users")) {
-      let id = `username-radio-${username_index}`
-      let username_radio_wrapper = document.createElement('div')
+      let username_select_row = document.createElement('div')
+      username_select_row.setAttribute('class', 'username-select-row')
+
+      let username_option = document.createElement('div')
       let username_radio_input = document.createElement('input')
       let username_radio_label = document.createElement('label')
 
@@ -83,6 +85,7 @@ class Progress {
       }
 
       username_radio_input.setAttribute('type', 'radio')
+      let id = `username-radio-${username_index}`
       username_radio_input.setAttribute('id', id)
       username_radio_input.setAttribute('name', 'username')
       username_radio_input.setAttribute('value', username)
@@ -92,10 +95,36 @@ class Progress {
       username_radio_label.setAttribute('for', id)
       username_radio_label.textContent = username
 
-      username_radio_wrapper.appendChild(username_radio_input)
-      username_radio_wrapper.appendChild(username_radio_label)
+      username_option.appendChild(username_radio_input)
+      username_option.appendChild(username_radio_label)
+      username_select_row.appendChild(username_option)
 
-      container.appendChild(username_radio_wrapper)
+      if (username !== 'anonymous') {
+        let username_delete = document.createElement('div')
+        username_delete.textContent = 'delete'
+        username_delete.setAttribute('class', 'button username-delete')
+        username_delete.onclick = (event) => {
+          let target_user = username
+          console.log(`deleting username "${username}"`)
+          let users = storage.get("users")
+          let index = users.indexOf(target_user)
+          users.splice(index, 1)
+          let fallback_user = users[users.length - 1]
+          storage.set("current_user", fallback_user)
+          storage.set("users", users)
+
+          let answered = storage.get("answered")
+          delete answered[target_user]
+          storage.set("answered", answered)
+
+          this.initialize_user_select()
+          this.initialize_questions()
+          this.update_total_answered_DOM()
+        }
+        username_select_row.appendChild(username_delete)
+      }
+
+      container.appendChild(username_select_row)
       username_index += 1
     }
   }
@@ -104,6 +133,31 @@ class Progress {
       let question_elem = button.closest('.question-block')
       button.onclick = (event) => {
         this.set_answered(question_elem)
+      }
+    }
+  }
+  initialize_undo_answer_buttons() {
+    for (let button of document.querySelectorAll('.question-checkmark')) {
+      button.onclick = (event) => {
+        event.preventDefault()
+        let question_elem = button.closest('.question-block')
+        let uuid = question_elem.getAttribute('uuid')
+        console.log(`undo answer for ${uuid}`)
+
+        // update the backend
+        let answered = storage.get("answered")
+        let current_user = storage.get("current_user")
+        let index = answered[current_user].indexOf(uuid)
+        answered[current_user].splice(index, 1)
+        storage.set("answered", answered)
+
+        // make the question display as unanswered
+        this.set_answered_DOM(question_elem, false)
+        question_elem.querySelector(".content-toggle").setAttribute("open", true)
+
+        // update the total answered count
+        this.update_total_answered_DOM()
+
       }
     }
   }
@@ -130,35 +184,11 @@ class Progress {
       this.update_total_answered_DOM()
     }
   }
-  initialize_username_delete() {
-    let element = document.querySelector('#username-delete')
-    element.onclick = (event) => {
-      let target_user = storage.get("current_user")
-      if (target_user === "anonymous") {
-        this.set_feedback_DOM("cannot delete anonymous user!")
-        return
-      }
-      let users = storage.get("users")
-      let index = users.indexOf(target_user)
-      users.pop(index)
-      let fallback_user = users[users.length - 1]
-      storage.set("current_user", fallback_user)
-      storage.set("users", users)
-
-      let answered = this.get_answered()
-      delete answered[target_user]
-      storage.set("answered", answered)
-
-      this.initialize_user_select()
-      this.initialize_questions()
-      this.update_total_answered_DOM()
-    }
-  }
   initialize_inputs() {
     this.initialize_user_select()
     this.initialize_answer_buttons()
+    this.initialize_undo_answer_buttons()
     this.initialize_username_input()
-    this.initialize_username_delete()
   }
   initialize_questions() {
     for (let question_elem of document.querySelectorAll('.question-block')) {
