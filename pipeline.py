@@ -123,7 +123,7 @@ class Distill:
 
       subdomain = Distill._sanitize_subdomain(question['subdomain'])
       response_type = 'mcq' if len(options) > 0 else 'frq'
-      difficulty = parameters.DIFFICULTIES[question['difficulty']].lower()
+      difficulty = question['difficulty']
 
       stimulus = Distill._replace_mfenced(stimulus)
       stem = Distill._replace_mfenced(stem)

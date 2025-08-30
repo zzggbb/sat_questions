@@ -93,6 +93,8 @@
 
   .subdomain-filter {
     line-height: 15px;
+    display: flex;
+    column-gap: 5px;
   }
 
   .checkbox {
@@ -103,6 +105,7 @@
     height: 15px;
 
     border: 1px solid var(--fg);
+    flex-shrink: 0;
   }
   .checkbox:checked {
     border: 5px solid var(--fg);
@@ -191,10 +194,13 @@
       row-gap: 5px;
     }
     .difficulty-filter {
+      display: flex;
+      column-gap: 5px;
+      align-items: center;
     }
-    .difficulty-hard { color: var(--red); }
-    .difficulty-medium { color: var(--orange); }
-    .difficulty-easy { color: var(--green); }
+    .difficulty-H { color: var(--red); }
+    .difficulty-M { color: var(--orange); }
+    .difficulty-E { color: var(--green); }
     .response-type-mcq { color: var(--blue); }
     .response-type-frq { color: var(--purple); }
 
@@ -306,7 +312,7 @@
     width: 7in;
   }
   .difficulty-rating {
-    width: 0.5in;
+  /*  width: 0.5in;*/
   }
 
   .question-taxonomy {

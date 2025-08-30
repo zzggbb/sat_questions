@@ -30,7 +30,7 @@
       </div>
     </div>
     <div id="control-panel-difficulty">
-      {% for difficulty in ["hard", "medium", "easy"] %}
+      {% for difficulty in ["H", "M", "E"] %}
       <div class="difficulty-filter">
         <input type="checkbox" class="checkbox"
                id="checkbox-{{domain_key}}-difficulty-{{difficulty}}">
@@ -75,7 +75,7 @@
         </span>
         <span class="question-subdomain">{{question.subdomain}}</span>
         <span class="difficulty-rating difficulty-{{question.difficulty}}">
-          {{question.difficulty[0].upper()}}
+          {{question.difficulty}}
         </span>
       </summary>
       <div class="question-body">

@@ -14,6 +14,9 @@ class Progress {
     let answered = storage.get("answered")
     return answered[user]
   }
+  get_current_user_answered_section() {
+    return this.get_current_user_answered().filter((uuid) => uuid.startsWith(DOMAIN_KEY))
+  }
   set_answered_storage(question_uuid) {
     let answered = storage.get("answered")
     let current_user = storage.get("current_user")
@@ -34,7 +37,7 @@ class Progress {
   }
   update_total_answered_DOM() {
     let elem = document.querySelector("#total-answered-questions")
-    let total = this.get_current_user_answered().length
+    let total = this.get_current_user_answered_section().length
     elem.textContent = `${total} answered questions`
   }
   set_answered_DOM(question_elem, state) {
@@ -195,10 +198,7 @@ class Progress {
       this.set_answered_DOM(question_elem, false)
       question_elem.querySelector('.content-toggle').setAttribute('open', true)
     }
-    for (let question_uuid of this.get_current_user_answered()) {
-      if (!question_uuid.startsWith(DOMAIN_KEY))
-        continue
-
+    for (let question_uuid of this.get_current_user_answered_section()) {
       let question_elem = document.querySelector(`[uuid="${question_uuid}"]`)
       this.set_answered_DOM(question_elem, true)
       question_elem.querySelector('.content-toggle').removeAttribute('open')
