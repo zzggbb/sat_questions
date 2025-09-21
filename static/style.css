@@ -160,6 +160,8 @@
       display: flex;
       flex-direction: column;
       row-gap: 5px;
+      max-height: 150px;
+      overflow-y: scroll;
     }
     .username-select-row {
       display: flex;
