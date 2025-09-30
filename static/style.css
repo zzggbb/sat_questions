@@ -81,12 +81,38 @@
     background-color: var(--bg);
     border: 1px solid var(--fg);
 
-    display: flex;
-    justify-content: space-between;
-    padding: 5px;
-    column-gap: 5px;
     font-family: monospace;
     font-size: large;
+
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    row-gap: 5px;
+  }
+  #control-panel-permanent-row {
+    display: flex;
+    justify-content: space-between;
+  }
+  #total-questions::after {
+    content: " total Qs";
+  }
+  #total-matching-questions::after {
+    content: " selected Qs";
+  }
+  #total-answered-questions::after {
+    content: " answered Qs";
+  }
+  #control-panel-toggle[state=true]::after {
+    content: "hide";
+  }
+  #control-panel-toggle[state=false]::after {
+    content: "show";
+  }
+  #control-panel-columns {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 5px;
+
   }
   #index-button {
   }

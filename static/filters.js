@@ -83,7 +83,7 @@ class Filters {
     }
 
     let elem = document.querySelector('#total-matching-questions')
-    elem.textContent = `${count} selected questions`
+    elem.textContent = count
 
   }
   set_selected_index(question, i, N) {

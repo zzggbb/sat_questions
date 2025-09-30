@@ -3,6 +3,21 @@ class ControlPanel {
     this.last_scroll_y = window.scrollY
     this.visible = (window.scrollY > 0)
     this.element = document.querySelector("#control-panel")
+    this.toggle_state = true;
+
+    this.toggle_elem = document.querySelector("#control-panel-toggle")
+    this.toggle_elem.onclick = () => {
+      if (this.toggle_state) {
+
+      }
+      this.toggle_state = !this.toggle_state;
+      console.log(`${this.toggle_state}`)
+      if (this.toggle_state)
+        document.querySelector("#control-panel-columns").style.display = "inherit"
+      else
+        document.querySelector("#control-panel-columns").style.display = "none"
+      this.toggle_elem.setAttribute("state", this.toggle_state)
+    }
 
     document.onscroll = this.handle_scroll_event.bind(this)
   }

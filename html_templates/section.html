@@ -12,49 +12,54 @@
 
 {% block body %}
   <div id="control-panel">
-    <div id="control-panel-column-1">
+    <div id="control-panel-permanent-row">
       <a id="index-button" class="button" href="index.html">home</a>
       <div id="domain">{{domain_name}}</div>
-      <div id="total-questions">{{questions|length}} total questions</div>
-      <div id="total-matching-questions">loading...</div>
-      <div id="total-answered-questions">loading...</div>
-      <fieldset id="username-select">
-        <legend>users</legend>
-        <div>loading...</div>
-      </fieldset>
-      <div id="username-feedback" hidden></div>
-      <div id="username-input-wrapper">
-        <input class="button" type="text"
-               id="username-input" placeholder="enter a new username">
-        <span class="button" id="username-submit-input">add</span>
-      </div>
+      <div id="total-questions">{{questions|length}}</div>
+      <div id="total-matching-questions">...</div>
+      <div id="total-answered-questions">...</div>
+      <div id="control-panel-toggle" class="button" state=true></div>
     </div>
-    <div id="control-panel-difficulty">
-      {% for difficulty in ["H", "M", "E"] %}
-      <div class="difficulty-filter">
-        <input type="checkbox" class="checkbox"
-               id="checkbox-{{domain_key}}-difficulty-{{difficulty}}">
-        <label for="checkbox-{{domain_key}}-difficulty-{{difficulty}}"
-               class="difficulty-rating difficulty-{{difficulty}}">
-          {{difficulty}}
-        </label>
+    <div id="control-panel-columns">
+      <div id="control-panel-column-1">
+        <fieldset id="username-select">
+          <legend>users</legend>
+          <div>loading...</div>
+        </fieldset>
+        <div id="username-feedback" hidden></div>
+        <div id="username-input-wrapper">
+          <input class="button" type="text"
+                 id="username-input" placeholder="enter a new username">
+          <span class="button" id="username-submit-input">add</span>
+        </div>
       </div>
-      {% endfor %}
-    </div>
-    <div id="control-panel-subdomain">
-      <div class="toggle-buttons">
-        <div id="show-all-subdomains" class="button">Show All Subdomains</div>
-        <div id="hide-all-subdomains" class="button">Hide All Subdomains</div>
+      <div id="control-panel-difficulty">
+        {% for difficulty in ["H", "M", "E"] %}
+        <div class="difficulty-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-{{domain_key}}-difficulty-{{difficulty}}">
+          <label for="checkbox-{{domain_key}}-difficulty-{{difficulty}}"
+                 class="difficulty-rating difficulty-{{difficulty}}">
+            {{difficulty}}
+          </label>
+        </div>
+        {% endfor %}
       </div>
-      {% for subdomain in subdomains %}
-      <div class="subdomain-filter">
-        <input type="checkbox" class="checkbox"
-               id="checkbox-{{domain_key}}-subdomain-{{subdomain | fmtattr}}">
-        <label for="checkbox-{{domain_key}}-subdomain-{{subdomain | fmtattr}}">
-          {{subdomain}}
-        </label>
+      <div id="control-panel-subdomain">
+        <div class="toggle-buttons">
+          <div id="show-all-subdomains" class="button">Show All Subdomains</div>
+          <div id="hide-all-subdomains" class="button">Hide All Subdomains</div>
+        </div>
+        {% for subdomain in subdomains %}
+        <div class="subdomain-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-{{domain_key}}-subdomain-{{subdomain | fmtattr}}">
+          <label for="checkbox-{{domain_key}}-subdomain-{{subdomain | fmtattr}}">
+            {{subdomain}}
+          </label>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
   </div>
 

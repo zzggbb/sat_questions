@@ -38,7 +38,7 @@ class Progress {
   update_total_answered_DOM() {
     let elem = document.querySelector("#total-answered-questions")
     let total = this.get_current_user_answered_section().length
-    elem.textContent = `${total} answered questions`
+    elem.textContent = total
   }
   set_answered_DOM(question_elem, state) {
     let checkmark = question_elem.querySelector('.question-checkmark')
