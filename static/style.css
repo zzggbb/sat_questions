@@ -1,3 +1,14 @@
+[visible="false"] {
+  display: none !important;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  column-gap: 5px;
+  width: 100%;
+}
+
 /* light/dark mode */
   :root {
     color-scheme: light dark;
@@ -41,33 +52,33 @@
   }
 
 /* index page */
-  .outer {
-    display: flex;
-    justify-content: space-evenly;
-    column-gap: 5px;
+  #taxonomy {
+    border-collapse: collapse;
+    border-bottom: 1px solid black;
+    font-family: monospace;
   }
-  .column {
-    display: flex;
-    flex-direction: column;
-    row-gap: 5px;
+  #taxonomy td {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    padding: 4px;
   }
-  .column-title {
-    font-size: x-large;
-    text-align: center;
-    font-weight: bold;
+  .answered-total {
+    border: 1px solid black;
+    cursor: pointer;
   }
-  .test-domain {
-    font-size: large;
-    text-align: center;
-    font-weight: bold;
+  .answered-total:hover {
+    box-shadow: inset 3px 3px 0 0 black, inset -3px -3px 0 0 black;
   }
-  .subdomains-list {
-    margin: 5px;
-    padding-left: 10px;
-  }
-  .subdomains-list > li {
-    font-size: medium;
+  .taxonomy-subdomain-column {
     text-align: left;
+  }
+  #taxonomy thead td {
+    border-top: none !important;
+  }
+  #index-users {
+    display: flex;
+    flex-direction: row;
+    column-gap: 5px;
   }
 
 /* control panel*/
@@ -94,13 +105,13 @@
     justify-content: space-between;
   }
   #total-questions::after {
-    content: " total Qs";
+    content: " total";
   }
   #total-matching-questions::after {
-    content: " selected Qs";
+    content: " selected";
   }
   #total-answered-questions::after {
-    content: " answered Qs";
+    content: " answered";
   }
   #control-panel-toggle[state=true]::after {
     content: "hide";
@@ -150,8 +161,8 @@
     border: 5px solid var(--fg);
   }
 
-  /* control panel column 1*/
-    #control-panel-column-1 {
+  /* control panel users */
+    #control-panel-users {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -186,8 +197,7 @@
       display: flex;
       flex-direction: column;
       row-gap: 5px;
-      max-height: 150px;
-      overflow-y: scroll;
+
     }
     .username-select-row {
       display: flex;
@@ -229,6 +239,11 @@
     .difficulty-H { color: var(--red); }
     .difficulty-M { color: var(--orange); }
     .difficulty-E { color: var(--green); }
+    .difficulty-H, .difficulty-M, .difficulty-E {
+      font-family: monospace;
+      font-weight: bold;
+      font-size: large;
+    }
     .response-type-mcq { color: var(--blue); }
     .response-type-frq { color: var(--purple); }
 
@@ -340,7 +355,6 @@
     width: 7in;
   }
   .difficulty-rating {
-  /*  width: 0.5in;*/
   }
 
   .question-taxonomy {
@@ -378,6 +392,7 @@
 
 /* footer */
   #footer {
+    font-family: monospace;
     border: 1px solid grey;
     text-align: center;
     display: flex;

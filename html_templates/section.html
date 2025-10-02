@@ -1,8 +1,16 @@
 {% extends "base.html" %}
-{% set title = domain_name %}
+{% set title = domain.name %}
 
 {% block head %}
-  <script>const DOMAIN_KEY = "{{domain_key}}"</script>
+  <script>const DOMAIN_KEY = "{{domain.key}}"</script>
+  <script>const SUPERDOMAIN_KEY = "{{domain.superdomain.key}}"</script>
+  <script>const SUPERDOMAIN_NUMBER = {{domain.superdomain.number}}</script>
+
+  <script src="../static/helpers.js"></script>
+
+  <script src="../static/subdomains.js"></script>
+  <script src="../static/taxonomy.js"></script>
+
   <script src="../static/storage.js"></script>
   <script src="../static/progress.js"></script>
   <script src="../static/filters.js"></script>
@@ -14,31 +22,32 @@
   <div id="control-panel">
     <div id="control-panel-permanent-row">
       <a id="index-button" class="button" href="index.html">home</a>
-      <div id="domain">{{domain_name}}</div>
+      <div id="domain">{{domain.name}}</div>
       <div id="total-questions">{{questions|length}}</div>
       <div id="total-matching-questions">...</div>
       <div id="total-answered-questions">...</div>
       <div id="control-panel-toggle" class="button" state=true></div>
     </div>
     <div id="control-panel-columns">
-      <div id="control-panel-column-1">
-        <fieldset id="username-select">
-          <legend>users</legend>
-          <div>loading...</div>
-        </fieldset>
-        <div id="username-feedback" hidden></div>
+      <div id="control-panel-users">
+        <div class="flex-row">
+          <select id="username-select"></select>
+          <div id="username-delete" class="button">delete</div>
+        </div>
+        <div id="username-feedback" visible="false"></div>
         <div id="username-input-wrapper">
           <input class="button" type="text"
                  id="username-input" placeholder="enter a new username">
           <span class="button" id="username-submit-input">add</span>
         </div>
+
       </div>
       <div id="control-panel-difficulty">
-        {% for difficulty in ["H", "M", "E"] %}
+        {% for difficulty in difficulties %}
         <div class="difficulty-filter">
           <input type="checkbox" class="checkbox"
-                 id="checkbox-{{domain_key}}-difficulty-{{difficulty}}">
-          <label for="checkbox-{{domain_key}}-difficulty-{{difficulty}}"
+                 id="checkbox-{{domain.key}}-difficulty-{{difficulty}}">
+          <label for="checkbox-{{domain.key}}-difficulty-{{difficulty}}"
                  class="difficulty-rating difficulty-{{difficulty}}">
             {{difficulty}}
           </label>
@@ -50,12 +59,13 @@
           <div id="show-all-subdomains" class="button">Show All Subdomains</div>
           <div id="hide-all-subdomains" class="button">Hide All Subdomains</div>
         </div>
-        {% for subdomain in subdomains %}
+        {% for subdomain in taxonomy[domain.superdomain][domain]%}
         <div class="subdomain-filter">
           <input type="checkbox" class="checkbox"
-                 id="checkbox-{{domain_key}}-subdomain-{{subdomain | fmtattr}}">
-          <label for="checkbox-{{domain_key}}-subdomain-{{subdomain | fmtattr}}">
-            {{subdomain}}
+                 id="checkbox-{{domain.key}}-subdomain_index-{{subdomain.index}}">
+          <label for="checkbox-{{domain.key}}-subdomain_index-{{subdomain.index}}"
+                 title="{{subdomain}}">
+            {{subdomain.name}}
           </label>
         </div>
         {% endfor %}
@@ -66,7 +76,7 @@
   {% for question in questions %}
   <div class="question-block"
     uuid="{{question.uuid}}"
-    subdomain="{{question.subdomain | fmtattr}}"
+    subdomain_index="{{question.subdomain.index}}"
     difficulty="{{question.difficulty}}">
 
     <details class="content-toggle" open>
@@ -78,7 +88,7 @@
         <span class="match-index">
           {{question.index+1}} of {{questions|length}} selected
         </span>
-        <span class="question-subdomain">{{question.subdomain}}</span>
+        <span class="question-subdomain">{{question.subdomain.name}}</span>
         <span class="difficulty-rating difficulty-{{question.difficulty}}">
           {{question.difficulty}}
         </span>

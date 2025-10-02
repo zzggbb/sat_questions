@@ -1,3 +1,5 @@
+'use strict';
+
 class ControlPanel {
   initialize() {
     this.last_scroll_y = window.scrollY
@@ -7,15 +9,8 @@ class ControlPanel {
 
     this.toggle_elem = document.querySelector("#control-panel-toggle")
     this.toggle_elem.onclick = () => {
-      if (this.toggle_state) {
-
-      }
       this.toggle_state = !this.toggle_state;
-      console.log(`${this.toggle_state}`)
-      if (this.toggle_state)
-        document.querySelector("#control-panel-columns").style.display = "inherit"
-      else
-        document.querySelector("#control-panel-columns").style.display = "none"
+      document.querySelector("#control-panel-columns").setAttribute("visible", this.toggle_state)
       this.toggle_elem.setAttribute("state", this.toggle_state)
     }
 

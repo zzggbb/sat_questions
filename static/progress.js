@@ -1,3 +1,7 @@
+'use strict';
+
+const DIFFICULTIES = ["E", "M", "H"]
+
 class Progress {
   /* storage manipulation methods */
   add_user(username) {
@@ -15,7 +19,12 @@ class Progress {
     return answered[user]
   }
   get_current_user_answered_section() {
-    return this.get_current_user_answered().filter((uuid) => uuid.startsWith(DOMAIN_KEY))
+    if (DOMAIN_KEY === null)
+      return []
+
+    return this.get_current_user_answered().filter(
+      (uuid) => uuid.startsWith(DOMAIN_KEY)
+    )
   }
   set_answered_storage(question_uuid) {
     let answered = storage.get("answered")
@@ -25,18 +34,12 @@ class Progress {
   }
 
   /* DOM manipulation methods */
-  set_feedback_DOM(message) {
-    let elem = document.querySelector('#username-feedback')
-    if (message === false) {
-      elem.setAttribute('hidden', 'true')
-      return
-    }
-    elem.removeAttribute('hidden')
-    elem.textContent = message
-    setTimeout(() => { elem.textContent = "" }, 5000)
-  }
   update_total_answered_DOM() {
     let elem = document.querySelector("#total-answered-questions")
+    if (!elem) {
+      console.warn("#total-answered-questions is missing, couldn't update")
+      return
+    }
     let total = this.get_current_user_answered_section().length
     elem.textContent = total
   }
@@ -48,6 +51,35 @@ class Progress {
     } else {
       question_elem.removeAttribute('answered')
       checkmark.setAttribute('invisible', 'true')
+    }
+  }
+  update_answered_grid_totals_DOM() {
+    if (!document.querySelector("#taxonomy"))
+      return
+
+    let per_difficulty_totals = []
+    for (let i=0; i<SUBDOMAINS.length; i++)
+      per_difficulty_totals[i] = new Uint32Array(DIFFICULTIES.length)
+
+    for (let question_uuid of this.get_current_user_answered()) {
+      if (!Question.check_uuid(question_uuid)) {
+        let current_user = storage.get("current_user")
+        console.warn(`user ${current_user} answered missing question ${question_uuid}`)
+        continue
+      }
+      let question = new Question(question_uuid)
+      let d = DIFFICULTIES.indexOf(question.difficulty)
+      per_difficulty_totals[question.subdomain_index][d] += 1
+    }
+
+    for (let i=0; i<SUBDOMAINS.length; i++) {
+      for (let d=0; d<DIFFICULTIES.length; d++) {
+        let total = per_difficulty_totals[i][d]
+        let difficulty = DIFFICULTIES[d]
+        let query = `.answered-total[subdomain_index="${i}"][difficulty="${difficulty}"]`
+        let cell = document.querySelector(query)
+        cell.textContent = (total > 0) ? total : " "
+      }
     }
   }
 
@@ -68,67 +100,79 @@ class Progress {
   /* initialization methods */
   initialize_user_select() {
     let container = document.querySelector("#username-select")
-    for (let radio_wrapper of container.querySelectorAll('div'))
-      radio_wrapper.remove()
+    for (let option of container.querySelectorAll('option'))
+      option.remove()
 
-    let username_index = 0
+    let delete_button = document.querySelector("#username-delete")
+
+    container.onchange = () => {
+      let username = container.value
+      console.log(`selected username ${container.value}`)
+      storage.set("current_user", username)
+      delete_button.setAttribute("visible", username !== "anonymous")
+
+      this.initialize_questions()
+      this.update_total_answered_DOM()
+      this.update_answered_grid_totals_DOM()
+    }
+
+    delete_button.onclick = () => {
+      let target_user = container.value
+
+      if (target_user === "anonymous")
+        return
+
+      if (!confirm(`Are you sure you want delete user "${target_user}"?`))
+        return
+
+      console.log(`deleting username ${target_user}`)
+      let users = storage.get("users")
+      let index = users.indexOf(target_user)
+      users.splice(index, 1)
+      let fallback_user = users[users.length - 1]
+      storage.set("current_user", fallback_user)
+      storage.set("users", users)
+
+      let answered = storage.get("answered")
+      delete answered[target_user]
+      storage.set("answered", answered)
+
+      this.initialize_user_select()
+      this.initialize_questions()
+      this.update_total_answered_DOM()
+    }
+
+    delete_button.setAttribute("visible",
+      storage.get("current_user") !== "anonymous")
+
     for (let username of storage.get("users")) {
-      let username_select_row = document.createElement('div')
-      username_select_row.setAttribute('class', 'username-select-row')
+      let option = ELEMENT("option", {}, username)
+      if (username === storage.get("current_user"))
+        option.setAttribute("selected", true)
 
-      let username_option = document.createElement('div')
-      let username_radio_input = document.createElement('input')
-      let username_radio_label = document.createElement('label')
+      container.appendChild(option)
+    }
+  }
+  initialize_answered_grid() {
+    for (let i=0; i<SUBDOMAINS.length; i++) {
+      for (let d=0; d<DIFFICULTIES.length; d++) {
+        let difficulty = DIFFICULTIES[d]
+        let query = `.answered-total[subdomain_index="${i}"][difficulty="${difficulty}"]`
+        let cell = document.querySelector(query)
+        let domain = cell.getAttribute("domain")
+        let superdomain = cell.getAttribute("superdomain")
+        cell.onclick = () => {
+          // disable all filters
+          for (let [type, value] of Filters.get_checkbox_pairs(superdomain, domain))
+            Filters.set_cached_checkbox_state(domain, type, value, false)
 
-      username_radio_input.onchange = (event) => {
-        console.log(`selected username ${username}`)
-        window.localStorage.setItem("current_user", username)
-        this.initialize_questions()
-        this.update_total_answered_DOM()
-      }
+          // enable cell-specific filters
+          Filters.set_cached_checkbox_state(domain, "difficulty", difficulty, true)
+          Filters.set_cached_checkbox_state(domain, "subdomain_index", i, true)
 
-      username_radio_input.setAttribute('type', 'radio')
-      let id = `username-radio-${username_index}`
-      username_radio_input.setAttribute('id', id)
-      username_radio_input.setAttribute('name', 'username')
-      username_radio_input.setAttribute('value', username)
-      if (username == storage.get("current_user"))
-        username_radio_input.setAttribute("checked", true)
-
-      username_radio_label.setAttribute('for', id)
-      username_radio_label.textContent = username
-
-      username_option.appendChild(username_radio_input)
-      username_option.appendChild(username_radio_label)
-      username_select_row.appendChild(username_option)
-
-      if (username !== 'anonymous') {
-        let username_delete = document.createElement('div')
-        username_delete.textContent = 'delete'
-        username_delete.setAttribute('class', 'button username-delete')
-        username_delete.onclick = (event) => {
-          let target_user = username
-          console.log(`deleting username "${username}"`)
-          let users = storage.get("users")
-          let index = users.indexOf(target_user)
-          users.splice(index, 1)
-          let fallback_user = users[users.length - 1]
-          storage.set("current_user", fallback_user)
-          storage.set("users", users)
-
-          let answered = storage.get("answered")
-          delete answered[target_user]
-          storage.set("answered", answered)
-
-          this.initialize_user_select()
-          this.initialize_questions()
-          this.update_total_answered_DOM()
+          location.href = `SAT_${superdomain}_${domain}.html`
         }
-        username_select_row.appendChild(username_delete)
       }
-
-      container.appendChild(username_select_row)
-      username_index += 1
     }
   }
   initialize_answer_buttons() {
@@ -169,16 +213,15 @@ class Progress {
       let username_element = document.querySelector('#username-input')
       let username = username_element.value
       if (username === '') {
-        this.set_feedback_DOM("username is empty!")
+        alert("username is empty!")
         return
       }
       if (storage.get("users").includes(username)) {
-        this.set_feedback_DOM("username is already used!")
+        alert("username is already used!")
         username_element.value = ""
         return
       }
 
-      this.set_feedback_DOM(false)
       username_element.value = ""
       this.add_user(username)
       window.localStorage.setItem("current_user", username)

@@ -1,5 +1,5 @@
 import hashlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import parameters
 
@@ -8,6 +8,17 @@ class Question:
   '''
   Metadata
   '''
+
+  '''
+  Unique identifier for the question. Composed of:
+    {domain_key}-{md5 hash of all main data}
+  When the collegeboard updates the question set, they
+  don't add them at the end of the list. They insert them into
+  the list at random points. So an `index` will not necessarily
+  refer to the same question after an update. This necessitates
+  having a UUID that is based on the content of the question.
+  '''
+  uuid: str = field(init=False)
 
   '''
   Codename of the domain that this question belongs to.
@@ -22,13 +33,24 @@ class Question:
     GAT - Geometry and Trigonometry
   '''
   domain_key: str
+  '''
+  Domain that this question belongs to.
+  See above for the mapping between codenames and full names.
+  '''
+  domain: parameters.Domain = field(init=False)
 
   '''0-based index of the question within its domain'''
   index: int
 
-
+  '''
+  0-based index of the subdomain (of all subdomains)
+  Not calculated during object instantiation; must be set by calling
+  question.set_subdomain_index(i). This happens in the Distill stage of
+  the pipeline.
+  '''
+  #subdomain_index: int = field(init=False)
   '''Full name of the subdomain that this question belongs to.'''
-  subdomain: str
+  subdomain: parameters.Subdomain
 
   '''
   Possible values are:

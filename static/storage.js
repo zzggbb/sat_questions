@@ -1,3 +1,5 @@
+'use strict';
+
 const STATE_FLAG = "initialized"
 
 class Storage {

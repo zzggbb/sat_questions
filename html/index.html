@@ -2,90 +2,886 @@
 <html>
   <head>
     <title>SAT Questions</title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../static/style.css"/>
+    <link rel="icon" href="data:,">
+  <script> const DOMAIN_KEY = null</script>
+  <script> const SUPERDOMAIN_KEY = null</script>
+  <script> const SUPERDOMAIN_NUMBER = null</script>
+
+  <script src="../static/helpers.js"></script>
+
+  <script src="../static/subdomains.js"></script>
+  <script src="../static/question_metadata_map.js"></script>
+  <script src="../static/taxonomy.js"></script>
+
+  <script src="../static/question.js"></script>
+  <script src="../static/storage.js"></script>
+  <script src="../static/filters.js"></script>
+  <script src="../static/progress.js"></script>
+  <script src="../static/index.js"></script>
   </head>
   <body>
-  <div class="outer">
-    <div class="column">
-      <div class="column-title">Reading and Writing</div>
-        <a class="button" href="SAT_IAI.html">
-          <div class="test-domain">Information and Ideas</div>
-          <ul class="subdomains-list">
-            <li>Central Ideas And Details</li>
-            <li>Command Of Evidence</li>
-            <li>Inferences</li>
-          </ul>
-        </a>
-        <a class="button" href="SAT_CAS.html">
-          <div class="test-domain">Craft and Structure</div>
-          <ul class="subdomains-list">
-            <li>Cross-Text Connections</li>
-            <li>Text Structure And Purpose</li>
-            <li>Words In Context</li>
-          </ul>
-        </a>
-        <a class="button" href="SAT_EOI.html">
-          <div class="test-domain">Expression of Ideas</div>
-          <ul class="subdomains-list">
-            <li>Rhetorical Synthesis</li>
-            <li>Transitions</li>
-          </ul>
-        </a>
-        <a class="button" href="SAT_SEC.html">
-          <div class="test-domain">Standard English Conventions</div>
-          <ul class="subdomains-list">
-            <li>Boundaries</li>
-            <li>Form, Structure, And Sense</li>
-          </ul>
-        </a>
-    </div>
-    <div class="column">
-      <div class="column-title">Math</div>
-        <a class="button" href="SAT_ALG.html">
-          <div class="test-domain">Algebra</div>
-          <ul class="subdomains-list">
-            <li>Linear Equations In 1 Variable</li>
-            <li>Linear Equations In 2 Variables</li>
-            <li>Linear Functions</li>
-            <li>Linear Inequalities In 1 Or 2 Variables</li>
-            <li>Systems Of 2 Linear Equations In 2 Variables</li>
-          </ul>
-        </a>
-        <a class="button" href="SAT_ADV.html">
-          <div class="test-domain">Advanced Math</div>
-          <ul class="subdomains-list">
-            <li>Equivalent Expressions</li>
-            <li>Nonlinear Equations In 1 Variable And Systems Of Equations In 2 Variables</li>
-            <li>Nonlinear Functions</li>
-          </ul>
-        </a>
-        <a class="button" href="SAT_PSDA.html">
-          <div class="test-domain">Problem-Solving and Data Analysis</div>
-          <ul class="subdomains-list">
-            <li>Evaluating Statistical Claims: Observational Studies And Experiments</li>
-            <li>Inference From Sample Statistics And Margin Of Error</li>
-            <li>One-Variable Data: Distributions And Measures Of Center And Spread</li>
-            <li>Percentages</li>
-            <li>Probability And Conditional Probability</li>
-            <li>Ratios, Rates, Proportional Relationships, And Units</li>
-            <li>Two-Variable Data: Models And Scatterplots</li>
-          </ul>
-        </a>
-        <a class="button" href="SAT_GAT.html">
-          <div class="test-domain">Geometry and Trigonometry</div>
-          <ul class="subdomains-list">
-            <li>Area And Volume</li>
-            <li>Circles</li>
-            <li>Lines, Angles, And Triangles</li>
-            <li>Right Triangles And Trigonometry</li>
-          </ul>
-        </a>
-    </div>
-  </div>
+  <table id="taxonomy">
+    <thead>
+      <tr>
+        <td colspan="3">
+          <div id="index-users">
+            <select id="username-select"></select>
+            <div id="username-delete" class="button">delete</div>
+            <div id="username-feedback" visible="false"></div>
+            <input class="button" type="text" id="username-input"
+                   placeholder="enter a new username">
+            <span class="button" id="username-submit-input">add</span>
+          </div>
+        </td>
+        <td class="difficulty-E">E</td>
+        <td class="difficulty-M">M</td>
+        <td class="difficulty-H">H</td>
+      </tr>
+    </thead>
+    <tbody>
+            <tr>
+                  <td rowspan="11">English</td>
+              <td rowspan="3">
+                <a href="SAT_E_IAI.html">
+                  Information & Ideas
+                </a>
+
+              </td>
+
+              <td class="taxonomy-subdomain-column">Central Ideas & Details</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="IAI"
+                subdomain_index="0"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="IAI"
+                subdomain_index="0"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="IAI"
+                subdomain_index="0"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Command Of Evidence</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="IAI"
+                subdomain_index="1"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="IAI"
+                subdomain_index="1"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="IAI"
+                subdomain_index="1"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Inferences</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="IAI"
+                subdomain_index="2"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="IAI"
+                subdomain_index="2"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="IAI"
+                subdomain_index="2"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="4">
+                <a href="SAT_E_CAS.html">
+                  Craft & Structure
+                </a>
+
+              </td>
+
+              <td class="taxonomy-subdomain-column">Cross-Text Connections</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="3"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="3"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="3"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Cross-Text Connections</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="4"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="4"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="4"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Text Structure & Purpose</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="5"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="5"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="5"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Words In Context</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="6"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="6"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="CAS"
+                subdomain_index="6"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="2">
+                <a href="SAT_E_EOI.html">
+                  Expression of Ideas
+                </a>
+
+              </td>
+
+              <td class="taxonomy-subdomain-column">Rhetorical Synthesis</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="EOI"
+                subdomain_index="7"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="EOI"
+                subdomain_index="7"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="EOI"
+                subdomain_index="7"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Transitions</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="EOI"
+                subdomain_index="8"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="EOI"
+                subdomain_index="8"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="EOI"
+                subdomain_index="8"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="2">
+                <a href="SAT_E_SEC.html">
+                  Standard English Conventions
+                </a>
+
+              </td>
+
+              <td class="taxonomy-subdomain-column">Boundaries</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="SEC"
+                subdomain_index="9"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="SEC"
+                subdomain_index="9"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="SEC"
+                subdomain_index="9"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Form, Structure, & Sense</td>
+
+              <td class="answered-total"
+                superdomain="E"
+                domain="SEC"
+                subdomain_index="10"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="SEC"
+                subdomain_index="10"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="E"
+                domain="SEC"
+                subdomain_index="10"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+                  <td rowspan="19">Math</td>
+              <td rowspan="5">
+                <a href="SAT_M_ALG.html">
+                  Algebra
+                </a>
+
+              </td>
+
+              <td class="taxonomy-subdomain-column">Linear Equations In 1 Variable</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="11"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="11"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="11"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Linear Equations In 2 Variables</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="12"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="12"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="12"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Linear Functions</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="13"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="13"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="13"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Linear Inequalities In 1 Or 2 Variables</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="14"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="14"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="14"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Systems Of 2 Linear Equations In 2 Variables</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="15"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="15"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ALG"
+                subdomain_index="15"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="3">
+                <a href="SAT_M_ADV.html">
+                  Advanced Math
+                </a>
+
+              </td>
+
+              <td class="taxonomy-subdomain-column">Equivalent Expressions</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="ADV"
+                subdomain_index="16"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ADV"
+                subdomain_index="16"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ADV"
+                subdomain_index="16"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Nonlinear Equations In 1 Variable & Systems Of Equations In 2 Variables</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="ADV"
+                subdomain_index="17"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ADV"
+                subdomain_index="17"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ADV"
+                subdomain_index="17"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Nonlinear Functions</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="ADV"
+                subdomain_index="18"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ADV"
+                subdomain_index="18"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="ADV"
+                subdomain_index="18"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="7">
+                <a href="SAT_M_PSDA.html">
+                  Problem-Solving & Data Analysis
+                </a>
+
+              </td>
+
+              <td class="taxonomy-subdomain-column">1-Variable Data: Distributions & Measures Of Center & Spread</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="19"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="19"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="19"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">2-Variable Data: Models & Scatterplots</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="20"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="20"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="20"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Evaluating Statistical Claims: Observational Studies & Experiments</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="21"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="21"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="21"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Inference From Sample Statistics & Margin Of Error</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="22"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="22"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="22"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Percentages</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="23"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="23"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="23"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Probability & Conditional Probability</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="24"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="24"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="24"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Ratios, Rates, Proportional Relationships, & Units</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="25"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="25"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="PSDA"
+                subdomain_index="25"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="4">
+                <a href="SAT_M_GAT.html">
+                  Geometry & Trigonometry
+                </a>
+
+              </td>
+
+              <td class="taxonomy-subdomain-column">Area & Volume</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="26"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="26"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="26"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Circles</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="27"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="27"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="27"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Lines, Angles, & Triangles</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="28"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="28"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="28"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+            <tr>
+
+              <td class="taxonomy-subdomain-column">Right Triangles & Trigonometry</td>
+
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="29"
+                difficulty="E">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="29"
+                difficulty="M">
+                ?
+              </td>
+              <td class="answered-total"
+                superdomain="M"
+                domain="GAT"
+                subdomain_index="29"
+                difficulty="H">
+                ?
+              </td>
+            </tr>
+    </tbody>
+  </table>
     <div id="footer">
       <div>Created by Zane Bradley (zanegbradley@gmail.com)</div>
-      <div>Last Updated: 2025-09-30 15:34:43 PDT</div>
-      <div><a href="https://github.com/zzggbb/sat_questions">https://github.com/zzggbb/sat_questions</a></div>
+      <div>Last Updated: 2025-10-02 02:06:06 PDT</div>
+      <div>
+        <a href="https://github.com/zzggbb/sat_questions">
+          https://github.com/zzggbb/sat_questions
+        </a>
+      </div>
+    </div>
   </body>
 </html>

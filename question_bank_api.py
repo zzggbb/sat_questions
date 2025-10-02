@@ -90,7 +90,7 @@ def get_ibn_question(ibn: str):
 def get_question(metadata):
   ibn = metadata['ibn']
   eid = metadata['external_id']
-  domain_code = metadata['primary_class_cd']
+  #domain_code = metadata['primary_class_cd']
 
   if ibn:
     question = get_ibn_question(ibn)
@@ -98,7 +98,7 @@ def get_question(metadata):
     question = get_eid_question(eid)
 
   extra_metadata = {
-    'domain': metadata['primary_class_cd_desc'],
+  #  'domain': metadata['primary_class_cd_desc'],
     'subdomain': metadata['skill_desc'],
     'difficulty': metadata['difficulty'],
   }
@@ -129,6 +129,7 @@ def get_questions(event_id: int, domain):
   with multiprocessing.Pool() as pool:
     questions = []
     for i, question in enumerate(pool.imap(get_question, question_metadatas)):
+      question['domain_key'] = domain.key
       questions.append(question)
       index = i+1
       percent = index/N*100

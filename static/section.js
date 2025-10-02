@@ -1,3 +1,5 @@
+'use strict';
+
 const storage = new Storage()
 const progress = new Progress()
 const filters = new Filters()

@@ -1,3 +1,5 @@
+'use strict;
+
 const DIFFICULTIES = ["easy", "medium", "hard"]
 function get_checkbox(key, value) {
   return document.querySelector(`[${key}="${value}"]`)

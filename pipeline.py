@@ -1,6 +1,7 @@
 import re
 import pickle
 import datetime
+import itertools
 from pathlib import Path
 from collections import namedtuple
 
@@ -12,9 +13,23 @@ import jinja2
 from bs4 import BeautifulSoup
 import simplejson as json
 
-def format_attribute(s):
-  return s.lower().replace(',','').replace(' ', '-').replace(':','-')
+EVENT_NUMBER = 99 # see parameters.EVENT_NAMES
 
+def format_attribute(s):
+  out = s
+  out = out.lower()
+  out = out.replace(',','')
+  out = out.replace(' ', '-')
+  out = out.replace(':','-')
+  out = out.replace('&', 'and')
+  return out
+
+def get_domain_filename(domain_key, extension):
+  superdomain_key = parameters.DOMAINS[domain_key].superdomain_key
+  return f"SAT_{superdomain_key}_{domain_key}.{extension}"
+
+def get_domain_html_name(domain_key):
+  return get_domain_filename(domain_key, "html")
 
 ROOT = Path(__file__).parent
 TIMESTAMP = datetime.datetime.now(datetime.timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
@@ -22,35 +37,30 @@ LOADER = jinja2.FileSystemLoader(ROOT / "html_templates")
 ENV = jinja2.Environment(loader=LOADER, trim_blocks=True, lstrip_blocks=True)
 ENV.globals['timestamp'] = TIMESTAMP
 ENV.filters['fmtattr'] = format_attribute
+ENV.filters['get_domain_html_name'] = get_domain_html_name
 
 class Scrape:
   """Scrape"""
 
   working_dir = ROOT / "scrapes"
 
-  def _get_scrape_filename(domain_key):
-    return f"SAT_{domain_key}.json"
-
   def required_files():
     yield from []
 
   def produced_files():
     for domain_key in parameters.DOMAINS.keys():
-      yield Scrape.working_dir / Scrape._get_scrape_filename(domain_key)
+      yield Scrape.working_dir / get_domain_filename(domain_key, "json")
 
   def run():
     for domain_key, domain in parameters.DOMAINS.items():
-      filename = Scrape._get_scrape_filename(domain_key)
-      questions = list(qbank.get_questions(99, domain))
+      filename = get_domain_filename(domain_key, "json")
+      questions = list(qbank.get_questions(EVENT_NUMBER, domain))
       json.dump(questions, open(Scrape.working_dir / filename, "w"))
 
 class Distill:
   """Distill"""
 
   working_dir = ROOT / "distilled"
-
-  def _sanitize_subdomain(subdomain_raw):
-    return subdomain_raw.strip().title().replace(' One ', ' 1 ').replace(' Two ', ' 2 ')
 
   def _replace_mfenced(html_string):
     # <mfenced>...</mfenced> -> <mrow><mo>(</mo>...<mo>)</mo></mrow>
@@ -69,9 +79,16 @@ class Distill:
 
     return str(soup)
 
-  def _parse_questions(questions_file_path):
-    questions = json.load(open(questions_file_path))
-    subdomains = set()
+  def parse_questions(domain_key):
+    '''
+    returns tuple(
+      sorted list[str] of shortened subdomain names,
+      list[Question]
+    )
+    '''
+    domain_scrape_path = Scrape.working_dir / get_domain_filename(domain_key, 'json')
+    questions = json.load(open(domain_scrape_path))
+    subdomain_name_to_obj = dict()
     question_objects = []
 
     for index, question in enumerate(questions):
@@ -118,10 +135,11 @@ class Distill:
         else:
           raise RuntimeError(f"Unexpected question type {qtype}")
 
-      domain_name = question['domain']
-      domain_key = parameters.DOMAINS_NAME_TO_KEY[domain_name]
+      subdomain_name = question['subdomain']
+      if subdomain_name not in subdomain_name_to_obj:
+        subdomain_name_to_obj[subdomain_name] = parameters.Subdomain(subdomain_name)
+      subdomain = subdomain_name_to_obj[subdomain_name]
 
-      subdomain = Distill._sanitize_subdomain(question['subdomain'])
       response_type = 'mcq' if len(options) > 0 else 'frq'
       difficulty = question['difficulty']
 
@@ -130,14 +148,13 @@ class Distill:
       options = list(map(Distill._replace_mfenced, options))
       rationale = Distill._replace_mfenced(rationale)
 
-      subdomains.add(subdomain)
-
       question = Question(
         domain_key, index, subdomain, response_type, difficulty,
         stimulus, stem, options, correct_answer, rationale
       )
       question_objects.append(question)
 
+    subdomains = subdomain_name_to_obj.values()
     return sorted(subdomains), question_objects
 
   def required_files():
@@ -146,27 +163,85 @@ class Distill:
   def produced_files():
     yield Distill.working_dir / "questions.pickle"
     yield Distill.working_dir / "taxonomy.pickle"
+    yield Distill.working_dir / "subdomains.pickle"
 
   def run():
+    all_subdomains = []
     all_questions = []
     taxonomy = {}
     for domain_key, domain in parameters.DOMAINS.items():
       superdomain = parameters.SUPERDOMAINS[domain.superdomain_key]
 
       print(f"Parsing {superdomain.name} > {domain.name}", end='... ')
-      scrape_path = Scrape.working_dir / Scrape._get_scrape_filename(domain_key)
-      subdomains, questions = Distill._parse_questions(scrape_path)
+      subdomains, questions = Distill.parse_questions(domain_key)
+
+      all_subdomains.extend(subdomains)
       all_questions.extend(questions)
-      if superdomain not in taxonomy:
-        taxonomy[superdomain] = {}
+
+      if superdomain not in taxonomy: taxonomy[superdomain] = {}
       taxonomy[superdomain][domain] = subdomains
       print("Finished")
 
+    '''
+    Subdomain index can only be calculated once all the questions have been processed
+    '''
+    for i, subdomain in enumerate(all_subdomains):
+      subdomain.set_index(i)
+
     pickle.dump(all_questions, open(Distill.working_dir / "questions.pickle", "wb"))
     pickle.dump(taxonomy, open(Distill.working_dir / "taxonomy.pickle", "wb"))
+    pickle.dump(all_subdomains, open(Distill.working_dir / "subdomains.pickle", "wb"))
 
-class QuestionDataJS:
-  """QuestionDataJS"""
+class TaxonomyJS:
+  """TaxonomyJS"""
+
+  working_dir = ROOT / "static"
+  input_file = Distill.working_dir / "taxonomy.pickle"
+  output_file = working_dir / "taxonomy.js"
+
+  def required_files():
+    yield TaxonomyJS.input_file
+
+  def produced_files():
+    yield TaxonomyJS.output_file
+
+  def run():
+    taxonomy = pickle.load(open(TaxonomyJS.input_file, "rb"))
+    taxonomy_json = {}
+    for superdomain, domains in taxonomy.items():
+      taxonomy_json[superdomain.key] = {}
+      for domain, subdomains in domains.items():
+        taxonomy_json[superdomain.key][domain.key] = []
+        for subdomain in subdomains:
+          taxonomy_json[superdomain.key][domain.key].append(subdomain.index)
+
+    taxonomy_string = json.dumps(taxonomy_json, indent=2)
+    output = f"const TAXONOMY = {taxonomy_string}"
+    with open(TaxonomyJS.output_file, 'w') as f:
+      f.write(output)
+
+class SubdomainsJS:
+  """SubdomainsJS"""
+
+  working_dir = ROOT / "static"
+  input_file = Distill.working_dir / "subdomains.pickle"
+  output_file = working_dir / "subdomains.js"
+
+  def required_files():
+    yield SubdomainsJS.input_file
+
+  def produced_files():
+    yield SubdomainsJS.output_file
+
+  def run():
+    subdomains = pickle.load(open(SubdomainsJS.input_file, "rb"))
+    subdomains_string = json.dumps([s.name for s in subdomains], indent=2)
+    output = f"const SUBDOMAINS = {subdomains_string}"
+    with open(SubdomainsJS.output_file, "w") as f:
+      f.write(output)
+
+class QuestionArrayJS:
+  """QuestionArrayJS"""
 
   working_dir = ROOT / "static"
 
@@ -174,14 +249,53 @@ class QuestionDataJS:
     yield Distill.working_dir / "questions.pickle"
 
   def produced_files():
-    yield QuestionDataJS.working_dir / "question_data.js"
+    yield QuestionArrayJS.working_dir / "question_array.js"
 
   def run():
-    path = QuestionDataJS.working_dir / "question_data.js"
+    path = QuestionArrayJS.working_dir / "question_array.js"
     questions = pickle.load(open(Distill.working_dir / "questions.pickle", "rb"))
-    question_data_string = json.dumps(questions, default=lambda o: vars(o), indent=2)
-    output = f"let question_data = {question_data_string}"
+    question_array_string = json.dumps(questions, default=lambda o: vars(o), indent=2)
+    output = f"const QUESTION_ARRAY = {question_array_string}"
     with open(path, 'w') as f:
+      f.write(output)
+
+class QuestionMetadataMapJS:
+  """QuestionMetadataMapJS"""
+
+  force_run = True
+  working_dir = ROOT / "static"
+  input_file = Distill.working_dir / "questions.pickle"
+  output_file = working_dir / "question_metadata_map.js"
+
+  def required_files():
+    yield QuestionMetadataMapJS.input_file
+
+  def produced_files():
+    yield QuestionMetadataMapJS.output_file
+
+  def run():
+    questions = pickle.load(open(QuestionMetadataMapJS.input_file, "rb"))
+    metadata_keys = [
+      "index",
+      "subdomain_index",
+      "response_type",
+      "difficulty"
+    ]
+    question_metadata_map = {
+      'columns': metadata_keys,
+      'rows': {}
+    }
+    for question in questions:
+      question_metadata = []
+      for key in metadata_keys:
+        value = question.subdomain.index if key == "subdomain_index" else getattr(question, key)
+        question_metadata.append(value)
+
+      question_metadata_map['rows'][question.uuid] = question_metadata
+
+    question_metadata_map_string = json.dumps(question_metadata_map, separators=(',', ':'))
+    output = f"const QUESTION_METADATA_MAP = {question_metadata_map_string}"
+    with open(QuestionMetadataMapJS.output_file, 'w') as f:
       f.write(output)
 
 class NewHTML:
@@ -198,7 +312,6 @@ class NewHTML:
     yield NewHTML.working_dir / "index2.html"
 
   def run():
-
     taxonomy = pickle.load(open(Distill.working_dir / "taxonomy.pickle", "rb"))
     questions = pickle.load(open(Distill.working_dir / "questions.pickle", "rb"))
 
@@ -212,6 +325,7 @@ class OldHTML:
   """OldHTML"""
 
   working_dir = ROOT / "html"
+  force_run = True
 
   def required_files():
     yield from Distill.produced_files()
@@ -222,39 +336,34 @@ class OldHTML:
   def produced_files():
     yield OldHTML.working_dir / "index.html"
     for domain_key in parameters.DOMAINS.keys():
-      yield OldHTML.working_dir / f"SAT_{domain_key}.html"
+      yield OldHTML.working_dir / get_domain_html_name(domain_key)
 
   def run():
     taxonomy = pickle.load(open(Distill.working_dir / "taxonomy.pickle", "rb"))
     questions = pickle.load(open(Distill.working_dir / "questions.pickle", "rb"))
+    subdomains = pickle.load(open(Distill.working_dir / "subdomains.pickle", "rb"))
 
-    domain_to_questions = {}
-    for question in questions:
-      if question.domain not in domain_to_questions:
-        domain_to_questions[question.domain] = []
-
-      domain_to_questions[question.domain].append(question)
-
-    index = {}
-    for domain, questions in domain_to_questions.items():
-      superdomain = parameters.SUPERDOMAINS[domain.superdomain_key]
-      subdomains = taxonomy[superdomain][domain]
-      html_name = f"SAT_{domain.key}.html"
-
-      with open(OldHTML.working_dir / html_name, 'w') as f:
-        f.write(ENV.get_template("section.html").render(
-          domain_name=domain.name,
-          domain_key=domain.key,
-          subdomains=subdomains,
-          questions=questions
-        ))
-
-      if superdomain.name not in index:
-        index[superdomain.name] = {}
-      index[superdomain.name][domain.name] = (html_name, subdomains)
+    subdomains_per_superdomain = {
+      superdomain: sum(len(subdomains) for domain, subdomains in domains.items())
+      for superdomain, domains in taxonomy.items()
+    }
 
     with open(OldHTML.working_dir / "index.html", 'w') as f:
-      f.write(ENV.get_template("index.html").render(index=index))
+      f.write(ENV.get_template("index.html").render(
+        taxonomy=taxonomy,
+        all_subdomains=subdomains,
+        subdomains_per_superdomain=subdomains_per_superdomain,
+        difficulties=parameters.DIFFICULTIES.keys()
+      ))
+
+    for domain, questions in itertools.groupby(questions, lambda q: q.domain):
+      with open(OldHTML.working_dir / get_domain_html_name(domain.key), 'w') as f:
+        f.write(ENV.get_template("section.html").render(
+          taxonomy=taxonomy,
+          domain=domain,
+          difficulties=parameters.DIFFICULTIES.keys(),
+          questions=list(questions)
+        ))
 
 def run_pipeline(stages):
   for stage in stages:
@@ -276,14 +385,19 @@ def run_pipeline(stages):
     if all(path.exists() for path in stage.produced_files()) \
         and not upstream_changed \
         and not getattr(stage, 'force_run', False):
-      print(f"[{description}] Already produced its files and no upstream changes, skipping.")
+      print(f"[{description}] Already produced files; no upstream changes; skipping")
     else:
       print(f"[{description}] Started running...")
       stage.run()
       print(f"[{description}] Finished running.")
 
 def main():
-  stages = [Scrape, Distill, QuestionDataJS, NewHTML, OldHTML]
+  stages = [
+    Scrape,
+    Distill,
+    SubdomainsJS, TaxonomyJS, QuestionArrayJS, QuestionMetadataMapJS,
+    NewHTML, OldHTML
+  ]
   run_pipeline(stages)
 
 if __name__ == '__main__':

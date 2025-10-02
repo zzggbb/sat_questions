@@ -1,3 +1,5 @@
+'use strict';
+
 const UNKNOWN = 'unknown'
 
 class Filters {
@@ -15,46 +17,69 @@ class Filters {
   }
   get_total_selected_questions() {
     let current = storage.get("total_selected_questions")
-    return current[DOMAIN_KEY] ?? UNKNOWN
+    return (DOMAIN_KEY in current) ? current[DOMAIN_KEY] : UNKNOWN
   }
   initialize_toggle_all(mode) {
     let bool = (mode === 'show')
     document.querySelector(`#${mode}-all-subdomains`).onclick = (event) => {
       console.log(`setting all subdomains: ${mode}`)
+      /*
       for (let checkbox of document.querySelectorAll('.subdomain-filter .checkbox')) {
         checkbox.checked = bool
         this.set_cached_checkbox_state(checkbox)
+      }
+      */
+      for (let subdomain_index of TAXONOMY[SUPERDOMAIN_NUMBER][DOMAIN_KEY]) {
+        this.get_checkbox(DOMAIN_KEY, "subdomain_index", subdomain_index).checked = bool
+        Filters.set_cached_checkbox_state(DOMAIN_KEY, "subdomain_index", subdomain_index, bool)
       }
       this.set_total_selected_questions(UNKNOWN)
       this.process_questions()
     }
   }
-
-  get_cached_checkbox_state(checkbox) {
-    let checkboxes = storage.get("checkboxes")
-    return checkboxes[checkbox.id] ?? true
+  static get_checkbox_pairs(superdomain_key=SUPERDOMAIN_KEY, domain_key=DOMAIN_KEY) {
+    let pairs = []
+    for (let subdomain_index of TAXONOMY[superdomain_key][domain_key]) {
+      pairs.push(["subdomain_index", subdomain_index])
+    }
+    for (let difficulty of DIFFICULTIES) {
+      pairs.push(["difficulty", difficulty])
+    }
+    return pairs
   }
-  set_cached_checkbox_state(checkbox) {
+  get_checkbox(domain, type, value) {
+    return document.querySelector(`#checkbox-${domain}-${type}-${value}`)
+  }
+
+  get_cached_checkbox_state(domain, type, value) {
+    // domain: IAI
+    // type: difficulty | subdomain
+    // value: E|M|H|integer
     let checkboxes = storage.get("checkboxes")
-    checkboxes[checkbox.id] = checkbox.checked
+    let key = `${domain}-${type}-${value}`
+    return (key in checkboxes) ? checkboxes[key] : true
+  }
+  static set_cached_checkbox_state(domain, type, value, state) {
+    let checkboxes = storage.get("checkboxes")
+    let key = `${domain}-${type}-${value}`
+    checkboxes[key] = state
     storage.set("checkboxes", checkboxes)
   }
 
   all_questions() {
     return document.querySelectorAll('.question-block')
   }
-  is_checked(key, value) {
-    return document.querySelector(`#checkbox-${DOMAIN_KEY}-${key}-${value}`).checked
+  is_checked(domain, key, value) {
+    return this.get_checkbox(domain, key, value).checked
   }
   is_question_selected(question) {
     return (
-      this.is_checked("difficulty", question.getAttribute('difficulty')) &&
-      this.is_checked("subdomain", question.getAttribute('subdomain'))
+      this.is_checked(DOMAIN_KEY, "difficulty", question.getAttribute('difficulty')) &&
+      this.is_checked(DOMAIN_KEY, "subdomain_index", question.getAttribute('subdomain_index'))
     )
   }
   process_questions() {
     let count = 0
-
     // might be cached, or might be UNKNOWN
     let total_selected = this.get_total_selected_questions()
     console.log(`1st pass: total selected = ${total_selected}`)
@@ -82,22 +107,21 @@ class Filters {
       }
     }
 
-    let elem = document.querySelector('#total-matching-questions')
-    elem.textContent = count
-
+    document.querySelector('#total-matching-questions').textContent = count
   }
   set_selected_index(question, i, N) {
     let elem = question.querySelector('.match-index')
     elem.textContent = `${i} of ${N} selected`
   }
   initialize_checkboxes() {
-    for (let checkbox of document.querySelectorAll('.checkbox')) {
-      checkbox.checked = this.get_cached_checkbox_state(checkbox)
+    for (let [type, value] of Filters.get_checkbox_pairs()) {
+      let checkbox = this.get_checkbox(DOMAIN_KEY, type, value)
+      checkbox.checked = this.get_cached_checkbox_state(DOMAIN_KEY, type, value)
       checkbox.onchange = () => {
-        this.set_cached_checkbox_state(checkbox)
+        Filters.set_cached_checkbox_state(DOMAIN_KEY, type, value, checkbox.checked)
         this.set_total_selected_questions(UNKNOWN)
         this.process_questions()
-     }
+      }
     }
   }
 }
