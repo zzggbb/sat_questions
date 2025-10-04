@@ -7,6 +7,7 @@ import parameters
 class Question:
   '''
   Metadata
+  -----------------------------------------------------------------------------
   '''
 
   '''
@@ -21,7 +22,7 @@ class Question:
   uuid: str = field(init=False)
 
   '''
-  Codename of the domain that this question belongs to.
+  Domain that this question belongs to.
   The 8 domains are:
     IAI - Information and Ideas
     CAS - Craft and Structure
@@ -32,12 +33,7 @@ class Question:
     PSDA - Problem-Solving and Data Analysis
     GAT - Geometry and Trigonometry
   '''
-  domain_key: str
-  '''
-  Domain that this question belongs to.
-  See above for the mapping between codenames and full names.
-  '''
-  domain: parameters.Domain = field(init=False)
+  domain: parameters.Domain
 
   '''0-based index of the question within its domain'''
   index: int
@@ -60,15 +56,13 @@ class Question:
   response_type: str
 
   '''
-  Possible values are:
-    'easy'
-    'medium'
-    'hard'
+  Possible values are: 'easy' 'medium' 'hard'
   '''
   difficulty: str
 
   '''
   Main Data
+  -----------------------------------------------------------------------------
   '''
 
   '''Called body or stimulus in the raw SAT scrape data'''
@@ -87,8 +81,6 @@ class Question:
   rationale: str
 
   def __post_init__(self):
-    self.domain = parameters.DOMAINS[self.domain_key]
-
     parts = [
       self.stimulus,
       self.stem,
@@ -98,4 +90,4 @@ class Question:
     ]
     combined = ''.join(parts)
     md5_hash = hashlib.md5(combined.encode()).hexdigest()
-    self.uuid = f'{self.domain_key}-{md5_hash}'
+    self.uuid = f'{self.domain.key}-{md5_hash}'

@@ -2,6 +2,18 @@
 
 const UNKNOWN = 'unknown'
 
+class SelectedCount {
+  constructor() {
+    this.element = DIV({"id":"selected-questions-count"}, SelectedCount.get_count())
+    storage.when_set("total_selected_questions", (_) => {
+      this.element.textContent = SelectedCount.get_count()
+    })
+  }
+  static get_count() {
+    return Filters.get_total_selected_questions()
+  }
+}
+
 class Filters {
   initialize() {
     console.log("initializing filters")
@@ -10,12 +22,12 @@ class Filters {
     this.initialize_checkboxes()
     this.process_questions()
   }
-  set_total_selected_questions(value) {
+  static set_total_selected_questions(value) {
     let current = storage.get("total_selected_questions")
     current[DOMAIN_KEY] = value
     storage.set("total_selected_questions", current)
   }
-  get_total_selected_questions() {
+  static get_total_selected_questions() {
     let current = storage.get("total_selected_questions")
     return (DOMAIN_KEY in current) ? current[DOMAIN_KEY] : UNKNOWN
   }
@@ -23,17 +35,11 @@ class Filters {
     let bool = (mode === 'show')
     document.querySelector(`#${mode}-all-subdomains`).onclick = (event) => {
       console.log(`setting all subdomains: ${mode}`)
-      /*
-      for (let checkbox of document.querySelectorAll('.subdomain-filter .checkbox')) {
-        checkbox.checked = bool
-        this.set_cached_checkbox_state(checkbox)
-      }
-      */
       for (let subdomain_index of TAXONOMY[SUPERDOMAIN_NUMBER][DOMAIN_KEY]) {
         this.get_checkbox(DOMAIN_KEY, "subdomain_index", subdomain_index).checked = bool
         Filters.set_cached_checkbox_state(DOMAIN_KEY, "subdomain_index", subdomain_index, bool)
       }
-      this.set_total_selected_questions(UNKNOWN)
+      Filters.set_total_selected_questions(UNKNOWN)
       this.process_questions()
     }
   }
@@ -81,7 +87,7 @@ class Filters {
   process_questions() {
     let count = 0
     // might be cached, or might be UNKNOWN
-    let total_selected = this.get_total_selected_questions()
+    let total_selected = Filters.get_total_selected_questions()
     console.log(`1st pass: total selected = ${total_selected}`)
     let selected_questions = []
     for (let question of this.all_questions()) {
@@ -98,7 +104,7 @@ class Filters {
     }
 
     if (total_selected === UNKNOWN) {
-      this.set_total_selected_questions(count)
+      Filters.set_total_selected_questions(count)
       console.log(`2nd pass: total selected = ${count}`)
       let index = 1
       for (let question of selected_questions) {
@@ -107,7 +113,7 @@ class Filters {
       }
     }
 
-    document.querySelector('#total-matching-questions').textContent = count
+    //document.querySelector('#matching-questions-count').textContent = count
   }
   set_selected_index(question, i, N) {
     let elem = question.querySelector('.match-index')
@@ -119,7 +125,7 @@ class Filters {
       checkbox.checked = this.get_cached_checkbox_state(DOMAIN_KEY, type, value)
       checkbox.onchange = () => {
         Filters.set_cached_checkbox_state(DOMAIN_KEY, type, value, checkbox.checked)
-        this.set_total_selected_questions(UNKNOWN)
+        Filters.set_total_selected_questions(UNKNOWN)
         this.process_questions()
       }
     }

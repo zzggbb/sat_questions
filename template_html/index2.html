@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% set title = "Index 2.0" %}
+
+{% block head %}
+  <script src="../static/index2.js"></script>
+  <script src="../static/question_data.js"></script>
+{% endblock %}
+
+{% block body %}
+  <div id="control-panel">
+    <div id="bar-column-1">
+      <div id="total-matching-questions">loading...</div>
+      <div id="total-questions">{{questions|length}} questions</div>
+      <div id="loading-indicator"></div>
+    </div>
+    <div id="bar-column-2">
+      <div id="difficulty-filters">
+        {% for difficulty in ["hard", "medium", "easy"] %}
+        <div class="difficulty-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-difficulty-{{difficulty}}" difficulty="{{difficulty}}">
+          <label for="checkbox-difficulty-{{difficulty}}"
+                 class="difficulty-rating difficulty-{{difficulty}}">
+            {{difficulty}}
+          </label>
+        </div>
+        {% endfor %}
+      </div>
+      <div id="response-type-filters">
+        {% for response_type in ["mcq", "frq"] %}
+        <div class="response-type-filter">
+          <input type="checkbox" class="checkbox"
+                 id="checkbox-response-type-{{response_type}}" response-type="{{response_type}}">
+          <label for="checkbox-response-type-{{response_type}}"
+                 class="question-response-type response-type-{{response_type}}">
+            {{response_type.upper()}}
+          </label>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div id="bar-column-3">
+      <input id="search" type="text"
+             placeholder="type text here and hit enter to search" autofocus>
+      {% set ns = namespace(counter=0) %}
+      {% for superdomain, domains in taxonomy.items() %}
+      <details><summary>{{superdomain.name}}</summary>
+        <div class="toggle-buttons">
+          <div class="toggle button" show key="superdomain" value="{{superdomain.name}}">
+            Show All
+          </div>
+          <div class="toggle button" key="superdomain" value="{{superdomain.name}}">
+            Hide All
+          </div>
+        </div>
+        <div class="filter-table">
+          {% for domain, subdomains in domains.items() %}
+          <div class="filter-table-row">
+            <div class="filter-table-cell">
+              <div class="filter-table-domain">
+                <div>{{domain.name}}</div>
+                <div class="toggle-buttons">
+                  <div class="toggle button" show key="domain" value="{{domain.name}}">
+                    Show All
+                  </div>
+                  <div class="toggle button" key="domain" value="{{domain.name}}">
+                    Hide All
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="filter-table-cell">
+              {% for subdomain in subdomains %}
+              <div class="subdomain-filter">
+                <input type="checkbox" class="checkbox" id="checkbox-subdomain-{{ns.counter}}"
+                       superdomain="{{superdomain.name}}" domain="{{domain.name}}" subdomain="{{subdomain}}">
+                <label for="checkbox-subdomain-{{ns.counter}}">{{subdomain}}</label>
+                {% set ns.counter = ns.counter + 1 %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div id="questions"></div>
+{% endblock %}

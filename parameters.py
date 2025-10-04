@@ -7,7 +7,18 @@ EVENT_NAMES = {
   102: 'PSAT 8/9',
 }
 
-Superdomain = namedtuple('Superdomain', 'number key name')
+@dataclass
+class Superdomain:
+  number: int
+  key: str
+  name: str
+
+  def __hash__(self):
+    return hash(self.number)
+
+  def __repr__(self):
+    return f"Superdomain({self.name})"
+
 SUPERDOMAINS = {
   'E': Superdomain(1, 'E', 'English'),
   'M':  Superdomain(2, 'M', 'Math'),
@@ -22,9 +33,16 @@ class Domain:
 
   def __post_init__(self):
     self.superdomain = SUPERDOMAINS[self.superdomain_key]
+    self.html_name = self.filename("html")
 
   def __hash__(self):
     return hash(self.key)
+
+  def __repr__(self):
+    return f"Domain({self.key})"
+
+  def filename(self, extension):
+    return f"SAT_{self.superdomain_key}_{self.key}.{extension}"
 
 class Subdomain:
   def __init__(self, raw_name):
@@ -53,7 +71,7 @@ class Subdomain:
     return hash(self.name)
 
   def __repr__(self):
-    return f"Subdomain(name={self.name} index={self.index} @ {hex(id(self))})"
+    return f"Subdomain({self.index} - {self.name} @ {hex(id(self))})"
 
   def __lt__(self, other):
     return self.name < other.name

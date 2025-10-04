@@ -98,7 +98,6 @@ def get_question(metadata):
     question = get_eid_question(eid)
 
   extra_metadata = {
-  #  'domain': metadata['primary_class_cd_desc'],
     'subdomain': metadata['skill_desc'],
     'difficulty': metadata['difficulty'],
   }
@@ -106,8 +105,8 @@ def get_question(metadata):
 
 def get_questions(event_id: int, domain):
   """
-  event_id: see EVENT_IDS
-  domain: see DOMAINS
+  event_id: parameters.EVENT_IDS
+  domain: parameters.Domain
   """
   event_name = parameters.EVENT_NAMES[event_id]
   superdomain = parameters.SUPERDOMAINS[domain.superdomain_key]
@@ -129,7 +128,6 @@ def get_questions(event_id: int, domain):
   with multiprocessing.Pool() as pool:
     questions = []
     for i, question in enumerate(pool.imap(get_question, question_metadatas)):
-      question['domain_key'] = domain.key
       questions.append(question)
       index = i+1
       percent = index/N*100

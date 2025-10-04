@@ -1,5 +1,8 @@
 "use strict";
 
+const EMPTY_ELEMENT = "empty_element_signal"
+const ELEMENTS = {}
+
 function remove_element(selector) {
   let e = document.querySelector(selector)
   if (e !== null)
@@ -12,12 +15,15 @@ function set_text(element, text) {
 }
 
 function ELEMENT(tag, attributes=null, text_content=null, children=null,
-                 onmouseup=null, oninput=null) {
+                 event_handlers=null) {
   let e = document.createElement(tag)
 
   if (attributes)
-    for (let [k, v] of Object.entries(attributes))
+    for (let [k, v] of Object.entries(attributes)) {
       e.setAttribute(k, v)
+      if (k === "id")
+        ELEMENTS[v] = e
+    }
 
   if (text_content !== null)
     if (tag === "input")
@@ -25,17 +31,20 @@ function ELEMENT(tag, attributes=null, text_content=null, children=null,
     else
       e.textContent = text_content
 
-  if (children !== null) for (let child of children) e.appendChild(child)
+  if (children !== null)
+    for (let child of children)
+      if (child !== EMPTY_ELEMENT)
+        e.appendChild(child)
 
-  if (onmouseup !== null) e.onmouseup = onmouseup
-
-  if (oninput !== null) e.oninput = oninput
+  if (event_handlers)
+    for (let [event_name, f] of Object.entries(event_handlers))
+      e.addEventListener(event_name, f)
 
   return e
 }
 
-function DIV(attributes, text_content=null, children=null, onclick=null) {
-  return ELEMENT("div", attributes, text_content, children, onclick)
+function DIV(attributes, text_content=null, children=null, event_handlers=null) {
+  return ELEMENT("div", attributes, text_content, children, event_handlers)
 }
 
 function format_timestamp(time_ms) {
@@ -50,4 +59,17 @@ function format_timestamp(time_ms) {
     timeStyle: "long",
   })
   return [calendar_part, time_part]
+}
+
+function* enumerate(list) {
+  let i = 0
+  for (let v of list) {
+    yield [i, v]
+    i++
+  }
+}
+
+function* entries(object) {
+  for (let [k, v] of Object.entries(object))
+    yield [k, v]
 }

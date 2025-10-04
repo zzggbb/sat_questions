@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% set title = "SAT Questions" %}
+
+{% block head %}
+  <script> const DOMAIN_KEY = null</script>
+  <script> const SUPERDOMAIN_KEY = null</script>
+  <script> const SUPERDOMAIN_NUMBER = null</script>
+
+  <script src="../static/helpers.js"></script>
+
+  <script src="../static/data/subdomains.js"></script>
+  <script src="../static/data/question_metadata_map.js"></script>
+  <script src="../static/data/taxonomy.js"></script>
+  <script src="../static/data/difficulties.js"></script>
+
+  <script src="../static/storage.js"></script>
+  <script src="../static/question.js"></script>
+  <script src="../static/user.js"></script>
+  <script src="../static/progress.js"></script>
+  <script src="../static/filters.js"></script>
+  <script src="../static/index.js"></script>
+{% endblock %}
+
+{% block body %}
+  <div id="content"></div>
+{% endblock %}
