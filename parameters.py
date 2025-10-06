@@ -1,11 +1,16 @@
 from dataclasses import dataclass
 from collections import namedtuple
 
-EVENT_NAMES = {
-  99: 'SAT',
-  100: 'PSAT/NMSQT & PSAT 10',
-  102: 'PSAT 8/9',
-}
+@dataclass
+class StandardizedTest:
+  number: int
+  name: str
+
+STANDARDIZED_TESTS = [
+  StandardizedTest(99, "SAT"),
+  StandardizedTest(100, "PSAT/NMSQT & PSAT 10"),
+  StandardizedTest(102, "PSAT 8/9"),
+]
 
 @dataclass
 class Superdomain:

@@ -1,7 +1,7 @@
 # standard
 import re
 import pickle
-import datetime
+from datetime import datetime, timezone
 import itertools
 from pathlib import Path
 from collections import namedtuple
@@ -9,15 +9,20 @@ from collections import namedtuple
 # project local
 import question_bank_api as qbank
 import parameters
+import models
 from question import Question
 from pipeline import Pipeline
+from logger import log
 
 # 3rd party
+import pandas as pd
 import jinja2
 from bs4 import BeautifulSoup
 import simplejson as json
 
-EVENT_NUMBER = 99 # see parameters.EVENT_NAMES
+pd.set_option('display.max_colwidth', 100)
+pd.set_option('display.width', 1000)
+pd.set_option('display.max_columns', None)
 
 def format_attribute(s):
   out = s
@@ -29,34 +34,131 @@ def format_attribute(s):
   return out
 
 ROOT = Path(__file__).parent
-TIMESTAMP = datetime.datetime.now(datetime.timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
+TIMESTAMP_HUMAN = datetime.now(timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
+TIMESTAMP_MACHINE = int(datetime.now(timezone.utc).timestamp())
 TEMPLATES = "template_html"
 LOADER = jinja2.FileSystemLoader(ROOT / TEMPLATES)
 ENV = jinja2.Environment(loader=LOADER, trim_blocks=True, lstrip_blocks=True)
-ENV.globals['timestamp'] = TIMESTAMP
+ENV.globals['timestamp_human'] = TIMESTAMP_HUMAN
 ENV.filters['fmtattr'] = format_attribute
 
 pipeline = Pipeline()
 
 @pipeline.add_stage
-class Scrape:
-  working_dir = ROOT / "scrapes"
+class Schema:
+  cancel_downstream = False
+  force_run = True
+  wdir = ROOT / "pipeline" / "Schema"
 
-  def required_files():
+  def required_paths():
     yield from []
 
-  def produced_files():
-    for domain in parameters.DOMAINS.values():
-      yield Scrape.working_dir / domain.filename("json")
+  def produced_paths():
+    yield Schema.wdir / f"standardized_tests.pickle"
+    yield Schema.wdir / f"classifications.pickle"
+
+  def get_schema():
+    lookup = qbank.get_lookup()
+
+    standardized_tests = pd.DataFrame(lookup['assessment'])
+    standardized_tests.id = standardized_tests.id.astype('int')
+    standardized_tests.rename(columns=dict(text='name'), inplace=True)
+    standardized_tests = standardized_tests.apply(lambda r: models.StandardizedTest(**r), axis="columns")
+
+    superdomains = pd.DataFrame(lookup['test'])
+    assert superdomains.text.str.contains('Reading and Writing').any()
+    superdomains.text.replace('Reading and Writing', 'R&W', inplace=True)
+    superdomains.set_index('text', inplace=True)
+    superdomains.id = superdomains.id.astype('int')
+
+    classifications = []
+    for superdomain_name, domains in lookup['domain'].items():
+      superdomain_obj = models.Superdomain(superdomain_name,superdomains.loc[superdomain_name, 'id'])
+      for domain in domains:
+        domain_obj = models.Domain(domain['text'], domain['primaryClassCd'])
+        for skill in domain['skill']:
+          subdomain_obj = models.Subdomain(skill['text'])
+          classifications.append(
+            dict(superdomain=superdomain_obj, domain=domain_obj, subdomain=subdomain_obj)
+          )
+
+    classifications = pd.DataFrame(classifications)
+    columns = classifications.columns.values.tolist()
+    classifications.sort_values(by=columns, inplace=True, ignore_index=True)
+
+    for i, subdomain in enumerate(classifications.subdomain):
+      subdomain.index = i
+
+    for i, domain in enumerate(classifications.domain.unique()):
+      domain.index = i
+
+    return standardized_tests, classifications
 
   def run():
-    for domain in parameters.DOMAINS.values():
-      questions = list(qbank.get_questions(EVENT_NUMBER, domain))
-      json.dump(questions, open(Scrape.working_dir / domain.filename("json"), "w"))
+    for path, df in zip(Schema.produced_paths(), Schema.get_schema()):
+      log(f"wrote {type(df)} {df.shape} to {path}")
+      df.to_pickle(path)
+
+@pipeline.add_stage
+class Metaquestions:
+  cancel_downstream = False
+  force_run = True
+  wdir = ROOT / "pipeline" / "Metaquestions"
+
+  def required_paths():
+    yield from Schema.produced_paths()
+
+  def produced_paths():
+    yield Metaquestions.wdir / f"metaquestions.pickle"
+
+  def run():
+    stests, classifications = map(pd.read_pickle, Metaquestions.required_paths())
+
+    df = pd.DataFrame()
+    for test, (superdomain, domain) in itertools.product(
+      stests,
+      classifications.groupby(['superdomain', 'domain']).groups.keys()
+    ):
+      metaquestions = qbank.get_metaquestions(test, superdomain, domain)
+      df.concat(pd.DataFrame(metaquestions))
+
+    for path in Metaquestions.produced_paths():
+      df.to_pickle(path)
+
+@pipeline.add_stage
+class Questions:
+  cancel_downstream = True
+  force_run = True
+  wdir = ROOT / "pipeline" / "Questions"
+
+  def required_paths():
+    yield from Metaquestions.produced_paths()
+
+  def produced_paths():
+    yield Questions.wdir / f"questions.pickle"
+
+  def run():
+    metaquestions = pd.read_pickle(next(Metaquestions.produced_paths()))
+    print(f"shape={metaquestions.shape} columns={metaquestions.columns}")
+
+    '''
+    N = len(question_metadatas)
+    with multiprocessing.Pool() as pool:
+      questions = []
+      for i, question in enumerate(pool.imap(get_question, question_metadatas)):
+        questions.append(question)
+        index = i+1
+        percent = index/N*100
+        line_status = f"{index:03}/{N} {percent:05.1f}%"
+        log(f"{line_header} {line_status}", end='\r')
+
+      log(f"{line_header} {line_status} finished.")
+      return questions
+    '''
 
 @pipeline.add_stage
 class Distill:
-  working_dir = ROOT / "distilled"
+  wdir = ROOT / "pipeline"
 
   def replace_mfenced(html_string):
     # <mfenced>...</mfenced> -> <mrow><mo>(</mo>...<mo>)</mo></mrow>
@@ -82,7 +184,7 @@ class Distill:
       list[Question]
     )
     '''
-    domain_scrape_path = Scrape.working_dir / domain.filename('json')
+    domain_scrape_path = Scrape.wdir / domain.filename('json')
     questions = json.load(open(domain_scrape_path))
     subdomain_objects = dict()
     question_objects = []
@@ -170,13 +272,13 @@ class Distill:
     subdomains = sorted(subdomain_objects.values())
     return subdomains, question_objects
 
-  def required_files():
-    yield from Scrape.produced_files()
+  def required_paths():
+    yield from Scrape.produced_paths()
 
-  def produced_files():
-    yield Distill.working_dir / "questions.pickle"
-    yield Distill.working_dir / "taxonomy.pickle"
-    yield Distill.working_dir / "subdomains.pickle"
+  def produced_paths():
+    yield Distill.wdir / "questions.pickle"
+    yield Distill.wdir / "taxonomy.pickle"
+    yield Distill.wdir / "subdomains.pickle"
 
   def run():
     all_subdomains = []
@@ -201,20 +303,20 @@ class Distill:
     for i, subdomain in enumerate(all_subdomains):
       subdomain.set_index(i)
 
-    pickle.dump(all_questions, open(Distill.working_dir / "questions.pickle", "wb"))
-    pickle.dump(taxonomy, open(Distill.working_dir / "taxonomy.pickle", "wb"))
-    pickle.dump(all_subdomains, open(Distill.working_dir / "subdomains.pickle", "wb"))
+    pickle.dump(all_questions, open(Distill.wdir / "questions.pickle", "wb"))
+    pickle.dump(taxonomy, open(Distill.wdir / "taxonomy.pickle", "wb"))
+    pickle.dump(all_subdomains, open(Distill.wdir / "subdomains.pickle", "wb"))
 
 @pipeline.add_stage
 class TaxonomyJS:
-  working_dir = ROOT / "static" / "data"
-  input_file = Distill.working_dir / "taxonomy.pickle"
-  output_file = working_dir / "taxonomy.js"
+  wdir = ROOT / "static" / "data"
+  input_file = Distill.wdir / "taxonomy.pickle"
+  output_file = wdir / "taxonomy.js"
 
-  def required_files():
+  def required_paths():
     yield TaxonomyJS.input_file
 
-  def produced_files():
+  def produced_paths():
     yield TaxonomyJS.output_file
 
   def run():
@@ -234,14 +336,14 @@ class TaxonomyJS:
 
 @pipeline.add_stage
 class SubdomainsJS:
-  working_dir = ROOT / "static" / "data"
-  input_file = Distill.working_dir / "subdomains.pickle"
-  output_file = working_dir / "subdomains.js"
+  wdir = ROOT / "static" / "data"
+  input_file = Distill.wdir / "subdomains.pickle"
+  output_file = wdir / "subdomains.js"
 
-  def required_files():
+  def required_paths():
     yield SubdomainsJS.input_file
 
-  def produced_files():
+  def produced_paths():
     yield SubdomainsJS.output_file
 
   def run():
@@ -253,13 +355,13 @@ class SubdomainsJS:
 
 @pipeline.add_stage
 class DifficultiesJS:
-  working_dir = ROOT / "static" / "data"
-  output_file = working_dir / "difficulties.js"
+  wdir = ROOT / "static" / "data"
+  output_file = wdir / "difficulties.js"
 
-  def required_files():
+  def required_paths():
     yield ROOT / "parameters.py"
 
-  def produced_files():
+  def produced_paths():
     yield DifficultiesJS.output_file
 
   def run():
@@ -271,17 +373,17 @@ class DifficultiesJS:
 
 @pipeline.add_stage
 class QuestionArrayJS:
-  working_dir = ROOT / "static" / "data"
+  wdir = ROOT / "static" / "data"
 
-  def required_files():
-    yield Distill.working_dir / "questions.pickle"
+  def required_paths():
+    yield Distill.wdir / "questions.pickle"
 
-  def produced_files():
-    yield QuestionArrayJS.working_dir / "question_array.js"
+  def produced_paths():
+    yield QuestionArrayJS.wdir / "question_array.js"
 
   def run():
-    path = QuestionArrayJS.working_dir / "question_array.js"
-    questions = pickle.load(open(Distill.working_dir / "questions.pickle", "rb"))
+    path = QuestionArrayJS.wdir / "question_array.js"
+    questions = pickle.load(open(Distill.wdir / "questions.pickle", "rb"))
     question_array_string = json.dumps(questions, default=lambda o: vars(o), indent=2)
     output = f"const QUESTION_ARRAY = {question_array_string}"
     with open(path, 'w') as f:
@@ -289,14 +391,14 @@ class QuestionArrayJS:
 
 @pipeline.add_stage
 class QuestionMetadataMapJS:
-  working_dir = ROOT / "static" / "data"
-  input_file = Distill.working_dir / "questions.pickle"
-  output_file = working_dir / "question_metadata_map.js"
+  wdir = ROOT / "static" / "data"
+  input_file = Distill.wdir / "questions.pickle"
+  output_file = wdir / "question_metadata_map.js"
 
-  def required_files():
+  def required_paths():
     yield QuestionMetadataMapJS.input_file
 
-  def produced_files():
+  def produced_paths():
     yield QuestionMetadataMapJS.output_file
 
   def run():
@@ -326,52 +428,52 @@ class QuestionMetadataMapJS:
 
 #@pipeline.add_stage
 class NewHTML:
-  working_dir = ROOT / "html"
+  wdir = ROOT / "html"
 
-  def required_files():
-    yield from Distill.produced_files()
+  def required_paths():
+    yield from Distill.produced_paths()
     yield ROOT / TEMPLATES / "base.html"
     yield ROOT / TEMPLATES / "index2.html"
 
-  def produced_files():
-    yield NewHTML.working_dir / "index2.html"
+  def produced_paths():
+    yield NewHTML.wdir / "index2.html"
 
   def run():
-    taxonomy = pickle.load(open(Distill.working_dir / "taxonomy.pickle", "rb"))
-    questions = pickle.load(open(Distill.working_dir / "questions.pickle", "rb"))
+    taxonomy = pickle.load(open(Distill.wdir / "taxonomy.pickle", "rb"))
+    questions = pickle.load(open(Distill.wdir / "questions.pickle", "rb"))
 
     html = ENV.get_template("index2.html").render(
       taxonomy=taxonomy, questions=questions
     )
 
-    open(NewHTML.working_dir / "index2.html", "w").write(html)
+    open(NewHTML.wdir / "index2.html", "w").write(html)
 
 @pipeline.add_stage
 class OldHTML:
-  working_dir = ROOT / "html"
+  wdir = ROOT / "html"
 
-  def required_files():
-    yield from Distill.produced_files()
+  def required_paths():
+    yield from Distill.produced_paths()
     yield ROOT / TEMPLATES / "base.html"
     yield ROOT / TEMPLATES / "index.html"
     yield ROOT / TEMPLATES / "section.html"
 
-  def produced_files():
-    yield OldHTML.working_dir / "index.html"
+  def produced_paths():
+    yield OldHTML.wdir / "index.html"
     for domain in parameters.DOMAINS.values():
-      yield OldHTML.working_dir / domain.html_name
+      yield OldHTML.wdir / domain.html_name
 
   def run():
-    taxonomy = pickle.load(open(Distill.working_dir / "taxonomy.pickle", "rb"))
-    questions = pickle.load(open(Distill.working_dir / "questions.pickle", "rb"))
-    subdomains = pickle.load(open(Distill.working_dir / "subdomains.pickle", "rb"))
+    taxonomy = pickle.load(open(Distill.wdir / "taxonomy.pickle", "rb"))
+    questions = pickle.load(open(Distill.wdir / "questions.pickle", "rb"))
+    subdomains = pickle.load(open(Distill.wdir / "subdomains.pickle", "rb"))
 
     subdomains_per_superdomain = {
       superdomain: sum(len(subdomains) for domain, subdomains in domains.items())
       for superdomain, domains in taxonomy.items()
     }
 
-    with open(OldHTML.working_dir / "index.html", 'w') as f:
+    with open(OldHTML.wdir / "index.html", 'w') as f:
       f.write(ENV.get_template("index.html").render(
         taxonomy=taxonomy,
         all_subdomains=subdomains,
@@ -380,7 +482,7 @@ class OldHTML:
       ))
 
     for domain, questions in itertools.groupby(questions, lambda q: q.domain):
-      with open(OldHTML.working_dir / domain.html_name, 'w') as f:
+      with open(OldHTML.wdir / domain.html_name, 'w') as f:
         f.write(ENV.get_template("section.html").render(
           taxonomy=taxonomy,
           domain=domain,

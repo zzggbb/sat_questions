@@ -1,0 +1,44 @@
+{
+  lookupData: {
+    assessment: [
+      { text: "SAT",                  id: "99" },
+      { text: "PSAT/NMSQT & PSAT 10", id: "100" },
+      { text: "PSAT 8/9",             id: "102" }
+    ],
+    test: [
+      { text: "Reading and Writing", id: "1" },
+      { text: "Math",                id: "2" },
+    ],
+    domain: {
+      R&W: (length = 4) [
+        {
+          id:"1" text:"Information and Ideas" primaryClassCd:"INI"
+          skills: (length = 3)
+        },
+        ...
+      ],
+      Math: (length = 4) [
+        {
+          id:"1" text:"Algebra" primaryClassCd:"H"
+          skills: (length = 5) [
+            { id: "1" through "5", text: <subdomain original name> },
+            ...
+          ]
+        },
+        ...
+      ]
+    }
+  },
+  mathLiveItems: (length = 876) [
+    UUID,
+    ...
+  ],
+  readingLiveItems: (length = 1024) [
+    UUID,
+    ...
+  ],
+  stateOfferings: [
+    { stateCd: <US state's 2 letter abbreviation>, name: <US state's full name> },
+    ... (length = 29)
+  ]
+}

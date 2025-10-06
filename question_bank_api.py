@@ -1,32 +1,53 @@
-# standard library
-import sys
+# standard
+from contextlib import contextmanager
+
+# project local
+from models import StandardizedTest, Superdomain, Domain
+from logger import log
+
+# 3rd party
 import requests
-import multiprocessing
 
-# local
-import parameters
+HEADERS = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)' }
 
-HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
+# A question is an "EID"-type if the "IBN" is null or an empty string
+NULL_IBN = [None, '']
+
+URLS = {
+  'lookup': 'https://qbank-api.collegeboard.org/msreportingquestionbank-prod/questionbank/lookup',
+  'question_eid': 'https://qbank-api.collegeboard.org/msreportingquestionbank-prod/questionbank/digital/get-question',
+  'question_ibn': 'https://saic.collegeboard.org/disclosed/{ibn}.json',
+  'questions': 'https://qbank-api.collegeboard.org/msreportingquestionbank-prod/questionbank/digital/get-questions'
 }
 
-def log(message):
-  print(f"[LOG] {message}", file=sys.stderr, flush=True)
+@contextmanager
+def ok_response_json(response):
+  if response.status_code == 200:
+    yield response.json()
+  else:
+    req = response.request
+    raise RuntimeError(f"ERROR: {req.method} {req.url} -> {response.text}")
 
-def get_eid_question(external_id: str):
-  url = 'https://qbank-api.collegeboard.org/msreportingquestionbank-prod/questionbank/digital/get-question'
+def get_lookup():
+  url = URLS['lookup']
+  method = 'GET'
+  response = requests.request(method, url, headers=HEADERS)
+  ''' response structure: see example_responses/lookup.structure'''
+  key = 'lookupData'
+  with ok_response_json(response) as data:
+    assert key in data
+    return data[key]
+
+def get_eid_question(metadata: dict):
+  external_id = metadata['external_id']
+  url = URLS['question_eid']
   method = 'POST'
   payload = {
     'external_id': external_id,
   }
   response = requests.request(method, url, headers=HEADERS, json=payload)
-  if response.status_code == 200:
-    return response.json()
-
-  raise RuntimeError(f"get_eid_question: SAT API returned error: {response.json()}")
-  """
-  example response:
-  {
+  """ example response:
+    {
       "keys": [
           "faeacd70-4539-4aad-b1db-67e1f2265bb9"
       ],
@@ -38,127 +59,97 @@ def get_eid_question(external_id: str):
       "vaultid": "d20a75cb-b0e3-42e8-bf52-d342e850550f",
       "type": "mcq",
       "answerOptions": [
-          {
-              "id": "ae00d44c-9ee5-4524-aac2-6d8f6118919a",
-              "content": "ESCAPED HTML"
-          },
-          {
-              "id": "faeacd70-4539-4aad-b1db-67e1f2265bb9",
-              "content": "ESCAPED HTML"
-          },
-          {
-              "id": "90e604c9-cf62-4f87-a7d5-f1867a3cd081",
-              "content": "ESCAPED HTML"
-          },
-          {
-              "id": "9bb36dc4-0d54-42b3-87ca-fff4941ae2a0",
-              "content": "ESCAPED HTML"
-          }
+        {
+          "id": "ae00d44c-9ee5-4524-aac2-6d8f6118919a",
+          "content": "ESCAPED HTML"
+        }, {
+          "id": "faeacd70-4539-4aad-b1db-67e1f2265bb9",
+          "content": "ESCAPED HTML"
+        }, {
+          "id": "90e604c9-cf62-4f87-a7d5-f1867a3cd081",
+          "content": "ESCAPED HTML"
+        }, {
+          "id": "9bb36dc4-0d54-42b3-87ca-fff4941ae2a0",
+          "content": "ESCAPED HTML"
+        }
       ],
-      "correct_answer": [
-          "B"
-      ]
-  }
+      "correct_answer": [ "B" ]
+    }
   """
 
-def get_ibn_question(ibn: str):
-  url = f'https://saic.collegeboard.org/disclosed/{ibn}.json'
+  with ok_response_json(response) as data:
+    return data
+
+def get_ibn_question(metadata: dict):
+  ibn = metadata['ibn']
+  url = URLS['question_ibn'].format(ibn=ibn)
   method = 'GET'
   response = requests.request(method, url, headers=HEADERS)
-  if response.status_code == 200:
-    data = response.json()
+  """ example response:
+    [
+      {
+          "item_id": "05759-DC",
+          "section": "Math",
+          "body": "ESCAPED HTML",
+          "prompt": "ESCAPED HTML",
+          "answer": {
+              "style": "SPR",
+              "rationale": "ESCAPED HTML"
+          }
+      }
+    ]
+  """
+
+  with ok_response_json(response) as data:
     assert len(data) == 1
     return data[0]
 
-  raise RuntimeError("get_ibn_question: SAT API returned error: {response.json()}")
-  """
-  example response:
-  [
-    {
-        "item_id": "05759-DC",
-        "section": "Math",
-        "body": "ESCAPED HTML",
-        "prompt": "ESCAPED HTML",
-        "answer": {
-            "style": "SPR",
-            "rationale": "ESCAPED HTML"
-        }
-    }
-  ]
-  """
-
-def get_question(metadata):
+def get_question(metaquestion):
   ibn = metadata['ibn']
   eid = metadata['external_id']
-  #domain_code = metadata['primary_class_cd']
-
-  if ibn:
-    question = get_ibn_question(ibn)
-  else:
-    question = get_eid_question(eid)
-
-  extra_metadata = {
-    'subdomain': metadata['skill_desc'],
+  method = get_eid_question if (ibn in NULL_IBN) else get_ibn_question
+  return method(metadata) | {
     'difficulty': metadata['difficulty'],
+    'subdomain_name': metadata['skill_desc']
   }
-  return question | extra_metadata
 
-def get_questions(event_id: int, domain):
-  """
-  event_id: parameters.EVENT_IDS
-  domain: parameters.Domain
-  """
-  event_name = parameters.EVENT_NAMES[event_id]
-  superdomain = parameters.SUPERDOMAINS[domain.superdomain_key]
-  line_header = f"{event_name} > {superdomain.name:<19} > {domain.name:<33}"
+def get_metaquestions(test: StandardizedTest, superdomain: Superdomain, domain: Domain):
+  line_header_suffix = f"({test.id} {superdomain.id} {domain.original_acronym})"
+  line_header = ' > '.join([
+    f"{test.name:<20}",
+    "{superdomain.name:<4}",
+    "{domain.name:<33}",
+  ]) + line_header_suffix
 
-  url = 'https://qbank-api.collegeboard.org/msreportingquestionbank-prod/questionbank/digital/get-questions'
+  url = URLS['questions']
   method = 'POST'
   payload = {
-    'asmtEventId': event_id,
-    'test': superdomain.number,
-    'domain': domain.ugly,
+    'asmtEventId': test.id,
+    'test': superdomain.id,
+    'domain': domain.original_acronym,
   }
   response = requests.request(method, url, headers=HEADERS, json=payload)
-  if response.status_code != 200:
-    raise RuntimeError(f"get_questions: SAT API returned error: {response.json()}")
-
-  question_metadatas = response.json()
-  N = len(question_metadatas)
-  with multiprocessing.Pool() as pool:
-    questions = []
-    for i, question in enumerate(pool.imap(get_question, question_metadatas)):
-      questions.append(question)
-      index = i+1
-      percent = index/N*100
-      line_status = f"{index:03}/{N} {percent:05.1f}%"
-      print(f"[LOG] {line_header} {line_status}", end='\r', flush=True)
-
-    print(f"[LOG] {line_header} {line_status} finished.", flush=True)
-    return questions
-
-  """
-  example response:
-  [
-    {
-        "updateDate": 1691007959838,
-        "pPcc": "SAT#S",
-        "questionId": "6d99b141",
-        "skill_cd": "S.B.",
-        "score_band_range_cd": 6,
-        "uId": "0053ca91-ad76-40ab-8f72-b5b3ced85bee",
-        "skill_desc": "Lines, angles, and triangles",
-        "createDate": 1691007959838,
-        "program": "SAT",
-        "primary_class_cd_desc": "Geometry and Trigonometry",
-        "ibn": null,
-        "external_id": "dbda3b6a-f820-4919-8708-c6088f04c080",
-        "primary_class_cd": "S",
-        "difficulty": "H"
-    },
-    {
+  """ example response:
+    [
+      {
+          "updateDate": 1691007959838,
+          "pPcc": "SAT#S",
+          "questionId": "6d99b141",
+          "skill_cd": "S.B.",
+          "score_band_range_cd": 6,
+          "uId": "0053ca91-ad76-40ab-8f72-b5b3ced85bee",
+          "skill_desc": "Lines, angles, and triangles",
+          "createDate": 1691007959838,
+          "program": "SAT",
+          "primary_class_cd_desc": "Geometry and Trigonometry",
+          "ibn": null,
+          "external_id": "dbda3b6a-f820-4919-8708-c6088f04c080",
+          "primary_class_cd": "S",
+          "difficulty": "H"
+      },
       ...
-    },
-    ...
-  ]
+    ]
   """
+
+  with ok_response_json(response) as metaquestions:
+    return metaquestions

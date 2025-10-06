@@ -1,3 +1,5 @@
+from pathlib import Path
+
 class Pipeline:
   def __init__(self):
     self.stages = []
@@ -7,18 +9,18 @@ class Pipeline:
     return stage
 
   def run(self):
-    for stage in self.stages:
-      if hasattr(stage, 'working_dir'):
-        stage.working_dir.mkdir(exist_ok=True)
+    for i, stage in enumerate(self.stages):
+      name = stage.__name__
 
-      description = stage.__name__
+      if hasattr(stage, 'wdir'):
+        stage.wdir.mkdir(exist_ok=True, parents=True)
 
       upstream_mtime = max(
-        (f.stat().st_mtime for f in stage.required_files() if f.exists()),
+        (path.stat().st_mtime for path in stage.required_paths() if path.exists()),
         default=0
       )
       downstream_mtime = min(
-        (f.stat().st_mtime for f in stage.produced_files() if f.exists()),
+        (path.stat().st_mtime for path in stage.produced_paths() if path.exists()),
         default=1
       )
       upstream_changed = upstream_mtime > downstream_mtime
@@ -26,12 +28,14 @@ class Pipeline:
       forced = getattr(stage, 'force_run', False)
       forced_string = f" [forced]" if forced else ''
 
-      if all(path.exists() for path in stage.produced_files()) \
+      if all(path.exists() for path in stage.produced_paths()) \
           and not upstream_changed \
           and not forced:
-        print(f"[{description}] Already produced files; no upstream changes; skipping")
+        print(f"[{name}] Already produced files; no upstream changes; skipping")
       else:
-        print(f"[{description}]{forced_string} Started running...")
+        print(f"[{name}]{forced_string} Started running...")
         stage.run()
-        print(f"[{description}] Finished running.")
+        print(f"[{name}] Finished running.")
 
+      if getattr(stage, 'cancel_downstream', False):
+        break
