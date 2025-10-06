@@ -10,9 +10,6 @@ import requests
 
 HEADERS = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)' }
 
-# A question is an "EID"-type if the "IBN" is null or an empty string
-NULL_IBN = [None, '']
-
 URLS = {
   'lookup': 'https://qbank-api.collegeboard.org/msreportingquestionbank-prod/questionbank/lookup',
   'question_eid': 'https://qbank-api.collegeboard.org/msreportingquestionbank-prod/questionbank/digital/get-question',
@@ -38,8 +35,42 @@ def get_lookup():
     assert key in data
     return data[key]
 
-def get_eid_question(metadata: dict):
-  external_id = metadata['external_id']
+def get_metaquestions(test, superdomain, domain):
+  url = URLS['questions']
+  method = 'POST'
+  payload = {
+    'asmtEventId': test.id,
+    'test': superdomain.id,
+    'domain': domain.original_acronym,
+  }
+  response = requests.request(method, url, headers=HEADERS, json=payload)
+  """ example response:
+    [
+      {
+          "updateDate": 1691007959838,
+          "pPcc": "SAT#S",
+          "questionId": "6d99b141",
+          "skill_cd": "S.B.",
+          "score_band_range_cd": 6,
+          "uId": "0053ca91-ad76-40ab-8f72-b5b3ced85bee",
+          "skill_desc": "Lines, angles, and triangles",
+          "createDate": 1691007959838,
+          "program": "SAT",
+          "primary_class_cd_desc": "Geometry and Trigonometry",
+          "ibn": null,
+          "external_id": "dbda3b6a-f820-4919-8708-c6088f04c080",
+          "primary_class_cd": "S",
+          "difficulty": "H"
+      },
+      ...
+    ]
+  """
+
+  with ok_response_json(response) as metaquestions:
+    return metaquestions
+
+def get_eid_question(metaquestion: dict):
+  external_id = metaquestion['external_id']
   url = URLS['question_eid']
   method = 'POST'
   payload = {
@@ -80,8 +111,8 @@ def get_eid_question(metadata: dict):
   with ok_response_json(response) as data:
     return data
 
-def get_ibn_question(metadata: dict):
-  ibn = metadata['ibn']
+def get_ibn_question(metaquestion: dict):
+  ibn = metaquestion['ibn']
   url = URLS['question_ibn'].format(ibn=ibn)
   method = 'GET'
   response = requests.request(method, url, headers=HEADERS)
@@ -105,51 +136,9 @@ def get_ibn_question(metadata: dict):
     return data[0]
 
 def get_question(metaquestion):
-  ibn = metadata['ibn']
-  eid = metadata['external_id']
-  method = get_eid_question if (ibn in NULL_IBN) else get_ibn_question
-  return method(metadata) | {
-    'difficulty': metadata['difficulty'],
-    'subdomain_name': metadata['skill_desc']
+  ibn = metaquestion['ibn']
+  eid = metaquestion['external_id']
+  method = get_eid_question if (ibn in None) else get_ibn_question
+  return method(metaquestion) | {
+    'difficulty': metaquestion['difficulty'],
   }
-
-def get_metaquestions(test: StandardizedTest, superdomain: Superdomain, domain: Domain):
-  line_header_suffix = f"({test.id} {superdomain.id} {domain.original_acronym})"
-  line_header = ' > '.join([
-    f"{test.name:<20}",
-    "{superdomain.name:<4}",
-    "{domain.name:<33}",
-  ]) + line_header_suffix
-
-  url = URLS['questions']
-  method = 'POST'
-  payload = {
-    'asmtEventId': test.id,
-    'test': superdomain.id,
-    'domain': domain.original_acronym,
-  }
-  response = requests.request(method, url, headers=HEADERS, json=payload)
-  """ example response:
-    [
-      {
-          "updateDate": 1691007959838,
-          "pPcc": "SAT#S",
-          "questionId": "6d99b141",
-          "skill_cd": "S.B.",
-          "score_band_range_cd": 6,
-          "uId": "0053ca91-ad76-40ab-8f72-b5b3ced85bee",
-          "skill_desc": "Lines, angles, and triangles",
-          "createDate": 1691007959838,
-          "program": "SAT",
-          "primary_class_cd_desc": "Geometry and Trigonometry",
-          "ibn": null,
-          "external_id": "dbda3b6a-f820-4919-8708-c6088f04c080",
-          "primary_class_cd": "S",
-          "difficulty": "H"
-      },
-      ...
-    ]
-  """
-
-  with ok_response_json(response) as metaquestions:
-    return metaquestions

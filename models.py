@@ -6,6 +6,9 @@ class StandardizedTest:
   name: str
   id: int
 
+  def __post_init__(self):
+    self.id = int(self.id)
+
   def __hash__(self):
     return hash(self.id)
 
@@ -28,6 +31,7 @@ class Superdomain:
 
   def __post_init__(self):
     self.name = Superdomain.fix_name(self.original_name)
+    self.id = int(self.id)
 
   def __hash__(self):
     return hash(self.id)
@@ -60,6 +64,7 @@ class Domain:
   def __post_init__(self):
     self.name = Domain.fix_name(self.original_name)
     self.acronym = Domain.fix_acronym(self.original_acronym)
+    self.index = int(self.index)
 
   def __hash__(self):
     return hash(self.name)
@@ -102,6 +107,7 @@ class Subdomain:
 
   def __post_init__(self):
     self.name = Subdomain.fix_name(self.original_name)
+    self.index = int(self.index)
 
   def __hash__(self):
     return hash(self.name)

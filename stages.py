@@ -12,7 +12,7 @@ import parameters
 import models
 from question import Question
 from pipeline import Pipeline
-from logger import log
+import logger
 
 # 3rd party
 import pandas as pd
@@ -63,13 +63,16 @@ class Schema:
     standardized_tests = pd.DataFrame(lookup['assessment'])
     standardized_tests.id = standardized_tests.id.astype('int')
     standardized_tests.rename(columns=dict(text='name'), inplace=True)
-    standardized_tests = standardized_tests.apply(lambda r: models.StandardizedTest(**r), axis="columns")
+    standardized_tests = standardized_tests.apply(
+      lambda r: models.StandardizedTest(**r),
+      axis="columns"
+    )
 
     superdomains = pd.DataFrame(lookup['test'])
     assert superdomains.text.str.contains('Reading and Writing').any()
     superdomains.text.replace('Reading and Writing', 'R&W', inplace=True)
     superdomains.set_index('text', inplace=True)
-    superdomains.id = superdomains.id.astype('int')
+    superdomains.id = superdomains.id.astype(int)
 
     classifications = []
     for superdomain_name, domains in lookup['domain'].items():
@@ -78,16 +81,22 @@ class Schema:
         domain_obj = models.Domain(domain['text'], domain['primaryClassCd'])
         for skill in domain['skill']:
           subdomain_obj = models.Subdomain(skill['text'])
+          subdomain_name = subdomain_obj.name
           classifications.append(
-            dict(superdomain=superdomain_obj, domain=domain_obj, subdomain=subdomain_obj)
+            dict(
+              superdomain=superdomain_obj,
+              domain=domain_obj,
+              subdomain_obj=subdomain_obj,
+              subdomain_name=subdomain_name,
+            )
           )
 
     classifications = pd.DataFrame(classifications)
     columns = classifications.columns.values.tolist()
     classifications.sort_values(by=columns, inplace=True, ignore_index=True)
 
-    for i, subdomain in enumerate(classifications.subdomain):
-      subdomain.index = i
+    for i, subdomain_obj in enumerate(classifications.subdomain_obj):
+      subdomain_obj.index = i
 
     for i, domain in enumerate(classifications.domain.unique()):
       domain.index = i
@@ -96,8 +105,8 @@ class Schema:
 
   def run():
     for path, df in zip(Schema.produced_paths(), Schema.get_schema()):
-      log(f"wrote {type(df)} {df.shape} to {path}")
-      df.to_pickle(path)
+      with logger.timer(f"write {type(df)} {df.shape} to {path}"):
+        df.to_pickle(path)
 
 @pipeline.add_stage
 class Metaquestions:
@@ -114,13 +123,42 @@ class Metaquestions:
   def run():
     stests, classifications = map(pd.read_pickle, Metaquestions.required_paths())
 
+    def get_subdomain_obj(row):
+      original_subdomain_name = row['skill_desc']
+      subdomain_name = models.Subdomain.fix_name(original_subdomain_name)
+      return classifications.loc[classifications.subdomain_name == subdomain_name, 'subdomain_obj'].item()
+
+
     df = pd.DataFrame()
     for test, (superdomain, domain) in itertools.product(
       stests,
       classifications.groupby(['superdomain', 'domain']).groups.keys()
     ):
-      metaquestions = qbank.get_metaquestions(test, superdomain, domain)
-      df.concat(pd.DataFrame(metaquestions))
+      with logger.timer(' > '.join([test.name, superdomain.name, domain.name])):
+        metaquestions = qbank.get_metaquestions(test, superdomain, domain)
+        mq_df = pd.DataFrame(metaquestions)
+        mq_df['test'] = test
+        mq_df['superdomain'] = superdomain
+        mq_df['domain'] = domain
+        mq_df['subdomain'] = mq_df.apply(get_subdomain_obj, axis="columns")
+        mq_df['index_within_domain'] = mq_df.index
+
+        # usually the ibn is null, but sometimes it's an empty string
+        mq_df.ibn = mq_df.ibn.replace('', None)
+
+        mq_df.drop(columns=[
+          'pPcc',
+          'questionId',
+          'skill_cd',
+          'score_band_range_cd',
+          'uId',
+          'skill_desc',
+          'program',
+          'primary_class_cd_desc',
+          'primary_class_cd',
+        ], inplace=True)
+
+        df = pd.concat([df, mq_df], ignore_index=True)
 
     for path in Metaquestions.produced_paths():
       df.to_pickle(path)
@@ -139,9 +177,16 @@ class Questions:
 
   def run():
     metaquestions = pd.read_pickle(next(Metaquestions.produced_paths()))
-    print(f"shape={metaquestions.shape} columns={metaquestions.columns}")
+    logger.log(f"shape={metaquestions.shape} columns={metaquestions.columns}")
 
     '''
+    line_header_suffix = f"({test.id} {superdomain.id} {domain.original_acronym})"
+    line_header = ' > '.join([
+      f"{test.name:<20}",
+      "{superdomain.name:<4}",
+      "{domain.name:<33}",
+    ]) + line_header_suffix
+
     N = len(question_metadatas)
     with multiprocessing.Pool() as pool:
       questions = []
