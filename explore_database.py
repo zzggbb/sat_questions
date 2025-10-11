@@ -3,11 +3,13 @@ import code
 import readline
 import rlcompleter
 
+import pickle
 import json
 
 # project local
+import models
 from stages import Schema, Metaquestions, Questions
-from models import StandardizedTest, Superdomain, Domain, Subdomain
+from models import Exam, Superdomain, Domain, Subdomain
 
 # 3rd party
 import pandas as pd
@@ -19,9 +21,10 @@ def repl(namespace):
     readline.parse_and_bind("tab: complete")
     code.interact(local=namespace, banner='', exitmsg='')
 
-standardized_tests, classifications = map(pd.read_pickle, Schema.produced_paths())
-metaquestions = pd.read_pickle(next(Metaquestions.produced_paths()))
+exams, classifications = map(pd.read_pickle, Schema.produced_paths().values())
+metaquestions = pd.read_pickle(Metaquestions.produced_paths())
+questions = pickle.load(open(Questions.produced_paths(), 'rb'))
 
-print("locals: standardized_tests classifications metaquestions")
+print("locals: exams classifications metaquestions questions")
 
 repl(locals())

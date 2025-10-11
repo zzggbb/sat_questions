@@ -1,16 +1,14 @@
 # standard
-import re
+import sys
 import pickle
 from datetime import datetime, timezone
 import itertools
 from pathlib import Path
-from collections import namedtuple
+import multiprocessing
 
 # project local
-import question_bank_api as qbank
-import parameters
+import question_bank as qbank
 import models
-from question import Question
 from pipeline import Pipeline
 import logger
 
@@ -47,26 +45,29 @@ pipeline = Pipeline()
 @pipeline.add_stage
 class Schema:
   cancel_downstream = False
-  force_run = True
+  #force_run = True
   wdir = ROOT / "pipeline" / "Schema"
 
   def required_paths():
-    yield from []
+    return {}
 
   def produced_paths():
-    yield Schema.wdir / f"standardized_tests.pickle"
-    yield Schema.wdir / f"classifications.pickle"
+    return {
+      "exams": Schema.wdir / "exams.pickle",
+      "classifications": Schema.wdir / f"classifications.pickle",
+    }
 
   def get_schema():
     lookup = qbank.get_lookup()
 
-    standardized_tests = pd.DataFrame(lookup['assessment'])
-    standardized_tests.id = standardized_tests.id.astype('int')
-    standardized_tests.rename(columns=dict(text='name'), inplace=True)
-    standardized_tests = standardized_tests.apply(
-      lambda r: models.StandardizedTest(**r),
+    exams = pd.DataFrame(lookup['assessment'])
+    exams.id = exams.id.astype('int')
+    exams.rename(columns=dict(text='name'), inplace=True)
+    exams = exams.apply(
+      lambda r: models.Exam(**r),
       axis="columns"
     )
+    exams.sort_values(inplace=True, ignore_index=True)
 
     superdomains = pd.DataFrame(lookup['test'])
     assert superdomains.text.str.contains('Reading and Writing').any()
@@ -76,68 +77,67 @@ class Schema:
 
     classifications = []
     for superdomain_name, domains in lookup['domain'].items():
-      superdomain_obj = models.Superdomain(superdomain_name,superdomains.loc[superdomain_name, 'id'])
+      superdomain_id = superdomains.loc[superdomain_name, 'id']
+      superdomain_obj = models.Superdomain(superdomain_name,superdomain_id)
       for domain in domains:
         domain_obj = models.Domain(domain['text'], domain['primaryClassCd'])
         for skill in domain['skill']:
           subdomain_obj = models.Subdomain(skill['text'])
-          subdomain_name = subdomain_obj.name
-          classifications.append(
-            dict(
-              superdomain=superdomain_obj,
-              domain=domain_obj,
-              subdomain_obj=subdomain_obj,
-              subdomain_name=subdomain_name,
-            )
-          )
+          classifications.append(dict(
+            superdomain=superdomain_obj,
+            domain=domain_obj,
+            subdomain=subdomain_obj
+          ))
 
     classifications = pd.DataFrame(classifications)
     columns = classifications.columns.values.tolist()
     classifications.sort_values(by=columns, inplace=True, ignore_index=True)
 
-    for i, subdomain_obj in enumerate(classifications.subdomain_obj):
+    for i, subdomain_obj in enumerate(classifications.subdomain):
       subdomain_obj.index = i
 
-    for i, domain in enumerate(classifications.domain.unique()):
-      domain.index = i
+    for i, domain_obj in enumerate(classifications.domain.unique()):
+      domain_obj.index = i
 
-    return standardized_tests, classifications
+    return exams, classifications
 
   def run():
-    for path, df in zip(Schema.produced_paths(), Schema.get_schema()):
-      with logger.timer(f"write {type(df)} {df.shape} to {path}"):
+    for path, df in zip(Schema.produced_paths().values(), Schema.get_schema()):
+      with logger.timer(f"write {type(df)} {df.shape} to {path.relative_to(ROOT)}"):
         df.to_pickle(path)
 
 @pipeline.add_stage
 class Metaquestions:
   cancel_downstream = False
-  force_run = True
+  #force_run = True
   wdir = ROOT / "pipeline" / "Metaquestions"
 
   def required_paths():
-    yield from Schema.produced_paths()
+    return Schema.produced_paths()
 
   def produced_paths():
-    yield Metaquestions.wdir / f"metaquestions.pickle"
+    return Metaquestions.wdir / f"metaquestions.pickle"
 
   def run():
-    stests, classifications = map(pd.read_pickle, Metaquestions.required_paths())
+    exams, classifications = map(pd.read_pickle, Metaquestions.required_paths().values())
 
     def get_subdomain_obj(row):
       original_subdomain_name = row['skill_desc']
-      subdomain_name = models.Subdomain.fix_name(original_subdomain_name)
-      return classifications.loc[classifications.subdomain_name == subdomain_name, 'subdomain_obj'].item()
-
+      needle = models.Subdomain(original_subdomain_name)
+      return classifications.loc[
+        classifications.subdomain.map(lambda s: s == needle),
+        'subdomain'
+      ].item()
 
     df = pd.DataFrame()
-    for test, (superdomain, domain) in itertools.product(
-      stests,
+    for exam, (superdomain, domain) in itertools.product(
+      exams,
       classifications.groupby(['superdomain', 'domain']).groups.keys()
     ):
-      with logger.timer(' > '.join([test.name, superdomain.name, domain.name])):
-        metaquestions = qbank.get_metaquestions(test, superdomain, domain)
+      with logger.timer(' > '.join([exam.short_name, superdomain.name, domain.name])):
+        metaquestions = qbank.get_metaquestions(exam, superdomain, domain)
         mq_df = pd.DataFrame(metaquestions)
-        mq_df['test'] = test
+        mq_df['exam'] = exam
         mq_df['superdomain'] = superdomain
         mq_df['domain'] = domain
         mq_df['subdomain'] = mq_df.apply(get_subdomain_obj, axis="columns")
@@ -160,48 +160,173 @@ class Metaquestions:
 
         df = pd.concat([df, mq_df], ignore_index=True)
 
-    for path in Metaquestions.produced_paths():
-      df.to_pickle(path)
+    df.to_pickle(Metaquestions.produced_paths())
+
+@pipeline.add_stage
+class QuestionCounts:
+  cancel_downstream = False
+  #force_run = True
+  wdir = ROOT / "pipeline" / "QuestionCounts"
+
+  def required_paths():
+    return Metaquestions.produced_paths()
+
+  def produced_paths():
+    return QuestionCounts.wdir / "question_counts.html"
+
+  def run():
+    metaquestions = pd.read_pickle(QuestionCounts.required_paths())
+    cross_table = pd.crosstab(
+      [metaquestions.superdomain, metaquestions.domain, metaquestions.subdomain],
+      metaquestions.exam
+    )
+    html = cross_table.replace(0, 'NONE').to_html(
+      formatters={
+        'superdomain': str,
+        'domain': str,
+        'subdomain': str
+      },
+      header=True,
+      table_id = 'question-counts-table'
+    )
+    css = '''
+    <style>
+    #question-counts-table {
+      border-collapse: collapse;
+      td {
+        padding: 1px;
+        text-align: center;
+      }
+      th {
+        vertical-align: middle;
+      }
+    }
+    </style>
+    '''
+    out = f"{html}{css}"
+    with open(QuestionCounts.produced_paths(), 'w') as f:
+      print(out, file=f)
 
 @pipeline.add_stage
 class Questions:
-  cancel_downstream = True
-  force_run = True
+  cancel_downstream = False
+  #force_run = True
   wdir = ROOT / "pipeline" / "Questions"
 
   def required_paths():
-    yield from Metaquestions.produced_paths()
+    return Metaquestions.produced_paths()
 
   def produced_paths():
-    yield Questions.wdir / f"questions.pickle"
+    return Questions.wdir / f"questions.pickle"
 
   def run():
-    metaquestions = pd.read_pickle(next(Metaquestions.produced_paths()))
+    metaquestions = pd.read_pickle(Metaquestions.produced_paths())
     logger.log(f"shape={metaquestions.shape} columns={metaquestions.columns}")
 
-    '''
-    line_header_suffix = f"({test.id} {superdomain.id} {domain.original_acronym})"
-    line_header = ' > '.join([
-      f"{test.name:<20}",
-      "{superdomain.name:<4}",
-      "{domain.name:<33}",
-    ]) + line_header_suffix
+    n_questions = len(metaquestions)
+    questions = []
 
-    N = len(question_metadatas)
+    metaquestions = metaquestions.to_dict(orient='records')
+
     with multiprocessing.Pool() as pool:
-      questions = []
-      for i, question in enumerate(pool.imap(get_question, question_metadatas)):
-        questions.append(question)
-        index = i+1
-        percent = index/N*100
-        line_status = f"{index:03}/{N} {percent:05.1f}%"
-        log(f"{line_header} {line_status}", end='\r')
+      for i, (metadata, maindata) in enumerate(zip(
+        metaquestions,
+        pool.imap(qbank.get_question_maindata, metaquestions)
+      )):
+        question = models.Question(
+          index = i,
+          index_within_domain = metadata['index_within_domain'],
+          exam = metadata['exam'],
+          superdomain = metadata['superdomain'],
+          domain = metadata['domain'],
+          subdomain = metadata['subdomain'],
+          answer_type = maindata['answer_type'],
+          difficulty = metadata['difficulty'],
 
-      log(f"{line_header} {line_status} finished.")
-      return questions
-    '''
+          stimulus = maindata['stimulus'],
+          stem = maindata['stem'],
+          options = maindata['options'],
+          correct_answer = maindata['correct_answer'],
+          rationale = maindata['rationale']
+        )
+        questions.append(question)
+
+        percent = i/n_questions*100
+        line_status = f"{i:04}/{n_questions} {percent:05.1f}%"
+        logger.log(f"{line_status}", end='\r')
+
+    pickle.dump(questions, open(Questions.produced_paths(), 'wb'))
 
 @pipeline.add_stage
+class QuestionsJSON:
+  cancel_downstream = False
+  wdir = ROOT / "pipeline" / "Questions"
+
+  def required_paths():
+    return Questions.produced_paths()
+
+  def produced_paths():
+    return QuestionsJSON.wdir / "questions.json"
+
+  def run():
+    questions = pickle.load(open(QuestionsJSON.required_paths(), 'rb'))
+    with open(QuestionsJSON.produced_paths(), 'w') as f:
+      for question in questions:
+        json_line = json.dumps(question, default=dict)
+        print(json_line, file=f)
+
+@pipeline.add_stage
+class FrontendData:
+  cancel_downstream = False
+  wdir = ROOT / "pipeline" / "FrontendData"
+
+  def required_paths():
+    return {
+      'questions': Questions.produced_paths(),
+      'exams': Schema.wdir / "exams.pickle",
+      'classifications': Schema.wdir / "classifications.pickle",
+      'models': ROOT / "models.py",
+    }
+
+  def produced_paths():
+    return FrontendData.wdir / "frontend_data.js"
+
+  def run():
+    questions = pickle.load(open(Questions.produced_paths(), 'rb'))
+    exams = pd.read_pickle(FrontendData.required_paths()['exams'])
+    classifications = pd.read_pickle(FrontendData.required_paths()['classifications'])
+
+    exams_json = exams.to_json(orient='records', indent=2)
+    classifications_json = classifications.to_json(orient='records', indent=2)
+    difficulties_json = json.dumps(list(models.Difficulty.values()), indent=2)
+    answer_types_json = json.dumps(list(models.AnswerType.values()), indent=2)
+
+    out = dict(
+      TOTAL_QUESTIONS = len(questions),
+      EXAMS = exams_json,
+      CLASSIFICATIONS = classifications_json,
+      DIFFICULTIES = difficulties_json,
+      ANSWER_TYPES = answer_types_json
+    )
+    out = '\n'.join(f"const {k} = {v}" for k, v in out.items())
+    with open(FrontendData.produced_paths(), 'w') as f:
+      print(out, file=f)
+
+@pipeline.add_stage
+class Index:
+  cancel_downstream = True
+
+  def required_paths():
+    return ROOT / TEMPLATES / 'index.html'
+
+  def produced_paths():
+    return ROOT / 'html' / 'index.html'
+
+  def run():
+    with open(Index.produced_paths(), 'w') as f:
+      f.write(ENV.get_template('index.html').render())
+
+#@pipeline.add_stage
 class Distill:
   wdir = ROOT / "pipeline"
 
@@ -299,7 +424,6 @@ class Distill:
 
       subdomain = subdomain_objects[temp_subdomain.name]
 
-
       response_type = 'mcq' if len(options) > 0 else 'frq'
       difficulty = question['difficulty']
 
@@ -352,7 +476,7 @@ class Distill:
     pickle.dump(taxonomy, open(Distill.wdir / "taxonomy.pickle", "wb"))
     pickle.dump(all_subdomains, open(Distill.wdir / "subdomains.pickle", "wb"))
 
-@pipeline.add_stage
+#@pipeline.add_stage
 class TaxonomyJS:
   wdir = ROOT / "static" / "data"
   input_file = Distill.wdir / "taxonomy.pickle"
@@ -379,7 +503,7 @@ class TaxonomyJS:
     with open(TaxonomyJS.output_file, 'w') as f:
       f.write(output)
 
-@pipeline.add_stage
+#@pipeline.add_stage
 class SubdomainsJS:
   wdir = ROOT / "static" / "data"
   input_file = Distill.wdir / "subdomains.pickle"
@@ -398,7 +522,7 @@ class SubdomainsJS:
     with open(SubdomainsJS.output_file, "w") as f:
       f.write(output)
 
-@pipeline.add_stage
+#@pipeline.add_stage
 class DifficultiesJS:
   wdir = ROOT / "static" / "data"
   output_file = wdir / "difficulties.js"
@@ -416,7 +540,7 @@ class DifficultiesJS:
     with open(DifficultiesJS.output_file, 'w') as f:
       f.write(output)
 
-@pipeline.add_stage
+#@pipeline.add_stage
 class QuestionArrayJS:
   wdir = ROOT / "static" / "data"
 
@@ -434,7 +558,7 @@ class QuestionArrayJS:
     with open(path, 'w') as f:
       f.write(output)
 
-@pipeline.add_stage
+#@pipeline.add_stage
 class QuestionMetadataMapJS:
   wdir = ROOT / "static" / "data"
   input_file = Distill.wdir / "questions.pickle"
@@ -493,7 +617,7 @@ class NewHTML:
 
     open(NewHTML.wdir / "index2.html", "w").write(html)
 
-@pipeline.add_stage
+#@pipeline.add_stage
 class OldHTML:
   wdir = ROOT / "html"
 
@@ -536,7 +660,12 @@ class OldHTML:
         ))
 
 def main():
-  pipeline.run()
+  if len(sys.argv) > 1:
+    stage_names = sys.argv[1:]
+    for stage_name in stage_names:
+      pipeline.run(stage_name, force=True)
+  else:
+    pipeline.run_all()
 
 if __name__ == '__main__':
   main()
