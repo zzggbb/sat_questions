@@ -17,7 +17,13 @@ function set_text(element, text) {
 function string_to_elements(html_string) {
     const template = document.createElement('template');
     template.innerHTML = html_string;
-    return template.content.children;
+    return template.content.childNodes;
+}
+
+function string_to_element(html_string) {
+  const e = DIV()
+  e.innerHTML = html_string
+  return e
 }
 
 function ELEMENT(tag, attributes=null, text_content=null, children=null,
@@ -41,9 +47,8 @@ function ELEMENT(tag, attributes=null, text_content=null, children=null,
     for (let child of children)
       if (child !== EMPTY_ELEMENT) {
         if (typeof(child) === 'string') {
-          children = string_to_elements(child)
-          for (let child of children)
-            e.appendChild(child)
+          child = string_to_element(child)
+          e.appendChild(child)
         } else {
           e.appendChild(child)
         }

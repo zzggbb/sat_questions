@@ -24,39 +24,64 @@ function parse_json() {
   });
 }
 
+class Migrate {
+  constructor() {
+    this.exam_shortnames = EXAMS.map(exam => exam.short_name)
+  }
+  uuid(uuid_original) {
+    let prefix, hash = uuid_original.split("-")
+    if (!this.exam_shortnames.includes(prefix))
+      prefix = "SAT"
+
+    return `${prefix}-${hash}`
+  }
+}
+
 class StoreQuestions {
   constructor() {
-    this.questions_map = {}
+    this.questions_map = new Map()
+
     this.stream = new WritableStream({
       start: this.start.bind(this),
       write: this.write.bind(this),
       close: this.close.bind(this),
     })
-    this.question_count = 0
+
+    this.questions_loaded_count = 0
+
+    this.questions_visible_count = 0
+    this.questions_visible_max = 50
+
     this.questions_element = DIV({'id': 'questions'})
     this.progress_element = DIV()
     this.question_objects = []
-    this.max_load_questions = 10
-
   }
   start(controller) {
     this.start_time = Date.now()
   }
   write(chunk, controller) {
-    this.questions_map[chunk['uuid']] = chunk
-    this.question_count += 1
-    let percent_loaded = (this.question_count / TOTAL_QUESTIONS * 100)
+    let uuid = chunk['uuid']
+
+    if (this.questions_map.has(uuid))
+      console.log(`questions_map got duplicate uuid: ${uuid}`)
+    else
+      this.questions_map.set(uuid,  chunk)
+
+    this.questions_loaded_count += 1
+    let percent_loaded = (this.questions_loaded_count / TOTAL_QUESTIONS * 100)
     let percent_loaded_string = percent_loaded.toFixed(0) + "%"
-    let fraction_string = `(${this.question_count}/${TOTAL_QUESTIONS})`
+    let fraction_string = `(${this.questions_loaded_count}/${TOTAL_QUESTIONS})`
     let prefix = "Total Questions Loaded: "
     this.progress_element.textContent = [
       prefix, percent_loaded_string, fraction_string
     ].join(' ')
 
-    if (this.question_count <= this.max_load_questions) {
-      let obj = Question.from_json(chunk)
-      this.question_objects.push(obj)
-      this.questions_element.appendChild(obj.element)
+    if (this.questions_visible_count < this.questions_visible_max) {
+      let question_obj = Question.from_json(chunk)
+      if (question_obj.is_selected_by_filters()) {
+        this.questions_element.appendChild(question_obj.element)
+        this.questions_visible_count += 1
+      }
     }
   }
   close(controller) {
@@ -67,10 +92,11 @@ class StoreQuestions {
   }
 }
 
+const migrate = new Migrate()
 const storage = new Storage()
+new Users()
 const progress = new Progress()
 const filters = new Filters()
-//const users = new UsersRow()
 const store_questions = new StoreQuestions()
 
 window.onload = async () => {
@@ -79,7 +105,6 @@ window.onload = async () => {
   progress.initialize()
   filters.initialize()
 
-  //document.querySelector("#control-panel").appendChild(users.element)
   document.querySelector("#control-panel").appendChild(filters.element)
   document.querySelector("#control-panel").appendChild(store_questions.progress_element)
   document.querySelector('#content').appendChild(store_questions.questions_element)

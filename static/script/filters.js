@@ -2,12 +2,21 @@
 
 class UserFilters {
   constructor() {
-    this.exam = EXAMS.length - 1
-    this.superdomains = [/* all super domain indices */]
-    this.domains = [/* all domain indices */]
-    this.subdomain = [/* all subdomain indices */]
-    this.difficulties = [/* all difficulty letters */]
-    this.answer_types = [/* all answer_type codes */]
+    // only one can be selected
+    this.exam = EXAMS.length - 1 // index
+    this.superdomain = SUPERDOMAINS.length - 1 // index
+
+    // multiple can be selected
+    this.domains = UserFilters.matching_domains(this.superdomain) // index
+    this.subdomains = UserFilters.matching_subdomains(this.domains) // index
+    this.difficulties = DIFFICULTIES // letter
+    this.answer_types = ANSWER_TYPES // acronym
+  }
+  static matching_domains(superdomain) {
+    return [... new Set(CLASSIFICATIONS.filter(r => r.superdomain.index===superdomain).map(r => r.domain.index))]
+  }
+  static matching_subdomains(domains) {
+    return [... new Set(CLASSIFICATIONS.filter(r => domains.includes(r.domain.index)).map(r => r.subdomain.index))]
   }
 }
 
@@ -27,6 +36,53 @@ class ExamFilter {
     let index = this.element.value
     let user_filters = Filters.get_current_user_filters()
     user_filters.exam = index
+    Filters.set_current_user_filters(user_filters)
+  }
+}
+
+class Cell {
+  constructor(text, superdomain, domain=null, subdomain=null, difficulty=null) {
+    // all arguments are indices
+    this.superdomain = superdomain
+    this.domain = domain
+    this.subdomain = subdomain
+    this.difficulty = difficulty
+
+    this.domains = (domain === null) ? UserFilters.matching_domains(this.superdomain) : [domain]
+    this.subdomains = (subdomain === null) ? UserFilters.matching_subdomains(this.domains) : [subdomain]
+    this.difficulties = (difficulty === null) ? DIFFICULTIES : [difficulty]
+
+    this.element = ELEMENT('td',
+      {
+        'class':'filter-cell',
+        'selected': this.is_selected_by_filters()
+      }, text, null, {
+      'click': this.click.bind(this)
+    })
+
+    storage.when_set('filters', (_) => {
+      this.element.setAttribute('selected', this.is_selected_by_filters())
+    })
+    storage.when_set('current_user', (_) => {
+      this.element.setAttribute('selected', this.is_selected_by_filters())
+    })
+  }
+  is_selected_by_filters() {
+    let user_filters = Filters.get_current_user_filters()
+    return (
+      user_filters.superdomain === this.superdomain &&
+      (user_filters.domains.includes(this.domain) || this.domain === null) &&
+      (user_filters.subdomains.includes(this.subdomain) || this.subdomain === null) &&
+      (user_filters.difficulties.includes(this.difficulty) || this.difficulty === null)
+    )
+  }
+  click(e) {
+    console.log(`superdomain=${this.superdomain} domains=${this.domains} subdomains=${this.subdomains} difficulties=${this.difficulties}`)
+    let user_filters = Filters.get_current_user_filters()
+    user_filters.superdomain = this.superdomain
+    user_filters.domains = this.domains
+    user_filters.subdomains = this.subdomains
+    user_filters.difficulties = this.difficulties
     Filters.set_current_user_filters(user_filters)
   }
 }
@@ -55,7 +111,6 @@ class Filters {
       storage.get("users").map(user => [user, new UserFilters()])
     ))
 
-    let row_elements = []
 
     let rowspans = {}
     for (let row of CLASSIFICATIONS) {
@@ -63,6 +118,7 @@ class Filters {
       rowspans[row.domain.name] = (rowspans[row.domain.name] ?? 0) + 1
     }
 
+    let row_elements = []
     for (let row of CLASSIFICATIONS) {
       let superdomain = row.superdomain.name
       let domain = row.domain.name
@@ -70,53 +126,27 @@ class Filters {
 
       let superdomain_element = EMPTY_ELEMENT
       if (superdomain in rowspans) {
-        superdomain_element = ELEMENT(
-          "td",
-          {"class":"superdomain","rowspan":rowspans[superdomain]},
-          superdomain,
-          null,
-          {'click': () => {
-            console.log(`filtering: "${superdomain}"`)
-          }
-        })
+        superdomain_element = (new Cell(row.superdomain.name, row.superdomain.index)).element
+        superdomain_element.setAttribute('rowspan', rowspans[superdomain])
         delete rowspans[superdomain]
       }
 
       let domain_element = EMPTY_ELEMENT
       if (domain in rowspans) {
-        domain_element = ELEMENT(
-          "td",
-          {"class":"domain","rowspan":rowspans[domain]},
-          domain,
-          null,
-          {'click': () => {
-            console.log(`filtering: "${superdomain}" > "${domain}"`)
-          }
-        })
+        domain_element = (new Cell(row.domain.name, row.superdomain.index, row.domain.index)).element
+        domain_element.setAttribute('rowspan', rowspans[domain])
         delete rowspans[domain]
       }
 
-      let subdomain_element = ELEMENT(
-        "td",
-        {"class":"subdomain"},
-        subdomain,
-        null,
-        {
-          'click': () => {
-            console.log(`filtering: "${superdomain}" > "${domain}" > "${subdomain}"`)
-          }
-        }
-      )
+      let subdomain_element = (new Cell(row.subdomain.name, row.superdomain.index, row.domain.index, row.subdomain.index)).element
 
       let row_element = ELEMENT("tr", null, null, [
         superdomain_element,
         domain_element,
         subdomain_element,
-        ...DIFFICULTIES.map(d => {
-          return ELEMENT("td", {"class":"difficulty"}, "?", null, {'click': () => {
-            console.log(`filtering: "${superdomain}" > "${domain}" > "${subdomain}" > "${d}"`)
-          }})
-        })
+        ...DIFFICULTIES.map(
+          d => (new Cell('?', row.superdomain.index, row.domain.index, row.subdomain.index, d)).element
+        )
       ])
       row_elements.push(row_element)
     }

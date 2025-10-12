@@ -86,13 +86,11 @@ body {
       td {
         border-top: 1px solid black;
         border-bottom: 1px solid black;
-        padding: 2px 5px 2px 5px;
-        &.subdomain, &.domain {
-          padding-left: 0px;
+        padding: 3px;
+        &.filter-cell:hover, &.filter-cell[selected="true"] {
+          box-shadow: inset 0px 0px 0px 2px black;
         }
-        &.superdomain:hover, &.domain:hover, &.subdomain:hover, &.difficulty:hover {
-          box-shadow: 0px 0px 0px 3px black;
-        }
+        cursor: pointer;
       }
     }
     thead td {
@@ -317,7 +315,7 @@ body {
   .question-checkmark:hover span::after {
     content: "✗";
   }
-  .question-checkmark[invisible] {
+  .question-checkmark[invisible="true"] {
     visibility: hidden;
   }
   .question-index {
@@ -352,13 +350,9 @@ body {
     flex-basis: 6in;
   }
   .answer-option {
-    &:hover {
+    &:hover, &[wrong] {
       text-decoration: line-through var(--red) 2px;
-      filter: brightness(100%);
-    }
-    &[wrong] {
-      text-decoration: line-through var(--red) 2px;
-      filter: brightness(50%);
+      color: red;
     }
   }
 

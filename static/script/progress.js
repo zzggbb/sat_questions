@@ -30,13 +30,30 @@ class Progress {
     return answered[user]
   }
 
+  static is_answered_by_current_user(uuid) {
+    return Progress.get_current_user_answered().includes(uuid)
+  }
+
+  static remove_current_user_answered(question_uuid) {
+    let answered = storage.get("answered")
+    let current_user = storage.get("current_user")
+
+    let index = answered[current_user].indexOf(question_uuid)
+    if (index == -1)
+      console.warn(`${current_user} hasn't answered ${question_uuid}`)
+    answered[current_user].splice(index, 1)
+
+    storage.set("answered", answered)
+  }
+
   static mark_current_user_answered(question_uuid) {
     let answered = storage.get("answered")
     let current_user = storage.get("current_user")
+
     if (answered[current_user].includes(question_uuid))
       return
-
     answered[current_user].push(question_uuid)
+
     storage.set("answered", answered)
   }
 }

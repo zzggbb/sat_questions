@@ -107,19 +107,19 @@ class Schema:
         df.to_pickle(path)
 
 @pipeline.add_stage
-class Metaquestions:
+class QuestionsMeta:
   cancel_downstream = False
   #force_run = True
-  wdir = ROOT / "pipeline" / "Metaquestions"
+  wdir = ROOT / "pipeline" / "QuestionsMeta"
 
   def required_paths():
     return Schema.produced_paths()
 
   def produced_paths():
-    return Metaquestions.wdir / f"metaquestions.pickle"
+    return QuestionsMeta.wdir / f"questions_meta.pickle"
 
   def run():
-    exams, classifications = map(pd.read_pickle, Metaquestions.required_paths().values())
+    exams, classifications = map(pd.read_pickle, QuestionsMeta.required_paths().values())
 
     def get_subdomain_obj(row):
       original_subdomain_name = row['skill_desc']
@@ -135,8 +135,8 @@ class Metaquestions:
       classifications.groupby(['superdomain', 'domain']).groups.keys()
     ):
       with logger.timer(' > '.join([exam.short_name, superdomain.name, domain.name])):
-        metaquestions = qbank.get_metaquestions(exam, superdomain, domain)
-        mq_df = pd.DataFrame(metaquestions)
+        questions_meta = qbank.get_questions_meta(exam, superdomain, domain)
+        mq_df = pd.DataFrame(questions_meta)
         mq_df['exam'] = exam
         mq_df['superdomain'] = superdomain
         mq_df['domain'] = domain
@@ -160,7 +160,7 @@ class Metaquestions:
 
         df = pd.concat([df, mq_df], ignore_index=True)
 
-    df.to_pickle(Metaquestions.produced_paths())
+    df.to_pickle(QuestionsMeta.produced_paths())
 
 @pipeline.add_stage
 class QuestionCounts:
@@ -169,16 +169,16 @@ class QuestionCounts:
   wdir = ROOT / "pipeline" / "QuestionCounts"
 
   def required_paths():
-    return Metaquestions.produced_paths()
+    return QuestionsMeta.produced_paths()
 
   def produced_paths():
     return QuestionCounts.wdir / "question_counts.html"
 
   def run():
-    metaquestions = pd.read_pickle(QuestionCounts.required_paths())
+    questions_meta = pd.read_pickle(QuestionsMeta.produced_paths())
     cross_table = pd.crosstab(
-      [metaquestions.superdomain, metaquestions.domain, metaquestions.subdomain],
-      metaquestions.exam
+      [questions_meta.superdomain, questions_meta.domain, questions_meta.subdomain],
+      questions_meta.exam
     )
     html = cross_table.replace(0, 'NONE').to_html(
       formatters={
@@ -207,6 +207,38 @@ class QuestionCounts:
     with open(QuestionCounts.produced_paths(), 'w') as f:
       print(out, file=f)
 
+
+@pipeline.add_stage
+class QuestionsMain:
+  cancel_downstream = False
+  wdir = ROOT / "pipeline" / "QuestionsMain"
+
+  def required_paths():
+    return QuestionsMeta.produced_paths()
+
+  def produced_paths():
+    return QuestionsMain.wdir / "questions_main.pickle"
+
+  def run():
+    questions_meta = pd.read_pickle(QuestionsMeta.produced_paths())
+    logger.log(f"shape={questions_meta.shape} columns={questions_meta.columns}")
+
+    n_questions = len(questions_meta)
+    questions_main = []
+    questions_meta = questions_meta.to_dict(orient='records')
+    with logger.timer("downloading question main data", end="...\n"):
+      with multiprocessing.Pool() as pool:
+        for i, (question_meta, question_main) in enumerate(zip(
+          questions_meta,
+          pool.imap(qbank.get_question_main, questions_meta)
+        )):
+          questions_main.append(question_main)
+          percent = i/n_questions*100
+          line_status = f"{i:04}/{n_questions} {percent:05.1f}%"
+          logger.log(f"{line_status}", end='\r')
+
+      pickle.dump(questions_main, open(QuestionsMain.produced_paths(), 'wb'))
+
 @pipeline.add_stage
 class Questions:
   cancel_downstream = False
@@ -214,48 +246,63 @@ class Questions:
   wdir = ROOT / "pipeline" / "Questions"
 
   def required_paths():
-    return Metaquestions.produced_paths()
+    return {
+      'meta': QuestionsMeta.produced_paths(),
+      'main': QuestionsMain.produced_paths()
+    }
 
   def produced_paths():
     return Questions.wdir / f"questions.pickle"
 
   def run():
-    metaquestions = pd.read_pickle(Metaquestions.produced_paths())
-    logger.log(f"shape={metaquestions.shape} columns={metaquestions.columns}")
+    questions_meta = pd.read_pickle(Questions.required_paths()['meta']).to_dict(orient='records')
+    questions_main = pickle.load(open(Questions.required_paths()['main'], 'rb'))
+    n_questions = len(questions_meta)
 
-    n_questions = len(metaquestions)
     questions = []
+    question_copies = {}
 
-    metaquestions = metaquestions.to_dict(orient='records')
+    index = 0
+    for dirty_index, (question_meta, question_main) in enumerate(zip(
+      questions_meta,
+      questions_main
+    )):
+      question = models.Question(
+        index = index,
+        index_within_domain = question_meta['index_within_domain'],
+        exam = question_meta['exam'],
+        superdomain = question_meta['superdomain'],
+        domain = question_meta['domain'],
+        subdomain = question_meta['subdomain'],
+        difficulty = question_meta['difficulty'],
 
-    with multiprocessing.Pool() as pool:
-      for i, (metadata, maindata) in enumerate(zip(
-        metaquestions,
-        pool.imap(qbank.get_question_maindata, metaquestions)
-      )):
-        question = models.Question(
-          index = i,
-          index_within_domain = metadata['index_within_domain'],
-          exam = metadata['exam'],
-          superdomain = metadata['superdomain'],
-          domain = metadata['domain'],
-          subdomain = metadata['subdomain'],
-          answer_type = maindata['answer_type'],
-          difficulty = metadata['difficulty'],
+        stimulus = question_main['stimulus'],
+        stem = question_main['stem'],
+        options = question_main['options'],
+        correct_answer = question_main['correct_answer'],
+        rationale = question_main['rationale']
+      )
 
-          stimulus = maindata['stimulus'],
-          stem = maindata['stem'],
-          options = maindata['options'],
-          correct_answer = maindata['correct_answer'],
-          rationale = maindata['rationale']
-        )
-        questions.append(question)
+      if question.uuid not in question_copies:
+        question_copies[question.uuid] = 0
 
-        percent = i/n_questions*100
-        line_status = f"{i:04}/{n_questions} {percent:05.1f}%"
-        logger.log(f"{line_status}", end='\r')
+      question_copies[question.uuid] += 1
+
+      if question_copies[question.uuid] > 1:
+        continue
+
+      index += 1
+      questions.append(question)
+      percent = dirty_index/n_questions*100
+      line_status = f"{dirty_index:04}/{n_questions} {percent:05.1f}%"
+      logger.log(f"{line_status}", end='\r')
 
     pickle.dump(questions, open(Questions.produced_paths(), 'wb'))
+
+    print()
+    for uuid, count in question_copies.items():
+      if count > 1:
+        print(f"Question {uuid}: found {count} copies")
 
 @pipeline.add_stage
 class QuestionsJSON:
@@ -296,17 +343,15 @@ class FrontendData:
     exams = pd.read_pickle(FrontendData.required_paths()['exams'])
     classifications = pd.read_pickle(FrontendData.required_paths()['classifications'])
 
-    exams_json = exams.to_json(orient='records', indent=2)
-    classifications_json = classifications.to_json(orient='records', indent=2)
-    difficulties_json = json.dumps(list(models.Difficulty.values()), indent=2)
-    answer_types_json = json.dumps(list(models.AnswerType.values()), indent=2)
-
     out = dict(
       TOTAL_QUESTIONS = len(questions),
-      EXAMS = exams_json,
-      CLASSIFICATIONS = classifications_json,
-      DIFFICULTIES = difficulties_json,
-      ANSWER_TYPES = answer_types_json
+      EXAMS = exams.to_json(orient='records', indent=2),
+      CLASSIFICATIONS = classifications.to_json(orient='records', indent=2),
+      SUPERDOMAINS = json.dumps(list(classifications.superdomain.unique()), indent=2, default=dict),
+      DOMAINS = json.dumps(list(classifications.domain.unique()), indent=2, default=dict),
+      SUBDOMAINS = json.dumps(list(classifications.subdomain), indent=2, default=dict),
+      DIFFICULTIES = json.dumps(list(models.Difficulty.values()), indent=2),
+      ANSWER_TYPES = json.dumps(list(models.AnswerType.values()), indent=2)
     )
     out = '\n'.join(f"const {k} = {v}" for k, v in out.items())
     with open(FrontendData.produced_paths(), 'w') as f:

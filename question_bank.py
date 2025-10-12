@@ -36,7 +36,7 @@ def get_lookup():
     assert key in data
     return data[key]
 
-def get_metaquestions(exam: models.Exam,
+def get_questions_meta(exam: models.Exam,
                       superdomain: models.Superdomain,
                       domain: models.Domain):
   url = URLS['questions']
@@ -69,11 +69,11 @@ def get_metaquestions(exam: models.Exam,
     ]
   """
 
-  with ok_response_json(response) as metaquestions:
-    return metaquestions
+  with ok_response_json(response) as questions_meta:
+    return questions_meta
 
-def get_eid_question(metaquestion: dict):
-  external_id = metaquestion['external_id']
+def get_eid_question(question_meta: dict):
+  external_id = question_meta['external_id']
   url = URLS['question_eid']
   method = 'POST'
   payload = {
@@ -114,8 +114,8 @@ def get_eid_question(metaquestion: dict):
   with ok_response_json(response) as data:
     return data
 
-def get_ibn_question(metaquestion: dict):
-  ibn = metaquestion['ibn']
+def get_ibn_question(question_meta: dict):
+  ibn = question_meta['ibn']
   url = URLS['question_ibn'].format(ibn=ibn)
   method = 'GET'
   response = requests.request(method, url, headers=HEADERS)
@@ -138,23 +138,23 @@ def get_ibn_question(metaquestion: dict):
     assert len(data) == 1
     return data[0]
 
-def get_question_maindata(metaquestion):
-  ibn = metaquestion['ibn']
-  eid = metaquestion['external_id']
+def get_question_main(question_meta):
+  ibn = question_meta['ibn']
+  eid = question_meta['external_id']
   method = get_eid_question if (ibn is None) else get_ibn_question
-  maindata = method(metaquestion)
+  question_main = method(question_meta)
 
-  if 'item_id' in maindata:
-    identifier = maindata['item_id']
-    stimulus = maindata.get('body', '')
-    stem = maindata.get('prompt', '')
-    rationale = maindata['answer']['rationale']
+  if 'item_id' in question_main:
+    identifier = question_main['item_id']
+    stimulus = question_main.get('body', '')
+    stem = question_main.get('prompt', '')
+    rationale = question_main['answer']['rationale']
 
-    qtype = maindata['answer']['style']
+    qtype = question_main['answer']['style']
     if qtype == 'Multiple Choice':
-      options = [option['body'] for option in maindata['answer']['choices'].values()]
-      if 'correct_choice' in maindata['answer']:
-        correct_answer = maindata['answer']['correct_choice'].upper()
+      options = [option['body'] for option in question_main['answer']['choices'].values()]
+      if 'correct_choice' in question_main['answer']:
+        correct_answer = question_main['answer']['correct_choice'].upper()
       else:
         needle = r'Choice ([A-Z]) is correct'
         search_result = re.search(needle, rationale)
@@ -170,29 +170,26 @@ def get_question_maindata(metaquestion):
     else:
       raise RuntimeError(f"Unexpected question type {qtype}")
 
-  elif 'externalid' in maindata:
-    identifier = maindata['externalid']
-    stimulus = maindata.get('stimulus', '')
-    stem = maindata['stem']
-    rationale = maindata['rationale']
+  elif 'externalid' in question_main:
+    identifier = question_main['externalid']
+    stimulus = question_main.get('stimulus', '')
+    stem = question_main['stem']
+    rationale = question_main['rationale']
 
-    qtype = maindata['type']
+    qtype = question_main['type']
     if qtype == 'mcq':
-      options = [option['content'] for option in maindata ['answerOptions']]
+      options = [option['content'] for option in question_main ['answerOptions']]
     elif qtype == 'spr':
       options = []
     else:
       raise RuntimeError(f"Unexpected question type {qtype}")
 
-    correct_answer = ', '.join(maindata['correct_answer'])
+    correct_answer = ', '.join(question_main['correct_answer'])
 
   else:
-    raise RuntimeError(f"Question maindata had no 'item_id' or 'externalid'")
-
-  answer_type = models.AnswerType['MCQ'] if len(options) > 0 else models.AnswerType['FRQ']
+    raise RuntimeError(f"question_main had no 'item_id' or 'externalid'")
 
   return {
-    'answer_type': answer_type,
     'stimulus': stimulus,
     'stem': stem,
     'options': options,

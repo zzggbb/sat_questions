@@ -233,19 +233,26 @@ class Question:
 
   '''
   Unique identifier for the question based on its contents. Composed of:
-    "{domain.acronym}-{MD5 hash of question's maindata}"
-  When the collegeboard updates the question set, they don't add them at the end
-  of the list. They insert them into the list at random points. So `index` will
-  not necessarily refer to the same question after an update. This necessitates
-  having a UUID that is based on the content of the question.
+    "{exam.short_name}-{MD5 hash of question's maindata}"
+
+  This is based on two quirks of the collegeboard:
+  1. When the collegeboard updates the question set, they don't add new
+     questions to the end of the list. They insert them into the list at random
+     points. So `index` will not necessarily refer to the same question after an
+     update. This necessitates having a UUID that is based on the content of the
+     question.
+  2. The collegeboard reuses questions between the P89/P10/SAT exams. Each copy
+     has identical content, they only differ in difficulty. A question that is
+     easy on the SAT might be medium on the P10 and hard on the P89. Not all
+     question are re-used 3 times.
   '''
   uuid: str = field(init=False)
   exam: Exam
   superdomain: Superdomain
   domain: Domain
   subdomain: Subdomain
-  answer_type: AnswerType
-  difficulty: Difficulty
+  answer_type: str = field(init=False)
+  difficulty: str
 
   ''' Maindata '''
 
@@ -278,7 +285,8 @@ class Question:
       self.rationale
     ])
     md5_hash = hashlib.md5(main_data_combined.encode()).hexdigest()
-    self.uuid = f'{self.domain.acronym}-{md5_hash}'
+    self.uuid = f'{self.exam.short_name}-{md5_hash}'
+    self.answer_type = AnswerType['MCQ'] if len(self.options) > 0 else AnswerType['FRQ']
 
   def __iter__(self):
     for k, v in self.__dict__.items():

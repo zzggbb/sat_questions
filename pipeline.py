@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 
 class Pipeline:
@@ -14,8 +15,12 @@ class Pipeline:
       if cancel_downstream:
         break
 
-  def run(self, name, force=False):
+  def run(self, name, force=False, show_duration=True):
     stage = self.stages[name]
+    show_duration = getattr(stage, 'show_duration', show_duration)
+
+    time_start = time.time()
+
     if hasattr(stage, 'wdir'):
       stage.wdir.mkdir(exist_ok=True, parents=True)
 
@@ -48,6 +53,7 @@ class Pipeline:
     force = getattr(stage, 'force_run', force)
     force_string = f" [force]" if force else ''
 
+
     if all(path.exists() for path in produced_paths.values()) \
         and not upstream_changed \
         and not force:
@@ -55,7 +61,9 @@ class Pipeline:
     else:
       print(f"[{name}]{force_string} Started running...")
       stage.run()
-      print(f"[{name}] Finished running.")
+      duration = time.time() - time_start
+      duration_string = f" [{duration:.2f} (s)]" if show_duration else ''
+      print(f"[{name}] Finished running.{duration_string}")
 
     cancel_downstream = getattr(stage, 'cancel_downstream', False)
     return cancel_downstream

@@ -94,8 +94,8 @@ class UserDelete {
     let index = users.indexOf(target_user)
     users.splice(index, 1)
     let fallback_user = users[users.length - 1]
-    storage.set("users", users)
     storage.set("current_user", fallback_user)
+    storage.set("users", users)
   }
 }
 

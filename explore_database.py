@@ -8,7 +8,7 @@ import json
 
 # project local
 import models
-from stages import Schema, Metaquestions, Questions
+from stages import Schema, QuestionsMeta, QuestionsMain, Questions, QuestionsJSON
 from models import Exam, Superdomain, Domain, Subdomain
 
 # 3rd party
@@ -22,9 +22,10 @@ def repl(namespace):
     code.interact(local=namespace, banner='', exitmsg='')
 
 exams, classifications = map(pd.read_pickle, Schema.produced_paths().values())
-metaquestions = pd.read_pickle(Metaquestions.produced_paths())
+questions_meta = pd.read_pickle(QuestionsMeta.produced_paths())
 questions = pickle.load(open(Questions.produced_paths(), 'rb'))
+questions_json = open(QuestionsJSON.produced_paths()).read().splitlines()
 
-print("locals: exams classifications metaquestions questions")
+print("locals: exams classifications questions_meta questions questions_json")
 
 repl(locals())
