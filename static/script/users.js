@@ -103,33 +103,11 @@ class Users {
   constructor() {
     storage.initialize("users", [ANONYMOUS])
     storage.initialize("current_user", ANONYMOUS)
-  }
-}
-
-class UsersRow extends Users {
-  constructor() {
-    super()
     this.element = DIV({"class": "flex-row"}, null, [
       (new UserSelect()).element,
       (new UserDelete()).element,
       (new UserInput()).element,
       (new UserAdd()).element,
-    ])
-  }
-}
-
-class UsersCompact extends Users {
-  constructor() {
-    super()
-    this.element = DIV({"id": "user-panel"}, null, [
-      DIV({"class":"flex-row"}, null, [
-        (new UserSelect()).element,
-        (new UserDelete()).element,
-      ]),
-      DIV({"class":"flex-row"}, null, [
-        (new UserInput()).element,
-        (new UserAdd()).element,
-      ])
     ])
   }
 }

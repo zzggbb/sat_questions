@@ -37,6 +37,11 @@ class ExamFilter {
     let user_filters = Filters.get_current_user_filters()
     user_filters.exam = index
     Filters.set_current_user_filters(user_filters)
+
+    //This really should be handled by a when_set("filters"), but
+    // currently when_set doesn't allow detecting changes to sub-objects;
+    // We really only want to trigger this when storage.filters.exam changes
+    Filters.update_answered_counts()
   }
 }
 
@@ -55,19 +60,23 @@ class Cell {
     this.element = ELEMENT('td',
       {
         'class':'filter-cell',
-        'selected': this.is_selected_by_filters()
-      }, text, null, {
+        'selected': this.matches_filters()
+      },
+      text,
+      null,
+      {
       'click': this.click.bind(this)
-    })
+      }
+    )
 
     storage.when_set('filters', (_) => {
-      this.element.setAttribute('selected', this.is_selected_by_filters())
+      this.element.setAttribute('selected', this.matches_filters())
     })
     storage.when_set('current_user', (_) => {
-      this.element.setAttribute('selected', this.is_selected_by_filters())
+      this.element.setAttribute('selected', this.matches_filters())
     })
   }
-  is_selected_by_filters() {
+  matches_filters() {
     let user_filters = Filters.get_current_user_filters()
     return (
       user_filters.superdomain === this.superdomain &&
@@ -76,8 +85,30 @@ class Cell {
       (user_filters.difficulties.includes(this.difficulty) || this.difficulty === null)
     )
   }
+  get_n_matching_questions() {
+    let current_user_filters = Filters.get_current_user_filters()
+    let matches = 0
+    for (let uuid of Progress.get_current_user_answered()) {
+      if (!question_viewer.map.has(uuid)) {
+        console.warn(`User ${storage.get("current_user")} answered deleted question ${uuid}`)
+        continue
+      }
+      let question = question_viewer.map.get(uuid)
+      let filters = {
+        exam: current_user_filters.exam,
+        superdomain: this.superdomain,
+        domains: this.domains,
+        subdomains: this.subdomains,
+        difficulties: this.difficulties,
+        answer_types: ANSWER_TYPES,
+      }
+      if (question.matches_filters(filters))
+        matches += 1
+    }
+    return matches
+  }
   click(e) {
-    console.log(`superdomain=${this.superdomain} domains=${this.domains} subdomains=${this.subdomains} difficulties=${this.difficulties}`)
+    console.log(`${this.superdomain} > ${this.domains} > ${this.subdomains} > ${this.difficulties}`)
     let user_filters = Filters.get_current_user_filters()
     user_filters.superdomain = this.superdomain
     user_filters.domains = this.domains
@@ -105,6 +136,13 @@ class Filters {
       storage.set('filters', filters)
     })
 
+    storage.when_set("current_user", (_) => {
+      this.update_answered_counts()
+    })
+
+    storage.when_set("answered", (_) => {
+      this.update_answered_counts()
+    })
   }
   initialize() {
     storage.initialize('filters', Object.fromEntries(
@@ -119,36 +157,38 @@ class Filters {
     }
 
     let row_elements = []
+    this.answered_count_cells = []
     for (let row of CLASSIFICATIONS) {
-      let superdomain = row.superdomain.name
-      let domain = row.domain.name
-      let subdomain = row.subdomain.name
+      let superdomain = row.superdomain.index
+      let domain = row.domain.index
+      let subdomain = row.subdomain.index
 
       let superdomain_element = EMPTY_ELEMENT
-      if (superdomain in rowspans) {
-        superdomain_element = (new Cell(row.superdomain.name, row.superdomain.index)).element
-        superdomain_element.setAttribute('rowspan', rowspans[superdomain])
-        delete rowspans[superdomain]
+      if (row.superdomain.name in rowspans) {
+        superdomain_element = (new Cell(row.superdomain.name, superdomain)).element
+        superdomain_element.setAttribute('rowspan', rowspans[row.superdomain.name])
+        delete rowspans[row.superdomain.name]
       }
 
       let domain_element = EMPTY_ELEMENT
-      if (domain in rowspans) {
-        domain_element = (new Cell(row.domain.name, row.superdomain.index, row.domain.index)).element
-        domain_element.setAttribute('rowspan', rowspans[domain])
-        delete rowspans[domain]
+      if (row.domain.name in rowspans) {
+        domain_element = (new Cell(row.domain.name, superdomain, domain)).element
+        domain_element.setAttribute('rowspan', rowspans[row.domain.name])
+        delete rowspans[row.domain.name]
       }
 
-      let subdomain_element = (new Cell(row.subdomain.name, row.superdomain.index, row.domain.index, row.subdomain.index)).element
+      let subdomain_element = (new Cell(row.subdomain.name, superdomain, domain, subdomain)).element
+
+      let difficulty_cells = DIFFICULTIES.map(
+        difficulty => new Cell('?', superdomain, domain, subdomain, difficulty)
+      )
+      let difficulty_elements = difficulty_cells.map(o => o.element)
 
       let row_element = ELEMENT("tr", null, null, [
-        superdomain_element,
-        domain_element,
-        subdomain_element,
-        ...DIFFICULTIES.map(
-          d => (new Cell('?', row.superdomain.index, row.domain.index, row.subdomain.index, d)).element
-        )
+        superdomain_element, domain_element, subdomain_element, ...difficulty_elements
       ])
       row_elements.push(row_element)
+      this.answered_count_cells.push(...difficulty_cells)
     }
 
     this.element = DIV(null, null, [
@@ -157,19 +197,20 @@ class Filters {
           ELEMENT("tr", null, null, [
             ELEMENT("td", {"colspan":"3"}, null, [
               DIV({"class":"flex-row"}, null, [
-                (new UserSelect()).element,
-                (new UserDelete()).element,
-                (new UserInput()).element,
-                (new UserAdd()).element,
+                users.element,
                 (new ExamFilter()).element,
               ])
             ]),
-            ...DIFFICULTIES.map(d => ELEMENT("td", {"class":`difficulty-${d}`}))
+            ...DIFFICULTIES.map(difficulty => ELEMENT("td", {"class":`difficulty-${difficulty}`}))
           ])
         ]),
         ELEMENT("tbody", null, null, row_elements)
       ]),
     ])
+  }
+  update_answered_counts() {
+    for (let cell of this.answered_count_cells)
+      cell.element.textContent = cell.get_n_matching_questions()
   }
   static get_current_user_filters() {
     let user = storage.get("current_user")

@@ -30,7 +30,7 @@ function ELEMENT(tag, attributes=null, text_content=null, children=null,
                  event_handlers=null) {
   let e = document.createElement(tag)
 
-  if (attributes)
+  if (attributes !== null)
     for (let [k, v] of Object.entries(attributes)) {
       e.setAttribute(k, v)
       if (k === "id")
@@ -54,7 +54,7 @@ function ELEMENT(tag, attributes=null, text_content=null, children=null,
         }
       }
 
-  if (event_handlers)
+  if (event_handlers !== null)
     for (let [event_name, f] of Object.entries(event_handlers))
       e.addEventListener(event_name, f)
 
