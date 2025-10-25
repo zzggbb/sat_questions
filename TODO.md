@@ -1,10 +1,18 @@
 High Priority
 
-    * Frontend: View questions
     * Frontend: Caching questions locally so they don't have to download every time
     * Frontend: Syncing storage data to/from server
 
 Low Priority
+
+    * Set URL param uuid based on current question:
+        let url = new URL(window.location.href)
+        url.searchParams.set("uuid", uuid)
+        window.history.replaceState(null, '', url)
+
+    * Read URL param uuid to set current question:
+        let params = new URLSearchParams(window.location.search)
+        params.get("uuid")
 
     * Backend: Keep a running "changelog" of changes to the quesiton set (deletes, insertions, updates)
 
@@ -31,3 +39,11 @@ Low Priority
         ADV: 13-15 questions
         GAT: 5-7 questions
         (total: 98-100 questions)
+
+Finished
+    * Frontend: View questions
+    * Frontend: filter by MCQ/FRQ
+    * Frontend: Display total questions per difficulty
+    * BUG: clicking on P89>Circles problems displays questions from wrong subdomain,
+           it should display no questions because there aren't any P89>Circle problems!
+

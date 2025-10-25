@@ -33,6 +33,8 @@ function json_to_question() {
 }
 
 const storage = new Storage()
+Migrate.fix_uuids()
+
 const users = new Users()
 const progress = new Progress()
 const filters = new Filters()
@@ -45,6 +47,7 @@ window.onload = async () => {
 
   progress.initialize()
   filters.initialize()
+  question_viewer.initialize()
 
   document.querySelector("#content").appendChild(control_panel.element)
   document.querySelector("#content").appendChild(question_viewer.element)

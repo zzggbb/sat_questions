@@ -65,6 +65,12 @@ function DIV(attributes, text_content=null, children=null, event_handlers=null) 
   return ELEMENT("div", attributes, text_content, children, event_handlers)
 }
 
+function BUTTON(attributes, text_content=null, children=null, event_handlers=null) {
+  let e = ELEMENT("div", attributes, text_content, children, event_handlers)
+  e.classList.add("button")
+  return e
+}
+
 function format_timestamp(time_ms) {
   if (time_ms === null)
     return ["never"]
@@ -90,4 +96,8 @@ function* enumerate(list) {
 function* entries(object) {
   for (let [k, v] of Object.entries(object))
     yield [k, v]
+}
+
+function set_visibility(element, state) {
+  element.setAttribute("visible", state)
 }

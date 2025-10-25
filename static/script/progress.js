@@ -2,6 +2,8 @@
 
 class Progress {
   constructor() {
+    console.log("Progress: constructor")
+
     storage.when_set("users", (users) => {
       let answered = storage.get("answered")
 
@@ -19,6 +21,8 @@ class Progress {
     })
   }
   initialize() {
+    console.log("Progress: initialize")
+
     storage.initialize("answered", Object.fromEntries(
       storage.get("users").map(user => [user, []])
     ))

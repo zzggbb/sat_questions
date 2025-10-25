@@ -20,6 +20,45 @@ class UserFilters {
   }
 }
 
+class AnswerTypeFilter {
+  constructor() {
+    this.element = ELEMENT("select", {"id":"answer-type-select"}, null, [
+      ELEMENT("option", {"value":"0"}, "MCQ"),
+      ELEMENT("option", {"value":"1"}, "FRQ"),
+      ELEMENT("option", {"value":"2"}, "MCQ & FRQ")
+    ], {
+      'change': this.change.bind(this)
+    })
+    this.element.value = AnswerTypeFilter.filter_to_index()
+
+    storage.when_set("current_user", (_) => {
+      this.element.value = AnswerTypeFilter.filter_to_index()
+    })
+  }
+  change(e) {
+    let index = this.element.value
+    let user_filters = Filters.get_current_user_filters()
+    user_filters.answer_types = AnswerTypeFilter.index_to_filter(index)
+    Filters.set_current_user_filters(user_filters)
+  }
+  static index_to_filter(index) {
+    if (index === "2")
+      return ANSWER_TYPES
+    else
+      return ANSWER_TYPES[index]
+  }
+  static filter_to_index() {
+    let filter = Filters.get_current_user_filters().answer_types
+
+    if (ANSWER_TYPES.every(answer_type => filter.includes(answer_type)))
+      return "2"
+
+    for (let [index, answer_type] of enumerate(ANSWER_TYPES))
+      if (filter.includes(answer_type))
+        return index
+  }
+}
+
 class ExamFilter {
   constructor() {
     this.element = ELEMENT("select", {"id":"exam-select"}, null,
@@ -28,7 +67,7 @@ class ExamFilter {
     )
     this.element.value = Filters.get_current_user_filters().exam
 
-    storage.when_set("current_user", (username) => {
+    storage.when_set("current_user", (_) => {
       this.element.value = Filters.get_current_user_filters().exam
     })
   }
@@ -41,7 +80,8 @@ class ExamFilter {
     //This really should be handled by a when_set("filters"), but
     // currently when_set doesn't allow detecting changes to sub-objects;
     // We really only want to trigger this when storage.filters.exam changes
-    Filters.update_answered_counts()
+    filters.update_answered_counts()
+    filters.update_total_counts()
   }
 }
 
@@ -57,16 +97,25 @@ class Cell {
     this.subdomains = (subdomain === null) ? UserFilters.matching_subdomains(this.domains) : [subdomain]
     this.difficulties = (difficulty === null) ? DIFFICULTIES : [difficulty]
 
+    let classes = ['filter-cell']
+    if (difficulty !== null) classes.push('progress-info')
+    else if (subdomain !== null) classes.push('subdomain')
+    else if (domain !== null) classes.push('domain')
+    else if (superdomain !== null) classes.push('superdomain')
+
+    let children = null
+    if (difficulty !== null)
+      children = [
+        DIV({}, null, [
+          DIV({'class': 'answered-questions-count'}, "?"),
+          DIV({'class': 'total-questions-count'}, this.get_total_count())
+        ])
+      ]
+
     this.element = ELEMENT('td',
-      {
-        'class':'filter-cell',
-        'selected': this.matches_filters()
-      },
-      text,
-      null,
-      {
-      'click': this.click.bind(this)
-      }
+      { 'class':classes.join(' '), 'selected': this.matches_filters() },
+      text, children,
+      { 'click': this.click.bind(this) }
     )
 
     storage.when_set('filters', (_) => {
@@ -85,14 +134,13 @@ class Cell {
       (user_filters.difficulties.includes(this.difficulty) || this.difficulty === null)
     )
   }
-  get_n_matching_questions() {
+  get_answered_count() {
     let current_user_filters = Filters.get_current_user_filters()
     let matches = 0
     for (let uuid of Progress.get_current_user_answered()) {
-      if (!question_viewer.map.has(uuid)) {
-        console.warn(`User ${storage.get("current_user")} answered deleted question ${uuid}`)
+      if (!question_viewer.map.has(uuid))
         continue
-      }
+
       let question = question_viewer.map.get(uuid)
       let filters = {
         exam: current_user_filters.exam,
@@ -107,6 +155,19 @@ class Cell {
     }
     return matches
   }
+  update_answered_count() {
+    let count = this.get_answered_count()
+    this.element.children[0].children[0].textContent = (count === 0) ? "-" : count
+  }
+  get_total_count() {
+    let exam_short_name = EXAMS[Filters.get_current_user_filters().exam].short_name
+    let key_string = `(${exam_short_name}, ${this.difficulty})`
+    return QUESTION_COUNTS[this.subdomain][key_string]
+  }
+  update_total_count() {
+    let count = this.get_total_count()
+    this.element.children[0].children[1].textContent = count
+  }
   click(e) {
     console.log(`${this.superdomain} > ${this.domains} > ${this.subdomains} > ${this.difficulties}`)
     let user_filters = Filters.get_current_user_filters()
@@ -120,6 +181,8 @@ class Cell {
 
 class Filters {
   constructor() {
+    console.log("Filters: constructor")
+
     storage.when_set('users', (users) => {
       let filters = storage.get('filters')
 
@@ -143,12 +206,15 @@ class Filters {
     storage.when_set("answered", (_) => {
       this.update_answered_counts()
     })
+
+    this.progress_cells = []
   }
   initialize() {
+    console.log("Filters: initialize")
+
     storage.initialize('filters', Object.fromEntries(
       storage.get("users").map(user => [user, new UserFilters()])
     ))
-
 
     let rowspans = {}
     for (let row of CLASSIFICATIONS) {
@@ -157,7 +223,6 @@ class Filters {
     }
 
     let row_elements = []
-    this.answered_count_cells = []
     for (let row of CLASSIFICATIONS) {
       let superdomain = row.superdomain.index
       let domain = row.domain.index
@@ -180,7 +245,7 @@ class Filters {
       let subdomain_element = (new Cell(row.subdomain.name, superdomain, domain, subdomain)).element
 
       let difficulty_cells = DIFFICULTIES.map(
-        difficulty => new Cell('?', superdomain, domain, subdomain, difficulty)
+        difficulty => new Cell(null, superdomain, domain, subdomain, difficulty)
       )
       let difficulty_elements = difficulty_cells.map(o => o.element)
 
@@ -188,7 +253,7 @@ class Filters {
         superdomain_element, domain_element, subdomain_element, ...difficulty_elements
       ])
       row_elements.push(row_element)
-      this.answered_count_cells.push(...difficulty_cells)
+      this.progress_cells.push(...difficulty_cells)
     }
 
     this.element = DIV(null, null, [
@@ -198,6 +263,7 @@ class Filters {
             ELEMENT("td", {"colspan":"3"}, null, [
               DIV({"class":"flex-row"}, null, [
                 users.element,
+                (new AnswerTypeFilter()).element,
                 (new ExamFilter()).element,
               ])
             ]),
@@ -209,8 +275,10 @@ class Filters {
     ])
   }
   update_answered_counts() {
-    for (let cell of this.answered_count_cells)
-      cell.element.textContent = cell.get_n_matching_questions()
+    for (let cell of this.progress_cells) cell.update_answered_count()
+  }
+  update_total_counts() {
+    for (let cell of this.progress_cells) cell.update_total_count()
   }
   static get_current_user_filters() {
     let user = storage.get("current_user")

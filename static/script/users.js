@@ -101,6 +101,7 @@ class UserDelete {
 
 class Users {
   constructor() {
+    console.log("Users: constructor")
     storage.initialize("users", [ANONYMOUS])
     storage.initialize("current_user", ANONYMOUS)
     this.element = DIV({"class": "flex-row"}, null, [

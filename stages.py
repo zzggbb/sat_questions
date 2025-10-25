@@ -137,6 +137,7 @@ class QuestionsMeta:
       with logger.timer(' > '.join([exam.short_name, superdomain.name, domain.name])):
         questions_meta = qbank.get_questions_meta(exam, superdomain, domain)
         mq_df = pd.DataFrame(questions_meta)
+        mq_df.difficulty = mq_df.difficulty.map(lambda d: models.Difficulty(d))
         mq_df['exam'] = exam
         mq_df['superdomain'] = superdomain
         mq_df['domain'] = domain
@@ -172,40 +173,40 @@ class QuestionCounts:
     return QuestionsMeta.produced_paths()
 
   def produced_paths():
-    return QuestionCounts.wdir / "question_counts.html"
+    return {
+      'html': QuestionCounts.wdir / "question_counts.html",
+      'json': QuestionCounts.wdir / "question_counts.json"
+    }
 
   def run():
     questions_meta = pd.read_pickle(QuestionsMeta.produced_paths())
-    cross_table = pd.crosstab(
+
+    html_detailed = pd.crosstab(
       [questions_meta.superdomain, questions_meta.domain, questions_meta.subdomain],
-      questions_meta.exam
-    )
-    html = cross_table.replace(0, 'NONE').to_html(
-      formatters={
-        'superdomain': str,
-        'domain': str,
-        'subdomain': str
-      },
+      [questions_meta.exam, questions_meta.difficulty]
+    ).replace(0, '-').to_html(
       header=True,
-      table_id = 'question-counts-table'
+      table_id='question-counts-detailed'
     )
-    css = '''
-    <style>
-    #question-counts-table {
-      border-collapse: collapse;
-      td {
-        padding: 1px;
-        text-align: center;
-      }
-      th {
-        vertical-align: middle;
-      }
-    }
-    </style>
-    '''
-    out = f"{html}{css}"
-    with open(QuestionCounts.produced_paths(), 'w') as f:
-      print(out, file=f)
+
+    html_simple = pd.crosstab(
+     [questions_meta.superdomain, questions_meta.domain, questions_meta.subdomain],
+     questions_meta.exam
+    ).replace(0, '-').to_html(
+      header=True,
+      table_id='question-counts-simple'
+    )
+
+    with open(QuestionCounts.produced_paths()['html'], 'w') as f:
+      css = open(ROOT / "static" / "style" / "question-counts.css", "r").read()
+      print(f"{html_detailed}{html_simple}<style>{css}</style>", file=f)
+
+    json = pd.crosstab(
+      questions_meta.subdomain,
+      [questions_meta.exam, questions_meta.difficulty]
+    ).to_json(orient='records', indent=2)
+    with open(QuestionCounts.produced_paths()['json'], 'w') as f:
+      print(json, file=f)
 
 
 @pipeline.add_stage
@@ -274,7 +275,7 @@ class Questions:
         superdomain = question_meta['superdomain'],
         domain = question_meta['domain'],
         subdomain = question_meta['subdomain'],
-        difficulty = question_meta['difficulty'],
+        difficulty = question_meta['difficulty'].letter,
 
         stimulus = question_main['stimulus'],
         stem = question_main['stem'],
@@ -350,8 +351,9 @@ class FrontendData:
       SUPERDOMAINS = json.dumps(list(classifications.superdomain.unique()), indent=2, default=dict),
       DOMAINS = json.dumps(list(classifications.domain.unique()), indent=2, default=dict),
       SUBDOMAINS = json.dumps(list(classifications.subdomain), indent=2, default=dict),
-      DIFFICULTIES = json.dumps(list(models.Difficulty.values()), indent=2),
-      ANSWER_TYPES = json.dumps(list(models.AnswerType.values()), indent=2)
+      DIFFICULTIES = json.dumps(models.DIFFICULTY_LETTERS, indent=2),
+      ANSWER_TYPES = json.dumps(list(models.AnswerType.values()), indent=2),
+      QUESTION_COUNTS = open(QuestionCounts.produced_paths()['json']).read()
     )
     out = '\n'.join(f"const {k} = {v}" for k, v in out.items())
     with open(FrontendData.produced_paths(), 'w') as f:

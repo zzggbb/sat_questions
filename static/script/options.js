@@ -1,3 +1,5 @@
+'use strict';
+
 let OPTION_INDEX = {"A":0, "B":1, "C":2, "D":3}
 
 class Option {

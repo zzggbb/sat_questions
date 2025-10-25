@@ -23,7 +23,7 @@ class Exam:
     return self.index < other.index
 
   def __repr__(self):
-    return f"Exam('{self.short_name}' {self.id})"
+    return self.short_name
 
   def __str__(self):
     return self.short_name
@@ -215,11 +215,24 @@ AnswerType = dict(
   FRQ = 'FRQ',
 )
 
-Difficulty = dict(
-  E = 'E',
-  M = 'M',
-  H = 'H',
-)
+DIFFICULTY_LETTERS = ['E', 'M', 'H']
+
+@dataclass
+class Difficulty:
+  letter: str
+  index: int = field(init=False)
+
+  def __post_init__(self):
+    self.index = DIFFICULTY_LETTERS.index(self.letter)
+
+  def __hash__(self):
+    return hash(self.index)
+
+  def __repr__(self):
+    return self.letter
+
+  def __lt__(self, other):
+    return self.index < other.index
 
 @dataclass
 class Question:
@@ -252,7 +265,7 @@ class Question:
   domain: Domain
   subdomain: Subdomain
   answer_type: str = field(init=False)
-  difficulty: str
+  difficulty: Difficulty
 
   ''' Maindata '''
 

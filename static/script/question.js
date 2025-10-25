@@ -61,43 +61,29 @@ class Question {
     )
 
     this.#element = DIV({'class': 'question-block'}, null, [
-      ELEMENT('details',
-        {
-          'class': 'content-toggle',
-          'open': true,
-        }, null, [
-        ELEMENT('summary', {'class':'question-header'}, null, [
-          question_checkmark_element,
-          ELEMENT('span',
-            {
-              'class': 'question-index',
-              'title': this.uuid,
-            }, this.index
-          ),
-          ELEMENT('span',
-            {
-              'class': 'matches-index',
-            }, this.get_matches_index_string()
-          ),
-          ELEMENT('span',
-            {'class': 'question-classification'},
-            this.get_classification_string()
-          ),
-          ELEMENT('span',
-            {'class': `difficulty-rating difficulty-${this.difficulty}`}
-          )
+      DIV({'class':'question-header'}, null, [
+        question_checkmark_element,
+        ELEMENT('span', {'class': 'question-index'}, `${this.index + 1} / ${TOTAL_QUESTIONS}`),
+        ELEMENT('span', {'class': 'question-uuid'}, this.uuid.slice(0,3) + '...' + this.uuid.slice(-4),
+                null, {'click': ()=> navigator.clipboard.writeText(this.uuid)}),
+        ELEMENT('span',
+          {'class': 'question-classification'},
+          this.get_classification_string()
+        ),
+        ELEMENT('span',
+          {'class': `difficulty-rating difficulty-${this.difficulty}`}
+        )
+      ]),
+      DIV({'class':'question-body'}, null, [
+        DIV({'class':'question-body-item'}, null, [
+          this.stimulus,
+          this.stem,
         ]),
-        DIV({'class':'question-body'}, null, [
-          DIV({'class':'question-body-item'}, null, [
-            this.stimulus,
-            this.stem,
-          ]),
-          this.options.length > 0 ? DIV({'class':'question-body-item'}, null, [
-            options_obj.element
-          ]) : EMPTY_ELEMENT
-        ]),
-        answer_toggle_element
-      ])
+        this.options.length > 0 ? DIV({'class':'question-body-item'}, null, [
+          options_obj.element
+        ]) : EMPTY_ELEMENT
+      ]),
+      answer_toggle_element
     ])
 
     return this.#element
@@ -111,9 +97,6 @@ class Question {
       filters.difficulties.includes(this.difficulty) &&
       filters.answer_types.includes(this.answer_type)
     )
-  }
-  get_matches_index_string() {
-    return `${this.matches_index+1}`
   }
   get_classification_string() {
     let parts = [
