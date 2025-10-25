@@ -164,52 +164,6 @@ class QuestionsMeta:
     df.to_pickle(QuestionsMeta.produced_paths())
 
 @pipeline.add_stage
-class QuestionCounts:
-  cancel_downstream = False
-  #force_run = True
-  wdir = ROOT / "pipeline" / "QuestionCounts"
-
-  def required_paths():
-    return QuestionsMeta.produced_paths()
-
-  def produced_paths():
-    return {
-      'html': QuestionCounts.wdir / "question_counts.html",
-      'json': QuestionCounts.wdir / "question_counts.json"
-    }
-
-  def run():
-    questions_meta = pd.read_pickle(QuestionsMeta.produced_paths())
-
-    html_detailed = pd.crosstab(
-      [questions_meta.superdomain, questions_meta.domain, questions_meta.subdomain],
-      [questions_meta.exam, questions_meta.difficulty]
-    ).replace(0, '-').to_html(
-      header=True,
-      table_id='question-counts-detailed'
-    )
-
-    html_simple = pd.crosstab(
-     [questions_meta.superdomain, questions_meta.domain, questions_meta.subdomain],
-     questions_meta.exam
-    ).replace(0, '-').to_html(
-      header=True,
-      table_id='question-counts-simple'
-    )
-
-    with open(QuestionCounts.produced_paths()['html'], 'w') as f:
-      css = open(ROOT / "static" / "style" / "question-counts.css", "r").read()
-      print(f"{html_detailed}{html_simple}<style>{css}</style>", file=f)
-
-    json = pd.crosstab(
-      questions_meta.subdomain,
-      [questions_meta.exam, questions_meta.difficulty]
-    ).to_json(orient='records', indent=2)
-    with open(QuestionCounts.produced_paths()['json'], 'w') as f:
-      print(json, file=f)
-
-
-@pipeline.add_stage
 class QuestionsMain:
   cancel_downstream = False
   wdir = ROOT / "pipeline" / "QuestionsMain"
@@ -306,6 +260,59 @@ class Questions:
         print(f"Question {uuid}: found {count} copies")
 
 @pipeline.add_stage
+class QuestionCounts:
+  cancel_downstream = False
+  #force_run = True
+  wdir = ROOT / "pipeline" / "QuestionCounts"
+
+  def required_paths():
+    return Questions.produced_paths()
+
+  def produced_paths():
+    return {
+      'html': QuestionCounts.wdir / "question_counts.html",
+      'json': QuestionCounts.wdir / "question_counts.json"
+    }
+
+  def run():
+    questions = pickle.load(open(Questions.produced_paths(), 'rb'))
+
+    df = pd.DataFrame(dict(
+      superdomain=[q.superdomain for q in questions],
+      domain=[q.domain for q in questions],
+      subdomain=[q.subdomain for q in questions],
+      exam=[q.exam for q in questions],
+      difficulty=[q.difficulty for q in questions],
+    ))
+
+    html_detailed = pd.crosstab(
+      [df.superdomain, df.domain, df.subdomain],
+      [df.exam, df.difficulty]
+    ).replace(0, '-').to_html(
+      header=True,
+      table_id='question-counts-detailed'
+    )
+
+    html_simple = pd.crosstab(
+     [df.superdomain, df.domain, df.subdomain],
+     df.exam
+    ).replace(0, '-').to_html(
+      header=True,
+      table_id='question-counts-simple'
+    )
+
+    with open(QuestionCounts.produced_paths()['html'], 'w') as f:
+      css = open(ROOT / "static" / "style" / "question-counts.css", "r").read()
+      print(f"{html_detailed}{html_simple}<style>{css}</style>", file=f)
+
+    json = pd.crosstab(
+      df.subdomain,
+      [df.exam, df.difficulty]
+    ).to_json(orient='records', indent=2)
+    with open(QuestionCounts.produced_paths()['json'], 'w') as f:
+      print(json, file=f)
+
+@pipeline.add_stage
 class QuestionsJSON:
   cancel_downstream = False
   wdir = ROOT / "pipeline" / "Questions"
@@ -334,6 +341,7 @@ class FrontendData:
       'exams': Schema.wdir / "exams.pickle",
       'classifications': Schema.wdir / "classifications.pickle",
       'models': ROOT / "models.py",
+      'counts': QuestionCounts.produced_paths()['json']
     }
 
   def produced_paths():

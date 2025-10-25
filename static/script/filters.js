@@ -161,7 +161,7 @@ class Cell {
   }
   get_total_count() {
     let exam_short_name = EXAMS[Filters.get_current_user_filters().exam].short_name
-    let key_string = `(${exam_short_name}, ${this.difficulty})`
+    let key_string = `(${exam_short_name}, '${this.difficulty}')`
     return QUESTION_COUNTS[this.subdomain][key_string]
   }
   update_total_count() {
