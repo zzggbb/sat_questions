@@ -1,5 +1,6 @@
 ![flowchart of pipeline](pipeline.svg)
 
+```
 ├── docs
 │   ├── example_responses
 │   │   ├── eid_question.json
@@ -52,3 +53,4 @@
 └── stages.py
 
 9 directories, 42 files
+```
