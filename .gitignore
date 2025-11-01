@@ -1,7 +1,5 @@
 __pycache__/
 
 pipeline/*
-!pipeline/FrontendData/frontend_data.js
-!pipeline/Questions/questions.json
-scrapes/
-distilled/
+!pipeline/frontend_data.js
+!pipeline/questions.json

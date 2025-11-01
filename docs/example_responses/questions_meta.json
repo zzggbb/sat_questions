@@ -1,0 +1,19 @@
+[
+  {
+    "updateDate": 1691007959838,
+    "pPcc": "SAT#S",
+    "questionId": "6d99b141",
+    "skill_cd": "S.B.",
+    "score_band_range_cd": 6,
+    "uId": "0053ca91-ad76-40ab-8f72-b5b3ced85bee",
+    "skill_desc": "Lines, angles, and triangles",
+    "createDate": 1691007959838,
+    "program": "SAT",
+    "primary_class_cd_desc": "Geometry and Trigonometry",
+    "ibn": null,
+    "external_id": "dbda3b6a-f820-4919-8708-c6088f04c080",
+    "primary_class_cd": "S",
+    "difficulty": "H"
+  },
+  ...
+]

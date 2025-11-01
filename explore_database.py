@@ -8,8 +8,12 @@ import json
 
 # project local
 import models
-from stages import Schema, QuestionsMeta, QuestionsMain, Questions, QuestionsJSON
-from models import Exam, Superdomain, Domain, Subdomain
+import stages
+from models import (
+  Exam, Superdomain, Domain, Subdomain, Classification,
+  AnswerType, DIFFICULTY_LETTERS, Difficulty,
+  Question
+)
 
 # 3rd party
 import pandas as pd
@@ -21,11 +25,11 @@ def repl(namespace):
     readline.parse_and_bind("tab: complete")
     code.interact(local=namespace, banner='', exitmsg='')
 
-exams, classifications = map(pd.read_pickle, Schema.produced_paths().values())
-questions_meta = pd.read_pickle(QuestionsMeta.produced_paths())
-questions = pickle.load(open(Questions.produced_paths(), 'rb'))
-questions_json = open(QuestionsJSON.produced_paths()).read().splitlines()
+artifacts = stages.pipeline.scan_artifacts()
+for identifier, artifact in artifacts.items():
+  globals()[identifier] = artifact.read()
 
-print("locals: exams classifications questions_meta questions questions_json")
+identifiers = ' '.join(artifacts.keys())
+print(f"variables: identifiers {identifiers}")
 
-repl(locals())
+repl(globals())

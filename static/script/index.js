@@ -52,7 +52,7 @@ window.onload = async () => {
   document.querySelector("#content").appendChild(control_panel.element)
   document.querySelector("#content").appendChild(question_viewer.element)
 
-  let resource = '../pipeline/Questions/questions.json'
+  let resource = '../pipeline/questions.json'
   let options = {
     mode: 'same-origin',
     headers: {

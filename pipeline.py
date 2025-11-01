@@ -1,13 +1,65 @@
+# standard
 import time
+import inspect
+import itertools
 from pathlib import Path
 
+# project local
+import logger
+
+class Artifact:
+  def __init__(self, identifier, default_path, path_or_filename, object_manager):
+    self.identifier = identifier
+
+    if isinstance(path_or_filename, str):
+      self.path = default_path / path_or_filename
+    else:
+      self.path = path_or_filename
+
+    self.object_manager = object_manager
+
+  def get_mtime(self):
+    return self.path.stat().st_mtime
+
+  def exists(self):
+    return self.path.exists()
+
+  def read(self):
+    return self.object_manager.read(self.path)
+
+  def write(self, obj):
+    with logger.timer(f"write {type(obj)} to {self.path}"):
+      self.object_manager.write(obj, self.path)
+
+  def __repr__(self):
+    return f"{self.identifier}"
+
 class Pipeline:
-  def __init__(self):
-    self.stages = {}
+  def __init__(self, default_path):
+    self.default_path = default_path
+    self.stages = dict()
+    self.artifacts = dict()
 
   def add_stage(self, stage):
     self.stages[stage.__name__] = stage
     return stage
+
+  def add_artifact(self, identifier, path_or_filename, object_manager):
+    artifact = Artifact(
+      identifier,
+      self.default_path,
+      path_or_filename,
+      object_manager
+    )
+    self.artifacts[identifier] = artifact
+    return artifact
+
+  def scan_artifacts(self):
+    artifacts = {}
+    for stage in self.stages.values():
+      for (identifier, path_or_filename, object_manager) in stage.produced:
+        artifacts[identifier] = Artifact(identifier, self.default_path, path_or_filename, object_manager)
+    return artifacts
 
   def run_all(self):
     for i, name in enumerate(self.stages.keys()):
@@ -21,31 +73,22 @@ class Pipeline:
 
     time_start = time.time()
 
-    if hasattr(stage, 'wdir'):
-      stage.wdir.mkdir(exist_ok=True, parents=True)
+    for artifact in getattr(stage, 'required', []):
+      self.add_artifact(*artifact)
 
-    required_paths = stage.required_paths()
-    if isinstance(required_paths, Path):
-      required_paths = {'only': required_paths}
-    elif isinstance(required_paths, dict):
-      pass
-    else:
-      raise ValueError(f"stage.required_paths has wrong return type")
+    required_artifacts = [
+      self.artifacts[identifier] for identifier in
+      inspect.signature(stage.run).parameters
+    ]
 
-    produced_paths = stage.produced_paths()
-    if isinstance(produced_paths, Path):
-      produced_paths = {'only': produced_paths}
-    elif isinstance(produced_paths, dict):
-      pass
-    else:
-      raise ValueError(f"stage.produced_paths has wrong return type")
+    produced_artifacts = list(itertools.starmap(self.add_artifact, stage.produced))
 
     upstream_mtime = max(
-      (path.stat().st_mtime for path in required_paths.values() if path.exists()),
+      [artifact.get_mtime() for artifact in required_artifacts if artifact.exists()],
       default=0
     )
     downstream_mtime = min(
-      (path.stat().st_mtime for path in produced_paths.values() if path.exists()),
+      [artifact.get_mtime() for artifact in produced_artifacts if artifact.exists()],
       default=1
     )
     upstream_changed = upstream_mtime > downstream_mtime
@@ -53,14 +96,18 @@ class Pipeline:
     force = getattr(stage, 'force_run', force)
     force_string = f" [force]" if force else ''
 
-
-    if all(path.exists() for path in produced_paths.values()) \
+    if all(artifact.exists() for artifact in produced_artifacts) \
         and not upstream_changed \
         and not force:
       print(f"[{name}] Already produced files; no upstream changes; skipping")
     else:
       print(f"[{name}]{force_string} Started running...")
-      stage.run()
+
+      required_objects = [artifact.read() for artifact in required_artifacts]
+      produced_objects = stage.run(*required_objects)
+      for produced_object, produced_artifact in zip(produced_objects, produced_artifacts):
+        produced_artifact.write(produced_object)
+
       duration = time.time() - time_start
       duration_string = f" [{duration:.2f} (s)]" if show_duration else ''
       print(f"[{name}] Finished running.{duration_string}")

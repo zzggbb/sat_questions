@@ -1,0 +1,28 @@
+{
+  "keys": [
+      "faeacd70-4539-4aad-b1db-67e1f2265bb9"
+  ],
+  "rationale": "ESCAPED HTML",
+  "origin": "manifold",
+  "stem": "ESCAPED HTML",
+  "externalid": "62bc2dfe-0a0c-45ec-a764-c5f84ddbce67",
+  "templateid": "cec7c28f-c417-4bf5-a857-a441ed54e2d0",
+  "vaultid": "d20a75cb-b0e3-42e8-bf52-d342e850550f",
+  "type": "mcq",
+  "answerOptions": [
+    {
+      "id": "ae00d44c-9ee5-4524-aac2-6d8f6118919a",
+      "content": "ESCAPED HTML"
+    }, {
+      "id": "faeacd70-4539-4aad-b1db-67e1f2265bb9",
+      "content": "ESCAPED HTML"
+    }, {
+      "id": "90e604c9-cf62-4f87-a7d5-f1867a3cd081",
+      "content": "ESCAPED HTML"
+    }, {
+      "id": "9bb36dc4-0d54-42b3-87ca-fff4941ae2a0",
+      "content": "ESCAPED HTML"
+    }
+  ],
+  "correct_answer": [ "B" ]
+}
