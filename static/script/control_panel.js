@@ -1,10 +1,8 @@
 'use strict';
 
-class ControlPanel {
-  #element = null
-
+class Clock {
   constructor() {
-    this.time_element = DIV({}, null, null, null)
+    this.element = DIV()
     window.setInterval(
       () => {
         let date = new Date()
@@ -13,18 +11,26 @@ class ControlPanel {
 
         let am_pm = (hours_24 < 12) ? "AM" : "PM"
         let hours_12 = (hours_24 + 11) % 12 + 1
-        this.time_element.textContent = `${hours_12}:${minutes} ${am_pm}`
+
+        let minutes_padded = String(minutes).padStart(2, "0")
+
+        this.element.textContent = `${hours_12}:${minutes_padded} ${am_pm}`
       },
       500
     )
+
   }
+}
+
+class ControlPanel {
+  #element = null
 
   get element() {
     if (this.#element === null)
       this.#element = DIV({"id":"control-panel"}, null, [
         DIV({"class":"flex-row space-between"}, null, [
           question_viewer.all_questions_load_status.element,
-          this.time_element,
+          (new Clock()).element,
           question_viewer.control.element,
           new ToggleButton(true, "hide controls", "show controls", (state) => {
             filters.element.setAttribute("visible", state)
