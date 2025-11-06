@@ -38,13 +38,13 @@ class QuestionViewerControl {
     this.matches_element = DIV({}, "?")
 
     this.element = DIV({"id":"question-viewer-control"}, null, [
-      BUTTON({},"⮜", null, {'click':() => { question_viewer.view_index -= 1 }}),
+      BUTTON({},"◄", null, {'click':() => { question_viewer.view_index -= 1 }}),
       DIV({'class':'flex-row'}, null, [
         this.index_element,
         DIV({}, "/"),
         this.matches_element,
       ]),
-      BUTTON({}, "⮞", null, {'click':() => { question_viewer.view_index += 1 }})
+      BUTTON({}, "►", null, {'click':() => { question_viewer.view_index += 1 }})
     ])
   }
 
