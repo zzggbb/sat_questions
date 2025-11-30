@@ -1,4 +1,7 @@
-![flowchart of pipeline](pipeline.svg)
+# Backend Pipeline Diagram
+![backend pipeline diagram](pipeline.svg)
+
+# File Layout
 
 ```
 ├── docs
