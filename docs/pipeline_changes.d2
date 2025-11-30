@@ -1,0 +1,65 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+Schema: {
+  "exams.pickle"
+  "classifications.pickle"
+}
+
+
+QuestionsMeta: {
+  "questions_meta.pickle"
+}
+Schema."exams.pickle" -> QuestionsMeta: changes
+Schema."classifications.pickle" -> QuestionsMeta: changes
+
+
+QuestionsMain: {
+  "questions_main.pickle"
+}
+QuestionsMeta."questions_meta.pickle" -> QuestionsMain: changes
+
+
+Questions: {
+  "questions.pickle"
+}
+QuestionsMeta."questions_meta.pickle" -> Questions: changes
+QuestionsMain."questions_main.pickle" -> Questions : changes
+
+
+QuestionCounts: {
+  "question_counts.html"
+  "question_counts.json"
+}
+Questions."questions.pickle" -> QuestionCounts : changes
+
+
+QuestionsJSON: {
+  "questions.json"
+}
+Questions."questions.pickle" -> QuestionsJSON : changes
+
+
+"models.py"
+
+FrontendData: {
+  "frontend_data.js"
+}
+Questions."questions.pickle" -> FrontendData: changes
+Schema."exams.pickle" -> FrontendData: changes
+Schema."classifications.pickle" -> FrontendData: changes
+QuestionCounts."question_counts.json" -> FrontendData: changes
+"models.py" -> FrontendData: changes
+
+"html_templates/index.html" {
+}
+
+Index: {
+  "html/index.html"
+}
+"html_templates/index.html" -> Index: changes

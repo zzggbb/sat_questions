@@ -1,5 +1,5 @@
 # Backend Pipeline Diagram
-![backend pipeline diagram](pipeline.svg)
+![backend pipeline diagram](pipeline_changes.svg)
 
 # File Layout
 
