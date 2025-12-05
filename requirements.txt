@@ -1,0 +1,19 @@
+# Required by explore_database.py and stages.py
+# Used for working with table data
+pandas
+
+# Required by stages.py
+# Use for writing python dictionary objects to json files
+# TODO: This might be unnecessary
+simplejson
+
+# Required by models.py
+# Used for fixing bad HTML in the questions from the collegeboard
+bs4
+
+# Required by stages.py, for using HTML templates
+jinja2
+
+# Required by question_bank.py
+# Used for downloading data from the collegeboard
+requests

@@ -2,7 +2,6 @@
 import code
 import readline
 import rlcompleter
-
 import pickle
 import json
 

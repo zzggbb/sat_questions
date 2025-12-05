@@ -15,7 +15,6 @@ import logger
 # 3rd party
 import pandas as pd
 import jinja2
-from bs4 import BeautifulSoup
 import simplejson as json
 
 pd.set_option('display.max_colwidth', 100)
