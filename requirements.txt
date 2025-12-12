@@ -2,16 +2,12 @@
 # Used for working with table data
 pandas
 
-# Required by stages.py
-# Use for writing python dictionary objects to json files
-# TODO: This might be unnecessary
-simplejson
-
 # Required by models.py
 # Used for fixing bad HTML in the questions from the collegeboard
 bs4
 
-# Required by stages.py, for using HTML templates
+# Required by stages.py
+# Used for HTML templating
 jinja2
 
 # Required by question_bank.py

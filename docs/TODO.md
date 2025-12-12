@@ -7,6 +7,7 @@
 
 # High Priority
 
+* BUG: Backend: running an individual pipeline stage is broken!
 * Frontend: Caching questions locally so they don't have to download every time
 * Frontend: Syncing storage data to/from server
 

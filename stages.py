@@ -1,5 +1,6 @@
 # standard
 import sys
+import json
 import pickle
 from datetime import datetime, timezone
 import itertools
@@ -15,7 +16,6 @@ import logger
 # 3rd party
 import pandas as pd
 import jinja2
-import simplejson as json
 
 pd.set_option('display.max_colwidth', 100)
 pd.set_option('display.width', 1000)
@@ -309,13 +309,30 @@ class Index:
   def run(index_template):
     yield index_template.render()
 
+def usage():
+  print(f"{sys.argv[0]} [-h|--help] [command]")
+  print("commands:")
+  print("  run <stage>... | all")
+  print("  list")
+
 def main():
-  if len(sys.argv) > 1:
-    stage_names = sys.argv[1:]
-    for stage_name in stage_names:
-      pipeline.run(stage_name, force=True)
-  else:
-    pipeline.run_all()
+  match sys.argv[1:]:
+    case ['-h'] | ['--help']:
+      usage()
+
+    case ['run', *stage_names]:
+      if stage_names == ['all']:
+        pipeline.run_all()
+      else:
+        for stage_name in stage_names:
+          pipeline.run(stage_name, force=True)
+
+    case ['list']:
+      for stage in pipeline.stages.keys():
+        print(stage)
+
+    case _:
+      usage()
 
 if __name__ == '__main__':
   main()
