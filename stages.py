@@ -1,5 +1,4 @@
 # standard
-import sys
 import json
 import pickle
 from datetime import datetime, timezone
@@ -8,7 +7,7 @@ from pathlib import Path
 import multiprocessing
 
 # project local
-import question_bank as qbank
+import question_bank
 import models
 from pipeline import Pipeline
 import logger
@@ -16,10 +15,6 @@ import logger
 # 3rd party
 import pandas as pd
 import jinja2
-
-pd.set_option('display.max_colwidth', 100)
-pd.set_option('display.width', 1000)
-pd.set_option('display.max_columns', None)
 
 ROOT = Path(__file__).parent
 TIMESTAMP_HUMAN = datetime.now(timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
@@ -31,30 +26,33 @@ ENV.globals['timestamp_human'] = TIMESTAMP_HUMAN
 
 pipeline = Pipeline(ROOT / "pipeline")
 
+@pipeline.artifact_template
 class PickledDataFrameArtifact:
   read = lambda path: pd.read_pickle(path)
   write = lambda obj, path: obj.to_pickle(path)
 
+@pipeline.artifact_template
 class PickledArtifact:
   read = lambda path: pickle.load(open(path, 'rb'))
   write = lambda obj, path: pickle.dump(obj, open(path, 'wb'))
 
+@pipeline.artifact_template
 class StringArtifact:
   read = lambda path: open(path, 'r').read()
   write = lambda obj, path: open(path, 'w').write(obj)
 
+@pipeline.artifact_template
 class JinjaTemplateArtifact:
   read = lambda path: ENV.from_string(open(path).read())
 
 @pipeline.add_stage
 class Schema:
   produced = [
-    ("exams", "exams.pickle", PickledDataFrameArtifact),
-    ("classifications", "classifications.pickle", PickledDataFrameArtifact)
+    PickledDataFrameArtifact("exams", "exams.pickle"),
+    PickledDataFrameArtifact("classifications", "classifications.pickle"),
   ]
-
-  def get_schema():
-    lookup = qbank.get_lookup()
+  def run():
+    lookup = question_bank.get_lookup()
 
     exams = pd.DataFrame(lookup['assessment'])
     exams.id = exams.id.astype('int')
@@ -95,18 +93,14 @@ class Schema:
     for i, domain_obj in enumerate(classifications.domain.unique()):
       domain_obj.index = i
 
-    return exams, classifications
-
-  def run():
-    for df in Schema.get_schema():
-      yield df
+    yield exams
+    yield classifications
 
 @pipeline.add_stage
 class QuestionsMeta:
   produced = [
-    ("questions_meta", "questions_meta.pickle", PickledDataFrameArtifact)
+    PickledDataFrameArtifact("questions_meta", "questions_meta.pickle"),
   ]
-
   def run(exams, classifications):
     def get_subdomain_obj(row):
       original_subdomain_name = row['skill_desc']
@@ -122,7 +116,7 @@ class QuestionsMeta:
       classifications.groupby(['superdomain', 'domain']).groups.keys()
     ):
       with logger.timer(' > '.join([exam.short_name, superdomain.name, domain.name])):
-        questions_meta = qbank.get_questions_meta(exam, superdomain, domain)
+        questions_meta = question_bank.get_questions_meta(exam, superdomain, domain)
         mq_df = pd.DataFrame(questions_meta)
         mq_df.difficulty = mq_df.difficulty.map(lambda d: models.Difficulty(d))
         mq_df['exam'] = exam
@@ -153,9 +147,8 @@ class QuestionsMeta:
 @pipeline.add_stage
 class QuestionsMain:
   produced = [
-    ("questions_main", "questions_main.pickle", PickledArtifact)
+    PickledArtifact("questions_main", "questions_main.pickle"),
   ]
-
   def run(questions_meta):
     logger.log(f"shape={questions_meta.shape} columns={questions_meta.columns}")
 
@@ -166,7 +159,7 @@ class QuestionsMain:
       with multiprocessing.Pool() as pool:
         for i, (question_meta, question_main) in enumerate(zip(
           questions_meta,
-          pool.imap(qbank.get_question_main, questions_meta)
+          pool.imap(question_bank.get_question_main, questions_meta)
         )):
           questions_main.append(question_main)
           percent = i/n_questions*100
@@ -178,9 +171,8 @@ class QuestionsMain:
 @pipeline.add_stage
 class Questions:
   produced = [
-    ('questions', "questions.pickle", PickledArtifact)
+    PickledArtifact('questions', "questions.pickle"),
   ]
-
   def run(questions_meta, questions_main):
     questions_meta = questions_meta.to_dict(orient='records')
     n_questions = len(questions_meta)
@@ -232,10 +224,9 @@ class Questions:
 @pipeline.add_stage
 class QuestionCounts:
   produced = [
-    ('question_counts_html', 'question_counts.html', StringArtifact),
-    ('question_counts_json', 'question_counts.json', StringArtifact)
+    StringArtifact('question_counts_html', 'question_counts.html'),
+    StringArtifact('question_counts_json', 'question_counts.json'),
   ]
-
   def run(questions):
     df = pd.DataFrame(dict(
       superdomain=[q.superdomain for q in questions],
@@ -273,7 +264,7 @@ class QuestionCounts:
 @pipeline.add_stage
 class QuestionsJSON:
   produced = [
-    ("questions_json", "questions.json", StringArtifact)
+    StringArtifact("questions_json", "questions.json"),
   ]
   def run(questions):
     yield '\n'.join(json.dumps(question, default=dict) for question in questions)
@@ -281,7 +272,7 @@ class QuestionsJSON:
 @pipeline.add_stage
 class FrontendData:
   produced = [
-    ('frontend_data', 'frontend_data.js', StringArtifact)
+    StringArtifact('frontend_data', 'frontend_data.js'),
   ]
   def run(questions, exams, classifications, question_counts_json):
     out = dict(
@@ -301,38 +292,13 @@ class FrontendData:
 @pipeline.add_stage
 class Index:
   required = [
-    ('index_template', ROOT / TEMPLATES / 'index.html', JinjaTemplateArtifact)
+    JinjaTemplateArtifact('index_template', ROOT / TEMPLATES / 'index.html'),
   ]
   produced = [
-    ('index_html', ROOT / 'html/index.html', StringArtifact)
+    StringArtifact('index_html', ROOT / 'html/index.html'),
   ]
   def run(index_template):
     yield index_template.render()
 
-def usage():
-  print(f"{sys.argv[0]} [-h|--help] [command]")
-  print("commands:")
-  print("  run <stage>... | all")
-  print("  list")
-
-def main():
-  match sys.argv[1:]:
-    case ['-h'] | ['--help']:
-      usage()
-
-    case ['run', *stage_names]:
-      if stage_names == ['all']:
-        pipeline.run_all()
-      else:
-        for stage_name in stage_names:
-          pipeline.run(stage_name, force=True)
-
-    case ['list']:
-      for stage in pipeline.stages.keys():
-        print(stage)
-
-    case _:
-      usage()
-
 if __name__ == '__main__':
-  main()
+  pipeline.command_line_interface()

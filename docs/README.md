@@ -1,17 +1,16 @@
 # Backend Pipeline Diagram
-![backend pipeline diagram](pipeline_changes.svg)
-
+![backend pipeline diagram](pipeline_diagram.svg)
 # File Layout
-
 ```
+.
 ├── docs
 │   ├── example_responses
 │   │   ├── eid_question.json
 │   │   ├── ibn_question.json
 │   │   ├── lookup.json
 │   │   └── questions_meta.json
-│   ├── pipeline.d2
-│   ├── pipeline.svg
+│   ├── pipeline_diagram.d2
+│   ├── pipeline_diagram.svg
 │   ├── README.md
 │   └── TODO.md
 ├── html
@@ -53,7 +52,9 @@
 ├── models.py
 ├── pipeline.py
 ├── question_bank.py
-└── stages.py
+├── requirements.txt
+├── stages.py
+└── update_docs.sh
 
-9 directories, 42 files
+9 directories, 44 files
 ```
