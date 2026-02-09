@@ -262,9 +262,9 @@ class Filters {
           ELEMENT("tr", null, null, [
             ELEMENT("td", {"colspan":"3"}, null, [
               DIV({"class":"flex-row"}, null, [
-                users.element,
-                (new AnswerTypeFilter()).element,
-                (new ExamFilter()).element,
+                users,
+                new AnswerTypeFilter(),
+                new ExamFilter(),
               ])
             ]),
             ...DIFFICULTIES.map(difficulty => ELEMENT("td", {"class":`difficulty-${difficulty}`}))

@@ -105,10 +105,10 @@ class Users {
     storage.initialize("users", [ANONYMOUS])
     storage.initialize("current_user", ANONYMOUS)
     this.element = DIV({"class": "flex-row"}, null, [
-      (new UserSelect()).element,
-      (new UserDelete()).element,
-      (new UserInput()).element,
-      (new UserAdd()).element,
+      new UserSelect(),
+      new UserDelete(),
+      new UserInput(),
+      new UserAdd(),
     ])
   }
 }
