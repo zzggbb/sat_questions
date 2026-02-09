@@ -77,11 +77,11 @@ class UserDelete {
     this.element = DIV({
         "id":"user-delete",
         "class": "button",
-        "visible": storage.get("current_user") !== ANONYMOUS
+        "in-layout": storage.get("current_user") !== ANONYMOUS
       }, "delete", null, {'click': this.click.bind(this)}
     )
     storage.when_set("current_user", (username) => {
-      this.element.setAttribute("visible", username !== ANONYMOUS)
+      this.element.setAttribute("in-layout", username !== ANONYMOUS)
     })
   }
   click() {

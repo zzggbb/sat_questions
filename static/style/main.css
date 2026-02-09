@@ -1,5 +1,8 @@
 /* reusable parts */
   [visible="false"] {
+    visibility: hidden !important;
+  }
+  [in-layout="false"] {
     display: none !important;
   }
   .flex-row {
@@ -361,9 +364,6 @@ body {
     .question-checkmark:hover span::after {
       content: "✗";
     }
-    .question-checkmark[invisible="true"] {
-      visibility: hidden;
-    }
     .question-uuid {
       cursor: pointer;
     }
@@ -385,12 +385,15 @@ body {
     .answer-options {
       width: fit-content;
     }
-    .answer-option {
-      &:hover, &[wrong="true"] {
-        text-decoration: line-through var(--red) 2px;
-        filter: brightness(50%) sepia(100%) saturate(100);
-        color: var(--red);
-      }
+    .answer-option[state="wrong"] {
+      filter: brightness(50%) sepia(100%) saturate(100);
+      color: var(--red);
+    }
+    .answer-option[state="correct"] {
+      color: var(--green);
+    }
+    .answer-option:hover::marker {
+      color: var(--red);
     }
 
   /* answer dropdown */

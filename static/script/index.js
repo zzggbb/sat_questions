@@ -70,4 +70,13 @@ window.onload = async () => {
 
   console.log("index: finished loading questions")
   filters.update_answered_counts()
+
+  document.onkeydown = (event) => {
+    switch (event.key) {
+      case 'ArrowLeft': question_viewer.view_index -= 1; break;
+      case 'ArrowRight': question_viewer.view_index += 1; break;
+      case 'ArrowUp': control_panel.toggle_button.toggle(); break;
+      case 'ArrowDown': question_viewer.current_question.toggle_answered(); break;
+    }
+  }
 }

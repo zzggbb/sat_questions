@@ -18,14 +18,44 @@ class Question {
     this.options = options
     this.correct_answer = correct_answer
     this.rationale = rationale
+
+    this.options_obj = new Options(this.uuid, this.options, this.correct_answer)
+    this.answer_toggle_element = null
+    this.question_checkmark_element = null
   }
+
+  set_answered_interface(answered) {
+    /* answered: boolean */
+    if (answered) {
+      this.question_checkmark_element.setAttribute("visible", true)
+      this.options_obj.reveal()
+      this.answer_toggle_element.setAttribute("open", "")
+    } else {
+      this.question_checkmark_element.setAttribute("visible", false)
+      this.options_obj.conceal()
+      this.answer_toggle_element.removeAttribute("open")
+    }
+  }
+
+  set_answered(state) {
+    /* state: boolean */
+    Progress.mark_current_user_answered(this.uuid, state)
+    this.set_answered_interface(state)
+  }
+
+  toggle_answered() {
+    this.set_answered(!Progress.is_answered_by_current_user(this.uuid))
+  }
+
   get element() {
     if (this.#element !== null)
       return this.#element
 
-    let options_obj = new Options(this.uuid, this.options, this.correct_answer)
-
-    let answer_toggle_element = ELEMENT('details', {'class':'answer-toggle'}, null,
+    this.answer_toggle_element = ELEMENT('details',
+      {
+        'class':'answer-toggle',
+      },
+      null,
       [
         ELEMENT('summary', null, 'Show Answer'),
         this.correct_answer !== null
@@ -34,35 +64,39 @@ class Question {
         this.rationale
       ],
       {
-        'click': () => {
-          Progress.mark_current_user_answered(this.uuid)
-          question_checkmark_element.setAttribute("invisible", false)
-          options_obj.reveal()
+        'click': (e) => {
+          // mark the question as answered
+          this.set_answered(true)
+          e.preventDefault()
         }
       }
     )
+    if (Progress.is_answered_by_current_user(this.uuid))
+      this.answer_toggle_element.setAttribute("open", "")
 
-    let question_checkmark_element = ELEMENT('span',
+    this.question_checkmark_element = ELEMENT('span',
       {
-      'class': 'button question-checkmark',
-      'invisible': !Progress.is_answered_by_current_user(this.uuid),
+        'class': 'button question-checkmark',
+        'visible': Progress.is_answered_by_current_user(this.uuid),
       },
       null,
       [ ELEMENT('span') ],
       {
         'click': (e) => {
-          Progress.remove_current_user_answered(this.uuid)
-          question_checkmark_element.setAttribute("invisible", true)
-          options_obj.conceal()
-          answer_toggle_element.removeAttribute("open")
+          // mark the question as unanswered
+          this.set_answered(false)
           e.preventDefault()
         }
       }
     )
 
+    storage.when_set("current_user", (_) => {
+      this.set_answered_interface(Progress.is_answered_by_current_user(this.uuid))
+    })
+
     this.#element = DIV({'class': 'question-block'}, null, [
       DIV({'class':'question-header'}, null, [
-        question_checkmark_element,
+        this.question_checkmark_element,
         ELEMENT('span', {'class': 'question-index'}, `${this.index + 1} / ${TOTAL_QUESTIONS}`),
         ELEMENT('span', {'class': 'question-uuid'}, this.uuid.slice(0,3) + '...' + this.uuid.slice(-4),
                 null, {'click': ()=> navigator.clipboard.writeText(this.uuid)}),
@@ -80,10 +114,10 @@ class Question {
           this.stem,
         ]),
         this.options.length > 0 ? DIV({'class':'question-body-item'}, null, [
-          options_obj.element
+          this.options_obj.element
         ]) : EMPTY_ELEMENT
       ]),
-      answer_toggle_element
+      this.answer_toggle_element
     ])
 
     return this.#element

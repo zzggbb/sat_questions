@@ -25,20 +25,28 @@ class Clock {
 class ControlPanel {
   #element = null
 
+  constructor() {
+    this.toggle_button = null
+  }
+
   get element() {
-    if (this.#element === null)
-      this.#element = DIV({"id":"control-panel"}, null, [
-        DIV({"class":"flex-row space-between"}, null, [
-          question_viewer.all_questions_load_status.element,
-          (new Clock()).element,
-          question_viewer.control.element,
-          new ToggleButton(true, "hide controls", "show controls", (state) => {
-            filters.element.setAttribute("visible", state)
-            document.querySelector("#footer").setAttribute("visible", state)
-          }),
-        ]),
-        filters.element,
-      ])
+    if (this.#element !== null)
+      return this.#element
+
+    this.toggle_button = new ToggleButton(true, "hide controls", "show controls", (state) => {
+      filters.element.setAttribute("in-layout", state)
+      document.querySelector("#footer").setAttribute("in-layout", state)
+    })
+
+    this.#element = DIV({"id":"control-panel"}, null, [
+      DIV({"class":"flex-row space-between"}, null, [
+        question_viewer.all_questions_load_status,
+        new Clock(),
+        question_viewer.control,
+        this.toggle_button,
+      ]),
+      filters,
+    ])
 
     return this.#element
   }

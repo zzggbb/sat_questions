@@ -49,6 +49,10 @@ function ELEMENT(tag, attributes=null, text_content=null, children=null,
         if (typeof(child) === 'string') {
           child = string_to_element(child)
           e.appendChild(child)
+        } else if (child instanceof Object &&
+                  'element' in child &&
+                  child.element instanceof HTMLElement) {
+          e.appendChild(child.element)
         } else {
           e.appendChild(child)
         }
@@ -96,8 +100,4 @@ function* enumerate(list) {
 function* entries(object) {
   for (let [k, v] of Object.entries(object))
     yield [k, v]
-}
-
-function set_visibility(element, state) {
-  element.setAttribute("visible", state)
 }

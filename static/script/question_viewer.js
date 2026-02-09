@@ -65,8 +65,8 @@ class QuestionViewer {
   #view_index = INITIAL_VIEW_INDEX
 
   constructor() {
-    this.map = new Map()
-    this.match_array = new Array()
+    this.uuid_to_question_map = new Map()
+    this.matching_questions = new Array()
 
     this.all_questions_load_status = new LoadingStatus("All Questions", TOTAL_QUESTIONS)
 
@@ -75,13 +75,7 @@ class QuestionViewer {
     ])
 
     this.control = new QuestionViewerControl()
-
-    document.onkeydown = (event) => {
-      switch (event.key) {
-        case 'ArrowLeft': this.view_index -= 1; break;
-        case 'ArrowRight': this.view_index += 1; break;
-      }
-    }
+    this.current_question = null
 
     this.stream = new WritableStream({
       start: this.start.bind(this),
@@ -98,7 +92,7 @@ class QuestionViewer {
   check_deleted_questions() {
     let current_user = storage.get("current_user")
     for (let uuid of Progress.get_current_user_answered())
-      if (!this.map.has(uuid))
+      if (!this.uuid_to_question_map.has(uuid))
         console.warn(`User ${current_user} answered deleted question ${uuid}`)
   }
 
@@ -114,27 +108,27 @@ class QuestionViewer {
     }
 
     if (i === -1)
-      this.#view_index = this.match_array.length - 1
-    else if (i === this.match_array.length)
+      this.#view_index = this.matching_questions.length - 1
+    else if (i === this.matching_questions.length)
       this.#view_index = 0
     else
       this.#view_index = i
 
-    let question = this.match_array[this.#view_index]
-    this.element.replaceChildren(question.element)
+    this.current_question = this.matching_questions[this.#view_index]
+    this.element.replaceChildren(this.current_question.element)
     this.control.set_index(this.#view_index)
   }
 
   update_matching_questions() {
-    this.match_array = []
-    for (let question of this.map.values()) {
+    this.matching_questions = new Array()
+    for (let question of this.uuid_to_question_map.values()) {
       if (question.matches_filters(Filters.get_current_user_filters()))
-        this.match_array.push(question)
+        this.matching_questions.push(question)
     }
 
-    this.control.set_n_matches(this.match_array.length)
+    this.control.set_n_matches(this.matching_questions.length)
 
-    if (this.match_array.length > 0)
+    if (this.matching_questions.length > 0)
       this.view_index = 0
     else
       this.view_index = NaN
@@ -146,21 +140,22 @@ class QuestionViewer {
   write(chunk, controller) {
     let question = chunk
 
-    this.map.set(question.uuid,  question)
+    this.uuid_to_question_map.set(question.uuid,  question)
 
     if (question.matches_filters(Filters.get_current_user_filters())) {
-      this.match_array.push(question)
-      if (this.match_array.length === 1) {
+      this.matching_questions.push(question)
+      if (this.matching_questions.length === 1) {
+        // first matching question was pushed
         this.view_index = 0
       }
     }
 
-    this.all_questions_load_status.update(this.map.size)
+    this.all_questions_load_status.update(this.uuid_to_question_map.size)
   }
   close(controller) {
-    this.control.set_n_matches(this.match_array.length)
+    this.control.set_n_matches(this.matching_questions.length)
 
-    if (this.match_array.length === 0)
+    if (this.matching_questions.length === 0)
       this.view_index = NaN
 
     this.all_questions_load_status.stop()

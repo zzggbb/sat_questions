@@ -1,9 +1,13 @@
 'use strict';
 
-let OPTION_INDEX = {"A":0, "B":1, "C":2, "D":3}
+const STATE_UNDECIDED = "undecided"
+const STATE_CORRECT = "correct"
+const STATE_WRONG = "wrong"
+
+const OPTION_INDEX = {"A":0, "B":1, "C":2, "D":3}
 
 class Option {
-  #wrong
+  #state
 
   constructor(option_html_string) {
     this.element = ELEMENT(
@@ -11,16 +15,24 @@ class Option {
       { 'class':'answer-option' },
       null,
       [option_html_string],
-      { 'click': () => { this.wrong = !this.wrong } }
+      {
+        'click': () => {
+          // clicking toggles between undecided and wrong
+          if (this.state === STATE_UNDECIDED)
+            this.state = STATE_WRONG
+          else if (this.state === STATE_WRONG)
+            this.state = STATE_UNDECIDED
+        }
+      }
     )
-    this.wrong = false
+    this.state = STATE_UNDECIDED
   }
-  set wrong(state) {
-    this.#wrong = state
-    this.element.setAttribute("wrong", state)
+  set state(s) {
+    this.#state = s
+    this.element.setAttribute("state", s)
   }
-  get wrong() {
-    return this.#wrong
+  get state() {
+    return this.#state
   }
 }
 
@@ -39,11 +51,15 @@ class Options {
   }
   conceal() {
     for (let option_obj of this.option_objs)
-      option_obj.wrong = false
+      option_obj.state = STATE_UNDECIDED
   }
   reveal() {
-    for (let [i, option_obj] of enumerate(this.option_objs))
-      option_obj.wrong = (i !== OPTION_INDEX[this.correct_answer])
+    for (let [i, option_obj] of enumerate(this.option_objs)) {
+      if (i === OPTION_INDEX[this.correct_answer])
+        option_obj.state = STATE_CORRECT
+      else
+        option_obj.state = STATE_WRONG
+    }
   }
 }
 

@@ -138,10 +138,10 @@ class Cell {
     let current_user_filters = Filters.get_current_user_filters()
     let matches = 0
     for (let uuid of Progress.get_current_user_answered()) {
-      if (!question_viewer.map.has(uuid))
+      if (!question_viewer.uuid_to_question_map.has(uuid))
         continue
 
-      let question = question_viewer.map.get(uuid)
+      let question = question_viewer.uuid_to_question_map.get(uuid)
       let filters = {
         exam: current_user_filters.exam,
         superdomain: this.superdomain,
