@@ -72,11 +72,32 @@ window.onload = async () => {
   filters.update_answered_counts()
 
   document.onkeydown = (event) => {
+    let handled = false;
+
     switch (event.key) {
-      case 'ArrowLeft': question_viewer.view_index -= 1; break;
-      case 'ArrowRight': question_viewer.view_index += 1; break;
-      case 'ArrowUp': control_panel.toggle_button.toggle(); break;
-      case 'ArrowDown': question_viewer.current_question.toggle_answered(); break;
+      case 'ArrowLeft':
+        question_viewer.view_index -= 1;
+        handled = true;
+        break;
+
+      case 'ArrowRight':
+        question_viewer.view_index += 1;
+        handled = true;
+        break;
+
+      case 'ArrowUp':
+        control_panel.toggle_button.toggle();
+        handled = true;
+        break;
+
+      case 'ArrowDown':
+        question_viewer.current_question.toggle_answered();
+        handled = true;
+        break;
     }
+
+    if (handled)
+      event.preventDefault();
+
   }
 }
