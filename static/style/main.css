@@ -312,6 +312,14 @@ body {
     flex-direction: row;
     column-gap: 5px;
     align-items: center;
+    #question-viewer-index {
+      width: 4ch;
+      text-align: right;
+    }
+    #question-viewer-matches {
+      width: 4ch;
+      text-align: left;
+    }
   }
   #question-viewer-loading {
     &::after {

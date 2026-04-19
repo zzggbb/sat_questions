@@ -4,11 +4,12 @@ const INITIAL_VIEW_INDEX = NaN
 
 class LoadingStatus {
   constructor(name, N=null) {
+    /* N is optional, for when the total number of things to load isn't known ahead of time */
     this.name = name
     this.N = N
-    this.element = DIV({}, null, [
+    this.element = DIV({"class": "loading-status"}, null, [
       DIV({}, name),
-      DIV({}, null),
+      DIV({"style": "white-space: pre"}, null),
     ])
   }
   start() {
@@ -17,8 +18,8 @@ class LoadingStatus {
   update(i) {
     if (this.N !== null) {
       let percent = i / this.N * 100
-      let percent_string = percent.toFixed(0) + "%"
-      let fraction_string = `(${i}/${this.N})`
+      let percent_string = percent.toFixed(0).padStart(3) + "%"
+      let fraction_string = `(${String(i).padStart(4)}/${this.N})`
       this.element.children[1].textContent = [percent_string, fraction_string].join(' ')
     } else {
       this.element.children[1].textContent = i
@@ -33,9 +34,9 @@ class LoadingStatus {
 
 class QuestionViewerControl {
   constructor() {
-    this.index_element = DIV({})
+    this.index_element = DIV({"id": "question-viewer-index"})
     this.set_index(INITIAL_VIEW_INDEX)
-    this.matches_element = DIV({}, "?")
+    this.matches_element = DIV({"id": "question-viewer-matches"}, "?")
 
     this.element = DIV({"id":"question-viewer-control"}, null, [
       BUTTON({},"◄", null, {'click':() => { question_viewer.view_index -= 1 }}),

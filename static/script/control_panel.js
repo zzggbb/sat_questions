@@ -2,7 +2,11 @@
 
 class Clock {
   constructor() {
-    this.element = DIV()
+    this.element = DIV({
+      "class": "clock",
+      "style": "white-space: pre"
+    })
+    this.update_interval = 500 // milliseconds
     window.setInterval(
       () => {
         let date = new Date()
@@ -13,12 +17,12 @@ class Clock {
         let hours_12 = (hours_24 + 11) % 12 + 1
 
         let minutes_padded = String(minutes).padStart(2, "0")
+        let hours_12_padded = String(hours_12).padStart(2, " ")
 
-        this.element.textContent = `${hours_12}:${minutes_padded} ${am_pm}`
+        this.element.textContent = `${hours_12_padded}:${minutes_padded} ${am_pm}`
       },
-      500
+      this.update_interval
     )
-
   }
 }
 
