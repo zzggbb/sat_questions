@@ -46,20 +46,12 @@ class Options {
       null,
       this.option_objs.map(o => o.element)
     )
-    if (Progress.is_answered_by_current_user(uuid))
-      this.reveal()
   }
   conceal() {
-    for (let option_obj of this.option_objs)
-      option_obj.state = STATE_UNDECIDED
+    for (let option_obj of this.option_objs) option_obj.state = STATE_UNDECIDED
   }
   reveal() {
-    for (let [i, option_obj] of enumerate(this.option_objs)) {
-      if (i === OPTION_INDEX[this.correct_answer])
-        option_obj.state = STATE_CORRECT
-      else
-        option_obj.state = STATE_WRONG
-    }
+    for (let option_obj of this.option_objs) option_obj.state = STATE_WRONG
+    this.option_objs[OPTION_INDEX[this.correct_answer]].state = STATE_CORRECT
   }
 }
-

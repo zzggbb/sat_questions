@@ -4,10 +4,28 @@
 * Frontend: filter by MCQ/FRQ
 * Frontend: Display total questions per difficulty
 * BUG: clicking on P89>Circles problems displays questions from wrong subdomain, it should display no questions because there aren't any P89>Circle problems!
+* BUG: (Fixed 2026-04-19)
+    A question's options will be revealed (color coded red/green) when a user hasn't answered the question.
+    The answer dropdown is still properly closed.
+
+    A question's `set_answered_interface` callback (when setting `current_user`) is only registered when
+    the question's `element` is created by the question viewer. This means that a question that hasn't been
+    seen yet will not update its answered interface when switching users.
+
+    Steps to reproduce:
+        - Call `storage.clear()` and reload the page. (This will wipe all users, answer progress, etc)
+        - Create two new users: `User1`, `User2`.
+        - Select `User2`, select `Cross-Text Connections > Easy`.
+        - Select `User1`, select `Equivalent Expressions > Easy`, go to question #2, mark it answered.
+          This is the "stuck question".
+        - Reload the page. User1 and `Equivalent Expressions > Easy > #1` will be automatically selected.
+        - Select `User2`, select `Equivalent Expressions > Easy`, go to question #2. It will be revealed,
+          even though `User2` never answered this question!
+
+* BUG: (Fixed) Backend: running an individual pipeline stage is broken!
 
 # High Priority
 
-* BUG: Backend: running an individual pipeline stage is broken!
 * Frontend: Caching questions locally so they don't have to download every time
 * Frontend: Syncing storage data to/from server
 

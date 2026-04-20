@@ -24,8 +24,8 @@ class Question {
     this.question_checkmark_element = null
   }
 
-  set_answered_interface(answered) {
-    /* answered: boolean */
+  update_answered_interface() {
+    let answered = Progress.is_answered_by_current_user(this.uuid)
     if (answered) {
       this.question_checkmark_element.setAttribute("visible", true)
       this.options_obj.reveal()
@@ -40,7 +40,7 @@ class Question {
   set_answered(state) {
     /* state: boolean */
     Progress.mark_current_user_answered(this.uuid, state)
-    this.set_answered_interface(state)
+    this.update_answered_interface()
   }
 
   toggle_answered() {
@@ -71,8 +71,6 @@ class Question {
         }
       }
     )
-    if (Progress.is_answered_by_current_user(this.uuid))
-      this.answer_toggle_element.setAttribute("open", "")
 
     this.question_checkmark_element = ELEMENT('span',
       {
@@ -89,10 +87,6 @@ class Question {
         }
       }
     )
-
-    storage.when_set("current_user", (_) => {
-      this.set_answered_interface(Progress.is_answered_by_current_user(this.uuid))
-    })
 
     this.#element = DIV({'class': 'question-block'}, null, [
       DIV({'class':'question-header'}, null, [
@@ -113,12 +107,15 @@ class Question {
           this.stimulus,
           this.stem,
         ]),
-        this.options.length > 0 ? DIV({'class':'question-body-item'}, null, [
-          this.options_obj.element
-        ]) : EMPTY_ELEMENT
+        this.options.length > 0 ?
+          DIV({'class':'question-body-item'}, null, [this.options_obj]) :
+          EMPTY_ELEMENT
       ]),
       this.answer_toggle_element
     ])
+
+    this.update_answered_interface()
+    storage.when_set("current_user", (_) => { this.update_answered_interface() })
 
     return this.#element
   }
