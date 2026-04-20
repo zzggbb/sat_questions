@@ -5,6 +5,7 @@
 * Frontend: Display total questions per difficulty
 * BUG: clicking on P89>Circles problems displays questions from wrong subdomain, it should display no questions because there aren't any P89>Circle problems!
 * BUG: (Fixed 2026-04-19)
+
     A question's options will be revealed (color coded red/green) when a user hasn't answered the question.
     The answer dropdown is still properly closed.
 
@@ -13,6 +14,7 @@
     seen yet will not update its answered interface when switching users.
 
     Steps to reproduce:
+
         1. Call `storage.clear()` and reload the page. (This will wipe all users, answer progress, etc)
         2. Create two new users: `User1`, `User2`.
         3. Select `User2`, select `Cross-Text Connections > Easy`.
