@@ -7,24 +7,21 @@
 * BUG: (FIXED) Backend: running an individual pipeline stage is broken!
 * BUG: (FIXED 2026-04-19)
 
-    A question's options will be revealed (color coded red/green) when a user hasn't answered the question.
-    The answer dropdown is still properly closed.
+  A question's options will be revealed (color coded red/green) when a user hasn't answered the question.
+  The answer dropdown is still properly closed.
 
-    A question's `set_answered_interface` callback (when setting `current_user`) is only registered when
-    the question's `element` is created by the question viewer. This means that a question that hasn't been
-    seen yet will not update its answered interface when switching users.
+  A question's `set_answered_interface` callback (when setting `current_user`) is only registered when
+  the question's `element` is created by the question viewer. This means that a question that hasn't been
+  seen yet will not update its answered interface when switching users.
 
-    Steps to reproduce:
+  Steps to reproduce:
 
-    1. Call `storage.clear()` and reload the page. (This will wipe all users, answer progress, etc)
-    2. Create two new users: `User1`, `User2`.
-    3. Select `User2`, select `Cross-Text Connections > Easy`.
-    4. Select `User1`, select `Equivalent Expressions > Easy`, go to question #2, mark it answered.
-       This is the "stuck question".
-    5. Reload the page. User1 and `Equivalent Expressions > Easy > #1` will be automatically selected.
-    6. Select `User2`, select `Equivalent Expressions > Easy`, go to question #2. It will be revealed,
-       even though `User2` never answered this question!
-
+  * Call `storage.clear()` and reload the page. (This will wipe all users, answer progress, etc)
+  * Create two new users: `User1`, `User2`.
+  * Select `User2`, select `Cross-Text Connections > Easy`.
+  * Select `User1`, select `Equivalent Expressions > Easy`, go to question #2, mark it answered. This is the "stuck question".
+  * Reload the page. User1 and `Equivalent Expressions > Easy > #1` will be automatically selected.
+  * Select `User2`, select `Equivalent Expressions > Easy`, go to question #2. It will be revealed, even though `User2` never answered this question!
 
 # High Priority
 
