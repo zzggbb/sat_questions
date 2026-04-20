@@ -3,8 +3,9 @@
 * Frontend: View questions
 * Frontend: filter by MCQ/FRQ
 * Frontend: Display total questions per difficulty
-* BUG: clicking on P89>Circles problems displays questions from wrong subdomain, it should display no questions because there aren't any P89>Circle problems!
-* BUG: (Fixed 2026-04-19)
+* BUG: (FIXED) clicking on P89>Circles problems displays questions from wrong subdomain, it should display no questions because there aren't any P89>Circle problems!
+* BUG: (FIXED) Backend: running an individual pipeline stage is broken!
+* BUG: (FIXED 2026-04-19)
 
     A question's options will be revealed (color coded red/green) when a user hasn't answered the question.
     The answer dropdown is still properly closed.
@@ -15,16 +16,15 @@
 
     Steps to reproduce:
 
-        1. Call `storage.clear()` and reload the page. (This will wipe all users, answer progress, etc)
-        2. Create two new users: `User1`, `User2`.
-        3. Select `User2`, select `Cross-Text Connections > Easy`.
-        4. Select `User1`, select `Equivalent Expressions > Easy`, go to question #2, mark it answered.
-          This is the "stuck question".
-        5. Reload the page. User1 and `Equivalent Expressions > Easy > #1` will be automatically selected.
-        6. Select `User2`, select `Equivalent Expressions > Easy`, go to question #2. It will be revealed,
-          even though `User2` never answered this question!
+    1. Call `storage.clear()` and reload the page. (This will wipe all users, answer progress, etc)
+    2. Create two new users: `User1`, `User2`.
+    3. Select `User2`, select `Cross-Text Connections > Easy`.
+    4. Select `User1`, select `Equivalent Expressions > Easy`, go to question #2, mark it answered.
+       This is the "stuck question".
+    5. Reload the page. User1 and `Equivalent Expressions > Easy > #1` will be automatically selected.
+    6. Select `User2`, select `Equivalent Expressions > Easy`, go to question #2. It will be revealed,
+       even though `User2` never answered this question!
 
-* BUG: (Fixed) Backend: running an individual pipeline stage is broken!
 
 # High Priority
 
