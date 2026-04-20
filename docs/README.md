@@ -36,7 +36,6 @@
 │   │   ├── progress.js
 │   │   ├── question.js
 │   │   ├── question_viewer.js
-│   │   ├── section.js
 │   │   ├── storage.js
 │   │   ├── toggle_button.js
 │   │   └── users.js
@@ -56,5 +55,5 @@
 ├── stages.py
 └── update_docs.sh
 
-9 directories, 44 files
+9 directories, 43 files
 ```
