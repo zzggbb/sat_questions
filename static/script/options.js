@@ -48,9 +48,15 @@ class Options {
     )
   }
   conceal() {
+    // free response questions don't have options
+    if (this.option_objs.length === 0) return
+
     for (let option_obj of this.option_objs) option_obj.state = STATE_UNDECIDED
   }
   reveal() {
+    // free response questions don't have options
+    if (this.option_objs.length === 0) return
+
     for (let option_obj of this.option_objs) option_obj.state = STATE_WRONG
     this.option_objs[OPTION_INDEX[this.correct_answer]].state = STATE_CORRECT
   }
