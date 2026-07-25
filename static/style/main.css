@@ -40,10 +40,16 @@
     --blue: #3C78D8;
     --purple: #8E7CC3;
   }
+  .icon {
+    width: 2em;
+    height: 2em;
+    vertical-align: -0.125em;
+    fill: var(--fg);
+  }
 
   /* invert the diagrams if dark mode is enabled */
   @media (prefers-color-scheme: dark) {
-    img, svg {
+    img, svg:not(.icon) {
       filter: invert(1);
     }
   }
@@ -163,6 +169,21 @@ body {
     display: flex;
     flex-direction: column;
     row-gap: 5px;
+  }
+  #light-dark-toggle {
+    display: flex;
+    flex-direction: row;
+    row-gap: 1px;
+
+    svg {
+      padding: 1px;
+    }
+    svg[active="true"] {
+      outline: 1px solid var(--fg);
+    }
+    svg[active="false"] {
+      outline: none;
+    }
   }
 
   /* difficulty E/M/H styling */

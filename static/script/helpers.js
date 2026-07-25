@@ -75,6 +75,16 @@ function BUTTON(attributes, text_content=null, children=null, event_handlers=nul
   return e
 }
 
+function ICON(view_box, data) {
+  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('class', 'icon')
+  svg.setAttribute('viewBox', view_box)
+  let path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  path.setAttribute('d', data)
+  svg.appendChild(path)
+  return svg
+}
+
 function format_timestamp(time_ms) {
   if (time_ms === null)
     return ["never"]
