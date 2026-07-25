@@ -7,9 +7,12 @@ class LoadingStatus {
     /* N is optional, for when the total number of things to load isn't known ahead of time */
     this.name = name
     this.N = N
+
     this.element = DIV({"class": "loading-status"}, null, [
       DIV({}, name),
-      DIV({"style": "white-space: pre"}, null),
+      DIV({"style": "white-space: pre"}, null,
+        N === null ? null : [DIV(), DIV()]
+      ),
     ])
   }
   start() {
@@ -19,8 +22,9 @@ class LoadingStatus {
     if (this.N !== null) {
       let percent = i / this.N * 100
       let percent_string = percent.toFixed(0).padStart(3) + "%"
-      let fraction_string = `(${String(i).padStart(4)}/${this.N})`
-      this.element.children[1].textContent = [percent_string, fraction_string].join(' ')
+      let fraction_string = `${String(i).padStart(4)}/${this.N}`
+      this.element.children[1].children[0].textContent = percent_string
+      this.element.children[1].children[1].textContent = fraction_string
     } else {
       this.element.children[1].textContent = i
     }

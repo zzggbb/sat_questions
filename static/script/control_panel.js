@@ -37,7 +37,7 @@ class ControlPanel {
     if (this.#element !== null)
       return this.#element
 
-    this.toggle_button = new ToggleButton(true, "hide controls", "show controls", (state) => {
+    this.toggle_button = new ToggleButton(true, "▲", "▼", (state) => {
       filters.element.setAttribute("in-layout", state)
       document.querySelector("#footer").setAttribute("in-layout", state)
     })
