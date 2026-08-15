@@ -34,6 +34,7 @@ function json_to_question() {
 
 const storage = new Storage()
 Migrate.fix_uuids()
+Migrate.fix_filters_superdomains()
 
 const users = new Users()
 const progress = new Progress()
