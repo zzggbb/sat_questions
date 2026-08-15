@@ -18,15 +18,4 @@ class Migrate {
     }
     storage.set("answered", answered)
   }
-  static fix_filters_superdomains() {
-    let filters = storage.get("filters")
-    for (let user in filters) {
-      if ("superdomain" in filters[user]) {
-        let old_superdomain = filters[user]["superdomain"]
-        filters[user]["superdomains"] = [old_superdomain]
-        delete filters[user]["superdomain"]
-      }
-    }
-    storage.set("filters", filters)
-  }
 }

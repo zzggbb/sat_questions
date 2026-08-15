@@ -122,11 +122,11 @@ class Question {
   matches_filters(filters) {
     return (
       filters.exam == this.exam.index &&
-      filters.superdomains.has(this.superdomain.index) &&
-      filters.domains.has(this.domain.index) &&
-      filters.subdomains.has(this.subdomain.index) &&
-      filters.difficulties.has(this.difficulty) &&
-      filters.answer_types.has(this.answer_type)
+      filters.superdomain == this.superdomain.index &&
+      filters.domains.includes(this.domain.index) &&
+      filters.subdomains.includes(this.subdomain.index) &&
+      filters.difficulties.includes(this.difficulty) &&
+      filters.answer_types.includes(this.answer_type)
     )
   }
   get_classification_string() {

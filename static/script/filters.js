@@ -4,19 +4,19 @@ class UserFilters {
   constructor() {
     // only one can be selected
     this.exam = EXAMS.length - 1 // index
-    this.superdomains = new Set([SUPERDOMAINS.length - 1]) // index
+    this.superdomain = SUPERDOMAINS.length - 1 // index
 
     // multiple can be selected
-    this.domains = UserFilters.matching_domains(this.superdomains[0]) // index
+    this.domains = UserFilters.matching_domains(this.superdomain) // index
     this.subdomains = UserFilters.matching_subdomains(this.domains) // index
-    this.difficulties = new Set(DIFFICULTIES) // letter
-    this.answer_types = new Set(ANSWER_TYPES) // acronym
+    this.difficulties = DIFFICULTIES // letter
+    this.answer_types = ANSWER_TYPES // acronym
   }
   static matching_domains(superdomain) {
-    return new Set(CLASSIFICATIONS.filter(r => r.superdomain.index===superdomain).map(r => r.domain.index))
+    return [... new Set(CLASSIFICATIONS.filter(r => r.superdomain.index===superdomain).map(r => r.domain.index))]
   }
   static matching_subdomains(domains) {
-    return new Set(CLASSIFICATIONS.filter(r => domains.has(r.domain.index)).map(r => r.subdomain.index))
+    return [... new Set(CLASSIFICATIONS.filter(r => domains.includes(r.domain.index)).map(r => r.subdomain.index))]
   }
 }
 
@@ -50,11 +50,11 @@ class AnswerTypeFilter {
   static filter_to_index() {
     let filter = Filters.get_current_user_filters().answer_types
 
-    if (ANSWER_TYPES.every(answer_type => filter.has(answer_type)))
+    if (ANSWER_TYPES.every(answer_type => filter.includes(answer_type)))
       return "2"
 
     for (let [index, answer_type] of enumerate(ANSWER_TYPES))
-      if (filter.has(answer_type))
+      if (filter.includes(answer_type))
         return index
   }
 }
@@ -93,9 +93,9 @@ class Cell {
     this.subdomain = subdomain
     this.difficulty = difficulty
 
-    this.domains = (domain === null) ? UserFilters.matching_domains(this.superdomain) : new Set([domain])
-    this.subdomains = (subdomain === null) ? UserFilters.matching_subdomains(this.domains) : new Set([subdomain])
-    this.difficulties = (difficulty === null) ? new Set(DIFFICULTIES) : new Set([difficulty])
+    this.domains = (domain === null) ? UserFilters.matching_domains(this.superdomain) : [domain]
+    this.subdomains = (subdomain === null) ? UserFilters.matching_subdomains(this.domains) : [subdomain]
+    this.difficulties = (difficulty === null) ? DIFFICULTIES : [difficulty]
 
     let classes = ['filter-cell']
     if (difficulty !== null) classes.push('progress-info')
@@ -128,10 +128,10 @@ class Cell {
   matches_filters() {
     let user_filters = Filters.get_current_user_filters()
     return (
-      user_filters.superdomains.has(this.superdomain) &&
-      (user_filters.domains.has(this.domain) || this.domain === null) &&
-      (user_filters.subdomains.has(this.subdomain) || this.subdomain === null) &&
-      (user_filters.difficulties.has(this.difficulty) || this.difficulty === null)
+      user_filters.superdomain === this.superdomain &&
+      (user_filters.domains.includes(this.domain) || this.domain === null) &&
+      (user_filters.subdomains.includes(this.subdomain) || this.subdomain === null) &&
+      (user_filters.difficulties.includes(this.difficulty) || this.difficulty === null)
     )
   }
   get_answered_count() {
@@ -169,23 +169,12 @@ class Cell {
     this.element.children[0].children[1].textContent = count
   }
   click(e) {
-    //console.log(`cell click: ${this.superdomain}>[${this.domains}]>[${this.subdomains}]>[${this.difficulties}]`)
+    console.log(`${this.superdomain} > ${this.domains} > ${this.subdomains} > ${this.difficulties}`)
     let user_filters = Filters.get_current_user_filters()
-    if (e.ctrlKey) {
-      if (this.matches_filters()) {
-        /*remove cell from user_filters*/
-      } else {
-        user_filters.superdomains.add(this.superdomain)
-        user_filters.domains = user_filters.domains.union(this.domains)
-        user_filters.subdomains = user_filters.subdomains.union(this.subdomains)
-        user_filters.difficulties = user_filters.difficulties.union(this.difficulties)
-      }
-    } else {
-      user_filters.superdomains = new Set([this.superdomain])
-      user_filters.domains = this.domains
-      user_filters.subdomains = this.subdomains
-      user_filters.difficulties = this.difficulties
-    }
+    user_filters.superdomain = this.superdomain
+    user_filters.domains = this.domains
+    user_filters.subdomains = this.subdomains
+    user_filters.difficulties = this.difficulties
     Filters.set_current_user_filters(user_filters)
   }
 }
@@ -294,21 +283,9 @@ class Filters {
   static get_current_user_filters() {
     let user = storage.get("current_user")
     let filters = storage.get("filters")
-
-    /* Convert Arrays to Sets when deserializing */
-    for (let filter_name in filters[user]) {
-      if (filters[user][filter_name] instanceof Array)
-        filters[user][filter_name] = new Set(filters[user][filter_name])
-    }
-
     return filters[user]
   }
   static set_current_user_filters(user_filters) {
-    /* Convert Sets to Arrays when serializing */
-    for (let filter_name in user_filters)
-      if (user_filters[filter_name] instanceof Set)
-        user_filters[filter_name] = [... user_filters[filter_name]]
-
     let user = storage.get("current_user")
     let filters = storage.get("filters")
     filters[user] = user_filters
