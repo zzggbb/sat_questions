@@ -40,6 +40,11 @@ class LightDarkToggle {
       'light dark': ICON('0 0 10 10', this.#params),
       'dark':       ICON('0 0 10 10', this.#moon)
     }
+    this.state_to_filter = {
+      'light': 'invert(0)',
+      'light dark': null,
+      'dark': 'invert(1)'
+    }
     this.element = DIV({"id":"light-dark-toggle"}, null, Object.values(this.buttons))
     this.state = 'light dark'
     for (let [name, button] of Object.entries(this.buttons))
@@ -48,6 +53,10 @@ class LightDarkToggle {
 
   set state(new_state) {
     document.documentElement.style.colorScheme = new_state
+    document.documentElement.style.setProperty('--math-image-filter',
+      this.state_to_filter[new_state]
+    )
+
     for (let [name, button] of Object.entries(this.buttons))
       button.setAttribute('active', name === new_state)
   }

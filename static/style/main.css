@@ -39,6 +39,22 @@
     --green: #6AA84F;
     --blue: #3C78D8;
     --purple: #8E7CC3;
+
+    /*
+    If the light-dark() function accepted filter functions as inputs, this
+    whole thing could be simplified to:
+
+      --math-image-filter: light-dark(invert(0), invert(1));
+
+    And the code in LightDarkToggle to set `--math-image-filter` could be
+    removed.
+    */
+    @media (prefers-color-scheme: light) {
+      --math-image-filter: invert(0);
+    }
+    @media (prefers-color-scheme: dark) {
+      --math-image-filter: invert(1);
+    }
   }
   .icon {
     width: 2em;
@@ -47,10 +63,20 @@
     fill: var(--fg);
   }
 
-  /* invert the diagrams if dark mode is enabled */
+  /*
+  Invert the math diagrams if dark mode is enabled
+
+  If we could query the actual color-scheme (not just the preferred one), then
+  this could be simplfied to:
+    @color-scheme dark {
+      img, svg:not(.icon) { filter: invert(1); }
+    }
+  And then the above media queries could be deleted, AND the style.setProperty
+  stuff in LightDarkToggle could be deleted.
+  */
   @media (prefers-color-scheme: dark) {
     img, svg:not(.icon) {
-      filter: invert(1);
+      filter: var(--math-image-filter);
     }
   }
 
