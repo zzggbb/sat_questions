@@ -1,4 +1,5 @@
 'use strict';
+
 const EXAM_SHORTNAMES = EXAMS.map(exam => exam.short_name)
 
 class Migrate {
@@ -17,5 +18,13 @@ class Migrate {
       }
     }
     storage.set("answered", answered)
+  }
+  static fix_filters() {
+    let filters = storage.get("filters")
+    for (let user in filters) {
+      if (!(filters[user] instanceof Array))
+        filters[user] = DEFAULT_FILTERS
+    }
+    storage.set("filters", filters)
   }
 }

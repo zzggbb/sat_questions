@@ -7,12 +7,22 @@ class Question {
               difficulty, stimulus, stem, options, correct_answer, rationale) {
     this.index = index
     this.uuid = uuid
+    this.group = new QuestionGroup(
+      exam.index,
+      superdomain.index,
+      domain.index,
+      subdomain.index,
+      difficulty,
+      answer_type
+    )
+
     this.exam = exam
     this.superdomain = superdomain
     this.domain = domain
     this.subdomain = subdomain
     this.answer_type = answer_type
     this.difficulty = difficulty
+
     this.stimulus = stimulus
     this.stem = stem
     this.options = options
@@ -91,9 +101,16 @@ class Question {
     this.#element = DIV({'class': 'question-block'}, null, [
       DIV({'class':'question-header'}, null, [
         this.question_checkmark_element,
-        ELEMENT('span', {'class': 'question-index'}, `${this.index + 1} / ${TOTAL_QUESTIONS}`),
-        ELEMENT('span', {'class': 'question-uuid'}, this.uuid.slice(0,3) + '...' + this.uuid.slice(-4),
-                null, {'click': ()=> navigator.clipboard.writeText(this.uuid)}),
+        ELEMENT('span',
+          {'class': 'question-index'},
+          `${this.index + 1} / ${TOTAL_QUESTIONS}`
+        ),
+        ELEMENT('span',
+          {'class': 'question-uuid'},
+          this.uuid.slice(0,3) + '...' + this.uuid.slice(-4),
+          null,
+          {'click': ()=> navigator.clipboard.writeText(this.uuid)}
+        ),
         ELEMENT('span',
           {'class': 'question-classification'},
           this.get_classification_string()
@@ -105,7 +122,7 @@ class Question {
       DIV({'class':'question-body'}, null, [
         DIV({'class':'question-body-item'}, null, [
           this.stimulus,
-          this.stem,
+          this.stem
         ]),
         this.options.length > 0 ?
           DIV({'class':'question-body-item'}, null, [this.options_obj]) :
@@ -118,16 +135,6 @@ class Question {
     storage.when_set("current_user", (_) => { this.update_answered_interface() })
 
     return this.#element
-  }
-  matches_filters(filters) {
-    return (
-      filters.exam == this.exam.index &&
-      filters.superdomain == this.superdomain.index &&
-      filters.domains.includes(this.domain.index) &&
-      filters.subdomains.includes(this.subdomain.index) &&
-      filters.difficulties.includes(this.difficulty) &&
-      filters.answer_types.includes(this.answer_type)
-    )
   }
   get_classification_string() {
     let parts = [

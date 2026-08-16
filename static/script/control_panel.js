@@ -74,7 +74,7 @@ class ControlPanel {
       return this.#element
 
     this.toggle_button = new ToggleButton(true, "▲", "▼", (state) => {
-      filters.element.setAttribute("in-layout", state)
+      filter_grid.element.setAttribute("in-layout", state)
       document.querySelector("#footer").setAttribute("in-layout", state)
     })
 
@@ -86,7 +86,7 @@ class ControlPanel {
         new LightDarkToggle(),
         this.toggle_button,
       ]),
-      filters,
+      filter_grid,
     ])
 
     return this.#element

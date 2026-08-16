@@ -127,7 +127,7 @@ class QuestionViewer {
   update_matching_questions() {
     this.matching_questions = new Array()
     for (let question of this.uuid_to_question_map.values()) {
-      if (question.matches_filters(Filters.get_current_user_filters()))
+      if (FilterGrid.any_group_contains(question.group))
         this.matching_questions.push(question)
     }
 
@@ -147,7 +147,7 @@ class QuestionViewer {
 
     this.uuid_to_question_map.set(question.uuid,  question)
 
-    if (question.matches_filters(Filters.get_current_user_filters())) {
+    if (FilterGrid.any_group_contains(question.group)) {
       this.matching_questions.push(question)
       if (this.matching_questions.length === 1) {
         // first matching question was pushed

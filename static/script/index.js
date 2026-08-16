@@ -34,10 +34,11 @@ function json_to_question() {
 
 const storage = new Storage()
 Migrate.fix_uuids()
+Migrate.fix_filters()
 
 const users = new Users()
 const progress = new Progress()
-const filters = new Filters()
+const filter_grid = new FilterGrid()
 
 const control_panel = new ControlPanel()
 const question_viewer = new QuestionViewer()
@@ -46,7 +47,7 @@ window.onload = async () => {
   console.log("index: window loaded")
 
   progress.initialize()
-  filters.initialize()
+  filter_grid.initialize()
   question_viewer.initialize()
 
   document.querySelector("#content").appendChild(control_panel.element)
@@ -69,7 +70,7 @@ window.onload = async () => {
   .pipeTo(question_viewer.stream)
 
   console.log("index: finished loading questions")
-  filters.update_answered_counts()
+  filter_grid.update_answered_counts()
 
   document.onkeydown = (event) => {
     let handled = false;
