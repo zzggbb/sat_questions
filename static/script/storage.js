@@ -10,7 +10,7 @@ class Storage {
       string_value = JSON.stringify(value)
 
     window.localStorage.setItem(key, string_value)
-    console.log(`set storage.${key} = ${string_value} (type: ${typeof(value)})`)
+    console.debug(`set storage.${key} = ${string_value} (type: ${typeof(value)})`)
 
     if (key in this.handlers) {
       for (let handler of this.handlers[key]) {
@@ -23,6 +23,13 @@ class Storage {
     if (value == null) return fallback
     try { return JSON.parse(value) } catch { return value }
   }
+  remove(key) {
+    window.localStorage.removeItem(key)
+  }
+  clear() {
+    window.localStorage.clear()
+  }
+
   when_set(key, handler) {
     if (!(key in this.handlers))
       this.handlers[key] = []
@@ -32,8 +39,5 @@ class Storage {
   initialize(key, value) {
     if (this.get(key) === null)
       this.set(key, value)
-  }
-  clear() {
-    window.localStorage.clear()
   }
 }

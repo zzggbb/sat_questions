@@ -1,5 +1,8 @@
 'use strict';
 
+const CONTAINS = 0
+const CONTAINED_BY = 1
+
 class QuestionGroup {
   constructor(exam=null, superdomain=null, domain=null, subdomain=null, difficulty=null, answer_type=null) {
     // integers (0-based indices)
@@ -24,58 +27,105 @@ class QuestionGroup {
       json['answer_type']
     )
   }
+  equals(other) {
+    if (!(other instanceof QuestionGroup))
+      throw new Error("other must be a QuestionGroup")
+
+    for (let field of ['exam', 'superdomain', 'domain', 'subdomain', 'difficulty', 'answer_type'])
+      if (this[field] !== other[field])
+        return false
+
+    return true
+  }
   contains(other) {
     if (!(other instanceof QuestionGroup))
       throw new Error("other must be a QuestionGroup")
 
-    for (let level of ['exam', 'superdomain', 'domain', 'subdomain'])
-      if (this[level] === null)
-        continue
-      else
-        if (this[level] !== other[level])
-          return false
-
-    if (this.difficulty !== null && this.difficulty !== other.difficulty)
-      return false
-
-    if (this.answer_type !== null && this.answer_type !== other.answer_type)
-      return false
+    for (let field of ['exam', 'superdomain', 'domain', 'subdomain', 'difficulty', 'answer_type'])
+      if (this[field] !== null && this[field] !== other[field])
+        return false
 
     return true
   }
+  lowest_field() {
+    for (let field of ['difficulty', 'subdomain', 'domain', 'superdomain'])
+      if (this[field] !== null)
+        return field
+  }
+  expand() {
+    /* Only used by cell question-groups, so:
+       * exam is null
+       * superdomain is always set
+       * domain, subdomain, difficulty may be set
+       * answer_type is unset
+    */
+    let subgroups = []
+    for (let {superdomain, domain, subdomain} of CLASSIFICATIONS) {
+      for (let difficulty of DIFFICULTIES) {
+        let group = new QuestionGroup(null, superdomain.index, domain.index, subdomain.index, difficulty)
+        if (this.contains(group))
+          subgroups.push(group)
+      }
+    }
+    return subgroups
+  }
 }
 
-// Filters are OR'd together
-const DEFAULT_FILTERS = [
-  new QuestionGroup(
-    2,    // SAT
-    0,    // English
-    0,    // Craft & Structure
-    0,    // Cross-Text Connections
-    "E",  // Easy
-    null  // any answer-type
-  )
-]
+class UserFilters {
+  constructor(answer_type, exam, groups) {
+    this.answer_type = answer_type
+    this.exam = exam
+    this.groups = groups
+  }
+  static default() {
+    return new UserFilters(
+      null,
+      2,
+      [
+        new QuestionGroup(null, 0, 0, 0, "E", null)
+      ]
+    )
+  }
+  static from_json(json) {
+    return new UserFilters(
+      json['answer_type'],
+      json['exam'],
+      json['groups'].map(QuestionGroup.from_json)
+    )
+  }
+  match(question_group, mode) {
+    /*
+    mode=CONTAINS: Returns true if any group in this filter contains question_group
+    mode=CONTAINED_BY: Returns true if any group in this filter is contained by question_group
+    */
+    if (!(question_group instanceof QuestionGroup))
+      throw new Error("question_group must be a QuestionGroup")
+
+    for (let i_group of this.groups) {
+      i_group.answer_type = this.answer_type
+      i_group.exam = this.exam
+
+      if (mode === CONTAINS && i_group.contains(question_group))
+        return true
+      if (mode === CONTAINED_BY && question_group.contains(i_group))
+        return true
+    }
+
+    return false
+  }
+}
 
 class Cell {
   constructor(text, question_group, rowspan=1) {
     this.question_group = question_group
 
-    let classes = ['filter-cell']
-    for (let level of ['difficulty', 'subdomain', 'domain', 'superdomain'])
-      if (question_group[level] !== null) {
-        classes.push(level)
-        break
-      }
-
-    let children = null
-    if (question_group.difficulty !== null)
-      children = [
-        DIV({}, null, [
-          DIV({'class': 'answered-questions-count'}, "?"),
-          DIV({'class': 'total-questions-count'}, this.get_total_count())
-        ])
-      ]
+    let classes = ['filter-cell', question_group.lowest_field()]
+    let child = (question_group.difficulty === null) ?
+      EMPTY_ELEMENT :
+      DIV(null, null, [
+        DIV({'class': 'answered-questions-count'}, "?"),
+        DIV({'class': 'total-questions-count'}, this.get_total_count())
+      ])
 
     this.element = ELEMENT('td',
       {
@@ -84,43 +134,32 @@ class Cell {
         'rowspan': rowspan
       },
       text,
-      children,
+      [child],
       { 'click': this.click.bind(this) }
     )
 
-    storage.when_set('filters', (_) => {
-      /*
-      Every cell's question-group specifies an exam. It is technically possible
-      to mix questions from different exams, but the UI doesn't currently support
-      this. So we just use the exam from the first filter-group.
-      */
-      this.question_group.exam = filter_grid.get_exam_index()
-
+    storage.when_set('filters', () => {
       this.element.setAttribute('selected', this.matches_filters())
     })
-    storage.when_set('current_user', (_) => {
+    storage.when_set('current_user', () => {
       this.element.setAttribute('selected', this.matches_filters())
     })
   }
   matches_filters() {
-    /*
-    Does this cell's question-group contain any of the current filter groups,
-    Or do any of the current filter groups contain this cell's question-group
-    */
-    for (let group of FilterGrid.get_current_user_filters())
-      if (this.question_group.contains(group) || group.contains(this.question_group))
-        return true
-    return false
+    // Are any of the current filter groups contained by this cell's question-group?
+    return FilterGrid.get_filters().match(this.question_group, CONTAINED_BY)
   }
   get_answered_count() {
     /* How many answered questions are in this cell's question-group? */
     let matches = 0
+    let exam = FilterGrid.get_filters().exam
+
     for (let uuid of Progress.get_current_user_answered()) {
       if (!question_viewer.uuid_to_question_map.has(uuid))
         continue
 
       let question = question_viewer.uuid_to_question_map.get(uuid)
-      if (this.question_group.contains(question.group))
+      if (this.question_group.contains(question.group) && question.group.exam == exam)
         matches += 1
     }
     return matches
@@ -130,7 +169,7 @@ class Cell {
     this.element.children[0].children[0].textContent = (count === 0) ? "-" : count
   }
   get_total_count() {
-    let exam_index = filter_grid.get_exam_index()
+    let exam_index = FilterGrid.get_filters().exam
     let exam_short_name = EXAMS[exam_index].short_name
     let key_string = `(${exam_short_name}, '${this.question_group.difficulty}')`
     return QUESTION_COUNTS[this.question_group.subdomain][key_string]
@@ -139,29 +178,32 @@ class Cell {
     let count = this.get_total_count()
     this.element.children[0].children[1].textContent = count
   }
-  click(e) {
-    e.preventDefault()
+  click(event) {
+    event.preventDefault()
     console.log(this.question_group)
-    let groups = FilterGrid.get_current_user_filters()
+    let filters = FilterGrid.get_filters()
+    let subgroups = this.question_group.expand()
 
-    for (let [i, group] of enumerate(groups)) {
-      if (JSON.stringify(group) === JSON.stringify(this.question_group)) {
-        // we have clicked on an already-active cell
-        if (e.ctrlKey) {
-          groups.splice(i, 1)
-          FilterGrid.set_current_user_filters(groups)
-        }
-        return
+    if (event.ctrlKey) {
+      if (this.matches_filters()) {
+        /* Copy over all groups in filters.groups that aren't a subgroup of this cell's question-group */
+        let new_groups = []
+        for (let candidate_group of filters.groups)
+          if (!this.question_group.contains(candidate_group))
+            new_groups.push(candidate_group)
+        filters.groups = new_groups
       }
+      else {
+        /* Add all subgroups of this cell's question-group to groups */
+        for (let subgroup of subgroups)
+          filters.groups.push(subgroup)
+      }
+    } else {
+      /* Set filters.groups to all subgroups of this.question_group */
+      filters.groups = subgroups
     }
 
-    // There is no group for this cell yet
-    if (e.ctrlKey) {
-      groups.push(this.question_group)
-    } else {
-      groups = [this.question_group]
-    }
-    FilterGrid.set_current_user_filters(groups)
+    FilterGrid.set_filters(filters)
   }
 }
 
@@ -180,7 +222,7 @@ class FilterGrid {
       // if 'users' has a user that 'filters' doesn't -> add new user to filters
       for (let user of users)
         if (!(user in filters))
-          filters[user] = DEFAULT_FILTERS
+          filters[user] = UserFilters.default()
 
       storage.set('filters', filters)
     })
@@ -194,10 +236,9 @@ class FilterGrid {
     console.log("FilterGrid: initialize")
 
     storage.initialize('filters', Object.fromEntries(
-      storage.get("users").map(user => [user, DEFAULT_FILTERS])
+      storage.get("users").map(user => [user, UserFilters.default()])
     ))
 
-    this.exam_filter = new ExamFilter()
     let rowspans = {}
     for (let row of CLASSIFICATIONS) {
       if (!(row.superdomain.name in rowspans)) rowspans[row.superdomain.name] = 0
@@ -208,7 +249,6 @@ class FilterGrid {
     }
 
     let row_elements = []
-    let exam = this.get_exam_index()
     for (let row of CLASSIFICATIONS) {
       let superdomain = row.superdomain.index
       let domain = row.domain.index
@@ -218,7 +258,7 @@ class FilterGrid {
       if (row.superdomain.name in rowspans) {
         superdomain_cell = new Cell(
           row.superdomain.name,
-          new QuestionGroup(exam, superdomain),
+          new QuestionGroup(null, superdomain),
           rowspans[row.superdomain.name]
         )
         delete rowspans[row.superdomain.name]
@@ -228,7 +268,7 @@ class FilterGrid {
       if (row.domain.name in rowspans) {
         domain_cell = new Cell(
           row.domain.name,
-          new QuestionGroup(exam, superdomain, domain),
+          new QuestionGroup(null, superdomain, domain),
           rowspans[row.domain.name]
         )
         delete rowspans[row.domain.name]
@@ -236,13 +276,13 @@ class FilterGrid {
 
       let subdomain_cell = new Cell(
         row.subdomain.name,
-        new QuestionGroup(exam, superdomain, domain, subdomain)
+        new QuestionGroup(null, superdomain, domain, subdomain)
       )
 
       let difficulty_cells = DIFFICULTIES.map(
         difficulty => new Cell(
           null,
-          new QuestionGroup(exam, superdomain, domain, subdomain, difficulty)
+          new QuestionGroup(null, superdomain, domain, subdomain, difficulty)
         )
       )
 
@@ -261,7 +301,7 @@ class FilterGrid {
               DIV({"class":"flex-row"}, null, [
                 users,
                 new AnswerTypeFilter(),
-                this.exam_filter
+                new ExamFilter()
               ])
             ]),
             ...DIFFICULTIES.map(difficulty => ELEMENT("td", {"class":`difficulty-${difficulty}`}))
@@ -277,31 +317,16 @@ class FilterGrid {
   update_total_counts() {
     for (let cell of this.progress_cells) cell.update_total_count()
   }
-  get_exam_index() {
-    return parseInt(this.exam_filter.element.value)
-  }
-  static get_current_user_filters() {
+  static get_filters() {
     let user = storage.get("current_user")
     let filters = storage.get("filters")
-    return filters[user].map(QuestionGroup.from_json)
+    return UserFilters.from_json(filters[user])
   }
-  static get_current_user_first_filter_group() {
-    let groups = FilterGrid.get_current_user_filters()
-    if (groups.length === 0)
-      return DEFAULT_FILTERS[0]
-    return groups[0]
-  }
-  static set_current_user_filters(user_filters) {
+  static set_filters(user_filters) {
     let user = storage.get("current_user")
     let filters = storage.get("filters")
     filters[user] = user_filters
     storage.set("filters", filters)
-  }
-  static any_group_contains(question_group) {
-    for (let group of FilterGrid.get_current_user_filters())
-      if (group.contains(question_group))
-        return true
-    return false
   }
 }
 
@@ -320,16 +345,14 @@ class AnswerTypeFilter {
       this.element.value = AnswerTypeFilter.get_filter_index()
     })
   }
-  change(e) {
+  change(event) {
     let index = parseInt(this.element.value)
-    let groups = FilterGrid.get_current_user_filters()
-    for (let group of groups)
-      group.answer_type = (index === 2) ? null : ANSWER_TYPES[index]
-
-    FilterGrid.set_current_user_filters(groups)
+    let filters = FilterGrid.get_filters()
+    filters.answer_type = (index === 2) ? null : ANSWER_TYPES[index]
+    FilterGrid.set_filters(filters)
   }
   static get_filter_index() {
-    return FilterGrid.get_current_user_first_filter_group().answer_type ?? 2
+    return FilterGrid.get_filters().answer_type ?? 2
   }
 }
 
@@ -339,19 +362,17 @@ class ExamFilter {
       EXAMS.map(exam => ELEMENT("option", {"value":exam.index}, exam.name)),
       {'change': this.change.bind(this)}
     )
-    this.element.value = FilterGrid.get_current_user_first_filter_group().exam
+    this.element.value = FilterGrid.get_filters().exam
 
     storage.when_set("current_user", (_) => {
-      this.element.value = FilterGrid.get_current_user_first_filter_group().exam
+      this.element.value = FilterGrid.get_filters().exam
     })
   }
-  change(e) {
+  change(event) {
     let index = parseInt(this.element.value)
-    let groups = FilterGrid.get_current_user_filters()
-    for (let group of groups)
-      group.exam = index
-
-    FilterGrid.set_current_user_filters(groups)
+    let filters = FilterGrid.get_filters()
+    filters.exam = index
+    FilterGrid.set_filters(filters)
 
     //This really should be handled by a when_set("filters"), but
     // currently when_set doesn't allow detecting changes to sub-objects;

@@ -162,7 +162,8 @@ class Pipeline:
         for name, stage in self.stages.items():
           required = ', '.join(str(artifact) for artifact in stage.required)
           produced = ', '.join(str(artifact) for artifact in stage.produced)
-          print(required, '->', name, '->', produced)
+          #print(required, '->', name, '->', produced)
+          print(f"{name}: ({required}) -> ({produced})")
 
       case ['d2-graph']:
         self.generate_d2_graph()

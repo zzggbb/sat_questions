@@ -152,6 +152,10 @@ body {
         }
         cursor: pointer;
       }
+      td:focus {
+        outline: none;
+        box-shadow: none;
+      }
     }
     thead td {
       padding: 0px 0px 5px 0px;
