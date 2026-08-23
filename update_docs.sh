@@ -1,5 +1,5 @@
 python3 stages.py d2-graph > docs/pipeline_diagram.d2
-d2 docs/pipeline_diagram.d2
+d2 docs/pipeline_diagram.d2 docs/pipeline_diagram.svg
 
 write_readme() {
   echo "# Backend Pipeline Diagram"

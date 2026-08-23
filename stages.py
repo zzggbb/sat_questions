@@ -17,8 +17,9 @@ import pandas as pd
 import jinja2
 
 ROOT = Path(__file__).parent
-TIMESTAMP_HUMAN = datetime.now(timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
-TIMESTAMP_MACHINE = int(datetime.now(timezone.utc).timestamp())
+TIME_NOW = datetime.now(timezone.utc)
+TIMESTAMP_HUMAN = TIME_NOW.astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
+TIMESTAMP_MACHINE = int(TIME_NOW.timestamp())
 TEMPLATES = "template_html"
 LOADER = jinja2.FileSystemLoader(ROOT / TEMPLATES)
 ENV = jinja2.Environment(loader=LOADER)

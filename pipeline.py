@@ -139,7 +139,8 @@ class Pipeline:
       f"{sys.argv[0]} [-h|--help] [command]",
       "commands:",
       "  run-stage <stage>... | all",
-      "  list-stages"
+      "  list-stages",
+      "  d2-graph"
     ])
 
     args = sys.argv[1:]
