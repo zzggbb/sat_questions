@@ -1,5 +1,23 @@
+# CLI Usage
+
+## Run entire pipeline to get the current CollegeBoard question set
+```bash
+$ python3 -m SAT run-stage all --spill-id new
+```
+
+## List the available question set versions
+```bash
+$ python3 -m SAT list-spills
+```
+
+## Activate a question set version
+```bash
+$ python3 -m SAT set-active-spill <spill ID or 'latest'>
+```
+
 # Backend Pipeline Diagram
 ![backend pipeline diagram](pipeline_diagram.svg)
+
 # File Layout
 ```
 .
