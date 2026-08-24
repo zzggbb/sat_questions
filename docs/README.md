@@ -15,12 +15,11 @@
 │   ├── pipeline_diagram.svg
 │   ├── README.md
 │   └── TODO.md
-├── html
-│   └── index.html
 ├── oil
 │   ├── artifact.py
 │   ├── __init__.py
 │   ├── pipeline.py
+│   ├── spill.py
 │   └── util.py
 ├── SAT
 │   ├── explore_database.py
@@ -39,16 +38,18 @@
 │   │   ├── questions_main.pickle
 │   │   ├── questions_meta.pickle
 │   │   └── questions.pickle
-│   └── 1787526700
-│       ├── classifications.pickle
-│       ├── exams.pickle
-│       ├── frontend_data.js
-│       ├── question_counts.html
-│       ├── question_counts.json
-│       ├── questions.json
-│       ├── questions_main.pickle
-│       ├── questions_meta.pickle
-│       └── questions.pickle
+│   ├── 1787544833
+│   │   ├── classifications.pickle
+│   │   ├── exams.pickle
+│   │   ├── frontend_data.js
+│   │   ├── index.html
+│   │   ├── question_counts.html
+│   │   ├── question_counts.json
+│   │   ├── questions.json
+│   │   ├── questions_main.pickle
+│   │   ├── questions_meta.pickle
+│   │   └── questions.pickle
+│   └── active -> 1787544833
 ├── static
 │   ├── script
 │   │   ├── control_panel.js
@@ -71,8 +72,9 @@
 │   ├── base.html
 │   └── index.html
 ├── .gitignore
+├── index.html -> spills/active/index.html
 ├── requirements.txt
 └── update_docs.sh
 
-14 directories, 57 files
+14 directories, 59 files
 ```
