@@ -25,6 +25,10 @@
 
 # High Priority
 
+* finish spill system
+  * To activate a spill, do:
+      `ln -snf <spill_id> spills/active`
+
 * Represent domain/difficulty filters as a tree, so they can be individually toggled on/off
 * Frontend: Caching questions locally so they don't have to download every time
 * Frontend: Syncing storage data to/from server

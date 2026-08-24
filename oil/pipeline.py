@@ -28,6 +28,7 @@ class Pipeline:
   def _get_spills(self):
     return [
       Spill.from_path(path) for path in self.spills_path.iterdir()
+      if path.name != 'active'
     ]
 
   def _latest_spill(self):
@@ -151,7 +152,7 @@ class Pipeline:
           else:
             print(f"'{n}' is an invalid spill ID. See `list-spills` for valid spill IDs")
 
-      # kludge!
+      # kludge to make SPILL_TIME_HUMAN work in Index stage
       self.spill = spill
       for artifact in self.artifacts.values():
         artifact.use_spill(spill)
@@ -171,6 +172,23 @@ class Pipeline:
     def list_spills(args):
       for spill in self._get_spills():
         print(spill)
+
+    def set_active_spill(args):
+      match args.spill_id:
+        case 'latest':
+          spill = self._latest_spill()
+
+        case n:
+          spill_ids = [spill.id for spill in self._get_spills()]
+          if n.isnumeric() and int(n) in spill_ids:
+            spill = Spill(self.spills_path, int(n))
+          else:
+            print(f"'{n}' is an invalid spill ID. See `list-spills` for valid spill IDs")
+
+      print(f"Setting spill {spill} as active spill")
+      active_symlink_path = self.spills_path / 'active'
+      active_symlink_path.unlink(missing_ok=True)
+      active_symlink_path.symlink_to(str(spill.id))
 
     def d2_graph(args):
       self.generate_d2_graph()
@@ -199,6 +217,12 @@ class Pipeline:
     parser_list_spills = subparsers.add_parser('list-spills',
                           help="Print information about each spill.")
     parser_list_spills.set_defaults(func=list_spills)
+
+    parser_set_active_spill = subparsers.add_parser('set-active-spill',
+                                                    help="Set the active spill")
+    parser_set_active_spill.add_argument('spill_id',
+                                         help="A spill ID, or 'latest'")
+    parser_set_active_spill.set_defaults(func=set_active_spill)
 
     parser_d2_graph = subparsers.add_parser('d2-graph',
                           help="Generate a graph (in d2 format) of the pipeline stages")

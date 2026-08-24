@@ -277,7 +277,6 @@ class FrontendData:
   ]
   def run(questions, exams, classifications, question_counts_json):
     out = dict(
-      SPILL_TIME_INT = pipeline.spill.id,
       TOTAL_QUESTIONS = len(questions),
       EXAMS = exams.to_json(orient='records', indent=2),
       CLASSIFICATIONS = classifications.to_json(orient='records', indent=2),
@@ -301,7 +300,6 @@ class Index:
   ]
   def run(index_template):
     ENV.globals['SPILL_TIME_HUMAN'] = pipeline.spill.timestamp
-    ENV.globals['SPILL_TIME_INT'] = pipeline.spill.id
     print(index_template)
     yield index_template.render()
 

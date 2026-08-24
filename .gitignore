@@ -1,5 +1,1 @@
 __pycache__/
-
-spills/*
-!spills/active/frontend_data.js
-!spills/active/questions.json
