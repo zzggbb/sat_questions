@@ -1,39 +1,39 @@
 vars: { d2-config: { layout-engine: elk } }
 Schema: {
-'pipeline/exams.pickle'
-'pipeline/classifications.pickle'
+'exams.pickle'
+'classifications.pickle'
 }
 QuestionsMeta: {
-'pipeline/questions_meta.pickle'
+'questions_meta.pickle'
 }
-Schema.'pipeline/exams.pickle' -> QuestionsMeta: changes
-Schema.'pipeline/classifications.pickle' -> QuestionsMeta: changes
+Schema.'exams.pickle' -> QuestionsMeta: changes
+Schema.'classifications.pickle' -> QuestionsMeta: changes
 QuestionsMain: {
-'pipeline/questions_main.pickle'
+'questions_main.pickle'
 }
-QuestionsMeta.'pipeline/questions_meta.pickle' -> QuestionsMain: changes
+QuestionsMeta.'questions_meta.pickle' -> QuestionsMain: changes
 Questions: {
-'pipeline/questions.pickle'
+'questions.pickle'
 }
-QuestionsMeta.'pipeline/questions_meta.pickle' -> Questions: changes
-QuestionsMain.'pipeline/questions_main.pickle' -> Questions: changes
+QuestionsMeta.'questions_meta.pickle' -> Questions: changes
+QuestionsMain.'questions_main.pickle' -> Questions: changes
 QuestionCounts: {
-'pipeline/question_counts.html'
-'pipeline/question_counts.json'
+'question_counts.html'
+'question_counts.json'
 }
-Questions.'pipeline/questions.pickle' -> QuestionCounts: changes
+Questions.'questions.pickle' -> QuestionCounts: changes
 QuestionsJSON: {
-'pipeline/questions.json'
+'questions.json'
 }
-Questions.'pipeline/questions.pickle' -> QuestionsJSON: changes
+Questions.'questions.pickle' -> QuestionsJSON: changes
 FrontendData: {
-'pipeline/frontend_data.js'
+'frontend_data.js'
 }
-Questions.'pipeline/questions.pickle' -> FrontendData: changes
-Schema.'pipeline/exams.pickle' -> FrontendData: changes
-Schema.'pipeline/classifications.pickle' -> FrontendData: changes
-QuestionCounts.'pipeline/question_counts.json' -> FrontendData: changes
+Questions.'questions.pickle' -> FrontendData: changes
+Schema.'exams.pickle' -> FrontendData: changes
+Schema.'classifications.pickle' -> FrontendData: changes
+QuestionCounts.'question_counts.json' -> FrontendData: changes
 Index: {
-'html/index.html'
+'index.html'
 }
 'template_html/index.html' -> Index: changes

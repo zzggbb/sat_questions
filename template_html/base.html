@@ -4,7 +4,7 @@
     <title>{{title}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="../static/style/main.css"/>
+    <link rel="stylesheet" type="text/css" href="../../static/style/main.css"/>
     <link rel="icon" href="data:,">
     {% block head %}{% endblock %}
   </head>
@@ -12,7 +12,7 @@
     {% block body %}{% endblock %}
     <div id="footer">
       <div>Created by Zane Bradley (zanegbradley@gmail.com)</div>
-      <div>Last Updated: {{timestamp_human}}</div>
+      <div>Last Updated: {{SPILL_TIME_HUMAN}}</div>
       <div>This website is entirely open-source and ad-free.</div>
       <div>You can view the source here:
         <a href="https://github.com/zzggbb/sat_questions">

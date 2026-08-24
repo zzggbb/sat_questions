@@ -1,5 +1,5 @@
 __pycache__/
 
-pipeline/*
-!pipeline/frontend_data.js
-!pipeline/questions.json
+spills/*
+!spills/active/frontend_data.js
+!spills/active/questions.json
