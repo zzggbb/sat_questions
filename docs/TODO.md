@@ -25,6 +25,7 @@
 
 # High Priority
 
+* change instances of "currentColor" to "#000000" in the SVGs in question HTML
 * finish spill system
   * To activate a spill, do:
       `ln -snf <spill_id> spills/active`
