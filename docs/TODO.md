@@ -25,7 +25,7 @@
 
 # High Priority
 
-* change instances of "currentColor" to "#000000" in the SVGs in question HTML
+* change instances of "currentColor" to "#000000" in the SVGs in question HTML. When "currentColor" is used, it doesn't invert and so it causes unreadable diagrams in darkmode. Example: P89-80c5c1567c26376019cdf368ba4cee65
 * finish spill system
   * To activate a spill, do:
       `ln -snf <spill_id> spills/active`
