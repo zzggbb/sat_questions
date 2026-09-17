@@ -74,15 +74,24 @@
   And then the above media queries could be deleted, AND the style.setProperty
   stuff in LightDarkToggle could be deleted.
   */
-  @media (prefers-color-scheme: dark) {
-    img, svg:not(.icon) {
-      filter: var(--math-image-filter);
-    }
+  img, svg:not(.icon) {
+    filter: var(--math-image-filter);
+  }
+
+  /*
+  Without this, SVGs that define their color as "currentColor" will
+  have their color set by the browser based on light/dark mode. But then
+  We apply the invert filter, so the colors look wrong. If all SVGs from
+  the collegeboard used currentColor, then they would automatically reflect
+  the light/dark mode, and we wouldn't need to invert and this wouldn't be
+  a problem.
+  */
+  svg:not(.icon) {
+    color: black;
   }
 
 body {
   margin: 5px;
-  color: var(--fg);
   background-color: var(--bg);
 }
 
@@ -102,6 +111,7 @@ body {
     border: 1px solid var(--fg);
     margin: 0;
     box-sizing: border-box;
+    background-color: var(--bg);
   }
 
 /* user */
